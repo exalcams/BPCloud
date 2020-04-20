@@ -284,6 +284,10 @@
     background-color: #efb577;
     color: white;
   }
+  .SaveAsDraftBtn {
+    background-color: white;
+    color: #efb577;
+  }
   .leftCard {
     @include mat-elevation(2);
     background: white;
@@ -326,5 +330,20 @@
   .sectionHeader {
     font-weight: bold;
     font-size: 18px;
+  }
+  .SectionTitle {
+    display: inline-block;
+    position: relative;
+  }
+
+  .SectionTitle strong:after {
+    content: "";
+    height: 2px;
+    width: 90%;
+    background-color: #efb577;
+    position: absolute;
+    bottom: -0.5em;
+    left: 52%;
+    transform: translate(-50%);
   }
 }
