@@ -49,7 +49,7 @@ export class VendorRegistrationComponent implements OnInit {
     'ValidUntil',
     'Action'
   ];
-  bankDetailsdisplayedColumns: string[] = [
+  bankDetailsDisplayedColumns: string[] = [
     'AccountNo',
     'Name',
     'IFSC',
@@ -59,7 +59,7 @@ export class VendorRegistrationComponent implements OnInit {
     'Action'
   ];
 
-  contactdisplayedColumns: string[] = [
+  contactDisplayedColumns: string[] = [
     'Name',
     'Department',
     'Title',
@@ -67,7 +67,7 @@ export class VendorRegistrationComponent implements OnInit {
     'Email',
     'Action'
   ];
-  activityLogdisplayedColumns: string[] = [
+  activityLogDisplayedColumns: string[] = [
     'Activity',
     'Date',
     'Time',
@@ -148,10 +148,10 @@ export class VendorRegistrationComponent implements OnInit {
       Country: ['', Validators.required],
       PinCode: ['', Validators.required],
       Type: ['', Validators.required],
-      Phone1: ['', Validators.required],
-      Phone2: [''],
-      Email1: ['', Validators.required],
-      Email2: [''],
+      Phone1: ['', [Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
+      Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
+      Email1: ['', [Validators.required, Validators.email]],
+      Email2: ['', [Validators.email]],
     });
   }
 
@@ -179,8 +179,8 @@ export class VendorRegistrationComponent implements OnInit {
       Name: ['', Validators.required],
       Department: ['', Validators.required],
       Title: ['', Validators.required],
-      Mobile: ['', Validators.required],
-      Email: ['', Validators.required],
+      Mobile: ['', [Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
+      Email: ['', [Validators.required, Validators.email]],
     });
   }
 
@@ -232,9 +232,9 @@ export class VendorRegistrationComponent implements OnInit {
     });
   }
   ClearActivityLogFormGroup(): void {
-    this.bankDetailsFormGroup.reset();
-    Object.keys(this.bankDetailsFormGroup.controls).forEach(key => {
-      this.bankDetailsFormGroup.get(key).markAsUntouched();
+    this.activityLogFormGroup.reset();
+    Object.keys(this.activityLogFormGroup.controls).forEach(key => {
+      this.activityLogFormGroup.get(key).markAsUntouched();
     });
   }
 
@@ -438,7 +438,7 @@ export class VendorRegistrationComponent implements OnInit {
       this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
       this.ClearActivityLogFormGroup();
     } else {
-      this.ShowValidationErrors(this.contactFormGroup);
+      this.ShowValidationErrors(this.activityLogFormGroup);
     }
   }
 
@@ -459,8 +459,8 @@ export class VendorRegistrationComponent implements OnInit {
     return true;
   }
   ActivityLogEnterKeyDown(): boolean {
-    this.email.nativeElement.blur();
-    this.AddContactToTable();
+    this.activityText.nativeElement.blur();
+    this.AddActivityLogToTable();
     return true;
   }
 
@@ -574,7 +574,7 @@ export class VendorRegistrationComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result) {
-          if (Actiontype === 'Create') {
+          if (Actiontype === 'Register') {
             this.CreateVendorOnBoarding();
           } else if (Actiontype === 'Update') {
             this.UpdateVendorOnBoarding();
@@ -591,15 +591,24 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoarding.Role = this.SelectedBPVendorOnBoardingView.Role = this.vendorRegistrationFormGroup.get('Role').value;
     this.SelectedBPVendorOnBoarding.LegalName = this.SelectedBPVendorOnBoardingView.LegalName = this.vendorRegistrationFormGroup.get('LegalName').value;
     this.SelectedBPVendorOnBoarding.AddressLine1 = this.SelectedBPVendorOnBoardingView.AddressLine1 = this.vendorRegistrationFormGroup.get('AddressLine1').value;
+    this.SelectedBPVendorOnBoarding.AddressLine2 = this.SelectedBPVendorOnBoardingView.AddressLine2 = this.vendorRegistrationFormGroup.get('AddressLine2').value;
     this.SelectedBPVendorOnBoarding.City = this.SelectedBPVendorOnBoardingView.City = this.vendorRegistrationFormGroup.get('City').value;
     this.SelectedBPVendorOnBoarding.State = this.SelectedBPVendorOnBoardingView.State = this.vendorRegistrationFormGroup.get('State').value;
     this.SelectedBPVendorOnBoarding.Country = this.SelectedBPVendorOnBoardingView.Country = this.vendorRegistrationFormGroup.get('Country').value;
+    this.SelectedBPVendorOnBoarding.Phone1 = this.SelectedBPVendorOnBoardingView.Phone1 = this.vendorRegistrationFormGroup.get('Phone1').value;
+    this.SelectedBPVendorOnBoarding.Phone2 = this.SelectedBPVendorOnBoardingView.Phone2 = this.vendorRegistrationFormGroup.get('Phone2').value;
+    this.SelectedBPVendorOnBoarding.Email1 = this.SelectedBPVendorOnBoardingView.Email1 = this.vendorRegistrationFormGroup.get('Email1').value;
+    this.SelectedBPVendorOnBoarding.Email2 = this.SelectedBPVendorOnBoardingView.Email2 = this.vendorRegistrationFormGroup.get('Email2').value;
+    this.SelectedBPVendorOnBoarding.VendorCode = this.SelectedBPVendorOnBoardingView.VendorCode = this.vendorRegistrationFormGroup.get('VendorCode').value;
+    this.SelectedBPVendorOnBoarding.ParentVendor = this.SelectedBPVendorOnBoardingView.ParentVendor = this.vendorRegistrationFormGroup.get('ParentVendor').value;
+    this.SelectedBPVendorOnBoarding.Status = this.SelectedBPVendorOnBoardingView.Status = this.vendorRegistrationFormGroup.get('Status').value;
+
   }
 
   GetBPVendorOnBoardingSubItemValues(): void {
     this.GetBPIdentityValues();
     this.GetBPBankValues();
-    this.GetBPBankValues();
+    this.GetBPContactValues();
     this.GetBPActivityLogValues();
   }
 
@@ -731,11 +740,11 @@ export class VendorRegistrationComponent implements OnInit {
   SetActionToOpenConfirmation(): void {
     if (this.SelectedBPVendorOnBoarding.TransID) {
       const Actiontype = 'Update';
-      const Catagory = 'BPVendorOnBoarding';
+      const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     } else {
-      const Actiontype = 'Create';
-      const Catagory = 'BPVendorOnBoarding';
+      const Actiontype = 'Register';
+      const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     }
   }
@@ -744,7 +753,7 @@ export class VendorRegistrationComponent implements OnInit {
     // if (this.vendorRegistrationFormGroup.valid) {
     if (this.SelectedBPVendorOnBoarding.TransID) {
       const Actiontype = 'Delete';
-      const Catagory = 'BPVendorOnBoarding';
+      const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     }
     // } else {
