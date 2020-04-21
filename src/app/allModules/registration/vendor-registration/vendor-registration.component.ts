@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MenuApp, AuthenticationDetails, UserView } from 'app/models/master';
 import { Guid } from 'guid-typescript';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { MatTableDataSource, MatPaginator, MatSort, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MasterService } from 'app/services/master.service';
@@ -29,6 +29,8 @@ export class VendorRegistrationComponent implements OnInit {
   // CurrentUserRole = '';
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
+  IsDisplayPhone2: boolean;
+  IsDisplayEmail2: boolean;
   vendorRegistrationFormGroup: FormGroup;
   identificationFormGroup: FormGroup;
   bankDetailsFormGroup: FormGroup;
@@ -126,6 +128,8 @@ export class VendorRegistrationComponent implements OnInit {
     // this.authenticationDetails = new AuthenticationDetails();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
+    this.IsDisplayPhone2 = false;
+    this.IsDisplayEmail2 = false;
   }
 
   ngOnInit(): void {
@@ -202,6 +206,8 @@ export class VendorRegistrationComponent implements OnInit {
       this.vendorRegistrationFormGroup.get(key).enable();
       this.vendorRegistrationFormGroup.get(key).markAsUntouched();
     });
+    this.IsDisplayPhone2 = false;
+    this.IsDisplayEmail2 = false;
     // this.fileToUpload = null;
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
@@ -255,6 +261,17 @@ export class VendorRegistrationComponent implements OnInit {
     this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
   }
 
+  DisplayPhone2(): void {
+    this.vendorRegistrationFormGroup.get('Phone2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+    this.vendorRegistrationFormGroup.get('Phone2').updateValueAndValidity();
+    this.IsDisplayPhone2 = true;
+  }
+  DisplayEmail2(): void {
+    this.vendorRegistrationFormGroup.get('Email2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+    this.vendorRegistrationFormGroup.get('Email2').updateValueAndValidity();
+    this.IsDisplayEmail2 = true;
+  }
+
   loadSelectedBPVendorOnBoarding(selectedBPVendorOnBoarding: BPVendorOnBoarding): void {
     this.ResetControl();
     this.SelectedBPVendorOnBoarding = selectedBPVendorOnBoarding;
@@ -292,7 +309,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Phone2').patchValue(this.SelectedBPVendorOnBoarding.Phone2);
     this.vendorRegistrationFormGroup.get('Email1').patchValue(this.SelectedBPVendorOnBoarding.Email1);
     this.vendorRegistrationFormGroup.get('Email2').patchValue(this.SelectedBPVendorOnBoarding.Email2);
-
+    // this.contactFormGroup.get('Email').validator({}as AbstractControl);
   }
 
   GetBPVendorOnBoardingSubItems(): void {

@@ -308,6 +308,10 @@
     height: 20px;
     cursor: pointer !important;
   }
+  .addFieldIcon {
+    height: 20px;
+    cursor: pointer !important;
+  }
   .Rectangle {
     // width: 152px;
     min-height: 50px;
@@ -338,12 +342,21 @@
 
   .SectionTitle strong:after {
     content: "";
-    height: 2px;
+    height: 3px;
     width: 90%;
     background-color: #efb577;
     position: absolute;
-    bottom: -0.5em;
+    bottom: -0.2em;
     left: 52%;
     transform: translate(-50%);
+  }
+  @mixin md-icon-size($size: 24px) {
+    font-size: $size;
+    height: $size;
+    width: $size;
+    line-height: $size;
+  }
+  .mat-icon {
+    @include md-icon-size(12px);
   }
 }
