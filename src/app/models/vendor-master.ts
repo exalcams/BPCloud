@@ -44,3 +44,11 @@ export class CBPApp extends CommonClass {
     StartDate?: Date;
     EndDate?: Date;
 }
+export class CBPLocation {
+    Pincode: string;
+    Location: string;
+    Taluk: string;
+    District: string;
+    State: string;
+    Country: string;
+}

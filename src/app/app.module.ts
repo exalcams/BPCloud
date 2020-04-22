@@ -45,6 +45,10 @@ const appRoutes: Routes = [
         loadChildren: './allModules/registration/registration.module#RegistrationModule'
     },
     {
+        path: 'approval',
+        loadChildren: './allModules/approval/approval.module#ApprovalModule'
+    },
+    {
         path: '**',
         redirectTo: 'auth/login'
     }

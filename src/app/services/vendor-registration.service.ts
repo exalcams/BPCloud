@@ -11,19 +11,9 @@ import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVen
 export class VendorRegistrationService {
 
   baseAddress: string;
-  NotificationEvent: Subject<any>;
-
-  GetNotification(): Observable<any> {
-    return this.NotificationEvent.asObservable();
-  }
-
-  TriggerNotification(eventName: string): void {
-    this.NotificationEvent.next(eventName);
-  }
 
   constructor(private _httpClient: HttpClient, private _authService: AuthService) {
     this.baseAddress = _authService.baseAddress;
-    this.NotificationEvent = new Subject();
   }
 
   // Error Handler
@@ -36,6 +26,11 @@ export class VendorRegistrationService {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllVendorOnBoardings`)
       .pipe(catchError(this.errorHandler));
   }
+
+  GetRegisteredVendorOnBoardings(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetRegisteredVendorOnBoardings`)
+      .pipe(catchError(this.errorHandler));
+  } 
 
   CreateVendorOnBoarding(VendorOnBoarding: BPVendorOnBoardingView): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Registration/CreateVendorOnBoarding`,
@@ -69,8 +64,30 @@ export class VendorRegistrationService {
       })
       .pipe(catchError(this.errorHandler));
   }
+  ApproveVendor(VendorOnBoarding: BPVendorOnBoarding): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Registration/ApproveVendor`,
+      VendorOnBoarding,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  RejectVendor(VendorOnBoarding: BPVendorOnBoarding): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Registration/RejectVendor`,
+      VendorOnBoarding,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
   GetIdentificationsByVOB(TransID: number): Observable<BPIdentity[] | string> {
-    return this._httpClient.get<BPIdentity[]>(`${this.baseAddress}vendorregisterapi/Registration/GetIdentificationsByVOB?TransID=${TransID}`)
+    return this._httpClient.get<BPIdentity[]>(`${this.baseAddress}vendorregisterapi/Registration/GetIdentitiesByVOB?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));
   }
   GetBanksByVOB(TransID: number): Observable<BPBank[] | string> {
