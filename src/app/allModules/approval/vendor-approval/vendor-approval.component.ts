@@ -1,34 +1,32 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MenuApp, AuthenticationDetails, UserView } from 'app/models/master';
-import { Guid } from 'guid-typescript';
+import { MenuApp, AuthenticationDetails } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
-import { MatTableDataSource, MatPaginator, MatSort, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { BPVendorOnBoarding, BPVendorOnBoardingView, BPIdentity, BPBank, BPContact, BPActivityLog } from 'app/models/vendor-registration';
+import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MasterService } from 'app/services/master.service';
-import { Router } from '@angular/router';
-import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
-import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
-import { AttachmentDialogComponent } from 'app/allModules/pages/attachment-dialog/attachment-dialog.component';
-import { VendorRegistrationService } from 'app/services/vendor-registration.service';
-import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact, BPActivityLog } from 'app/models/vendor-registration';
-import { AttachmentDetails } from 'app/models/task';
 import { FuseConfigService } from '@fuse/services/config.service';
+import { MasterService } from 'app/services/master.service';
+import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
+import { Router } from '@angular/router';
 import { CBPLocation } from 'app/models/vendor-master';
+import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
+import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
+import { Guid } from 'guid-typescript';
 
 @Component({
-  selector: 'vendor-registration',
-  templateUrl: './vendor-registration.component.html',
-  styleUrls: ['./vendor-registration.component.scss']
+  selector: 'app-vendor-approval',
+  templateUrl: './vendor-approval.component.html',
+  styleUrls: ['./vendor-approval.component.scss']
 })
-export class VendorRegistrationComponent implements OnInit {
+export class VendorApprovalComponent implements OnInit {
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
   SelectedMenuApp: MenuApp;
-  // authenticationDetails: AuthenticationDetails;
-  // CurrentUserID: Guid;
-  // CurrentUserRole = '';
+  authenticationDetails: AuthenticationDetails;
+  CurrentUserID: Guid;
+  CurrentUserRole = '';
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
   IsDisplayPhone2: boolean;
@@ -51,7 +49,7 @@ export class VendorRegistrationComponent implements OnInit {
     'Type',
     'IDNumber',
     'ValidUntil',
-    'Action'
+    // 'Action'
   ];
   bankDetailsDisplayedColumns: string[] = [
     'AccountNo',
@@ -60,7 +58,7 @@ export class VendorRegistrationComponent implements OnInit {
     'BankName',
     'Branch',
     'City',
-    'Action'
+    // 'Action'
   ];
 
   contactDisplayedColumns: string[] = [
@@ -69,14 +67,14 @@ export class VendorRegistrationComponent implements OnInit {
     'Title',
     'Mobile',
     'Email',
-    'Action'
+    // 'Action'
   ];
   activityLogDisplayedColumns: string[] = [
     'Activity',
     'Date',
     'Time',
     'Text',
-    'Action'
+    // 'Action'
   ];
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
@@ -128,7 +126,7 @@ export class VendorRegistrationComponent implements OnInit {
     };
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoardingView = new BPVendorOnBoardingView();
-    // this.authenticationDetails = new AuthenticationDetails();
+    this.authenticationDetails = new AuthenticationDetails();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
@@ -136,11 +134,26 @@ export class VendorRegistrationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // const retrievedObject = localStorage.getItem('authorizationData');
+    // if (retrievedObject) {
+    //   this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
+    //   this.CurrentUserID = this.authenticationDetails.userID;
+    //   this.CurrentUserRole = this.authenticationDetails.userRole;
+    //   this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+    // if (this.MenuItems.indexOf('Dashboard') < 0) {
+    //     this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger
+    //     );
+    //     this._router.navigate(['/auth/login']);
+    // }
     this.InitializeVendorRegistrationFormGroup();
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
     this.InitializeActivityLogFormGroup();
+    this.GetRegisteredVendorOnBoardings();
+    // } else {
+    //   this._router.navigate(['/auth/login']);
+    // }
   }
 
   InitializeVendorRegistrationFormGroup(): void {
@@ -297,11 +310,29 @@ export class VendorRegistrationComponent implements OnInit {
     this.IsDisplayEmail2 = true;
   }
 
+  GetRegisteredVendorOnBoardings(): void {
+    this.IsProgressBarVisibile = true;
+    this._vendorRegistrationService.GetRegisteredVendorOnBoardings().subscribe(
+      (data) => {
+        this.IsProgressBarVisibile = false;
+        this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
+        if (this.AllVendorOnBoardings && this.AllVendorOnBoardings.length) {
+          this.loadSelectedBPVendorOnBoarding(this.AllVendorOnBoardings[0]);
+        }
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+  }
+
   loadSelectedBPVendorOnBoarding(selectedBPVendorOnBoarding: BPVendorOnBoarding): void {
     this.ResetControl();
     this.SelectedBPVendorOnBoarding = selectedBPVendorOnBoarding;
     this.selectID = selectedBPVendorOnBoarding.TransID;
-    this.EnableAllVendorOnBoardingTypes();
+    // this.EnableAllVendorOnBoardingTypes();
     this.SetBPVendorOnBoardingValues();
     this.GetBPVendorOnBoardingSubItems();
   }
@@ -315,18 +346,19 @@ export class VendorRegistrationComponent implements OnInit {
     this.identificationDataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  EnableAllVendorOnBoardingTypes(): void {
-    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
-      this.vendorRegistrationFormGroup.get(key).enable();
-    });
-  }
+  // EnableAllVendorOnBoardingTypes(): void {
+  //   Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
+  //     this.vendorRegistrationFormGroup.get(key).enable();
+  //   });
+  // }
   SetBPVendorOnBoardingValues(): void {
     this.vendorRegistrationFormGroup.get('Name').patchValue(this.SelectedBPVendorOnBoarding.Name);
     this.vendorRegistrationFormGroup.get('Type').patchValue(this.SelectedBPVendorOnBoarding.Type);
     this.vendorRegistrationFormGroup.get('Role').patchValue(this.SelectedBPVendorOnBoarding.Role);
     this.vendorRegistrationFormGroup.get('LegalName').patchValue(this.SelectedBPVendorOnBoarding.LegalName);
     this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(this.SelectedBPVendorOnBoarding.AddressLine1);
-    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.SelectedBPVendorOnBoarding.AddressLine1);
+    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.SelectedBPVendorOnBoarding.AddressLine2);
+    this.vendorRegistrationFormGroup.get('PinCode').patchValue(this.SelectedBPVendorOnBoarding.PinCode);
     this.vendorRegistrationFormGroup.get('City').patchValue(this.SelectedBPVendorOnBoarding.City);
     this.vendorRegistrationFormGroup.get('State').patchValue(this.SelectedBPVendorOnBoarding.State);
     this.vendorRegistrationFormGroup.get('Country').patchValue(this.SelectedBPVendorOnBoarding.Country);
@@ -616,10 +648,10 @@ export class VendorRegistrationComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result) {
-          if (Actiontype === 'Register') {
-            this.CreateVendorOnBoarding();
-          } else if (Actiontype === 'Update') {
-            this.UpdateVendorOnBoarding();
+          if (Actiontype === 'Approve') {
+            this.ApproveVendor();
+          } else if (Actiontype === 'Reject') {
+            this.RejectVendor();
           } else if (Actiontype === 'Delete') {
             this.DeleteVendorOnBoarding();
           }
@@ -634,7 +666,6 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoarding.LegalName = this.SelectedBPVendorOnBoardingView.LegalName = this.vendorRegistrationFormGroup.get('LegalName').value;
     this.SelectedBPVendorOnBoarding.AddressLine1 = this.SelectedBPVendorOnBoardingView.AddressLine1 = this.vendorRegistrationFormGroup.get('AddressLine1').value;
     this.SelectedBPVendorOnBoarding.AddressLine2 = this.SelectedBPVendorOnBoardingView.AddressLine2 = this.vendorRegistrationFormGroup.get('AddressLine2').value;
-    this.SelectedBPVendorOnBoarding.PinCode = this.SelectedBPVendorOnBoardingView.PinCode = this.vendorRegistrationFormGroup.get('PinCode').value;
     this.SelectedBPVendorOnBoarding.City = this.SelectedBPVendorOnBoardingView.City = this.vendorRegistrationFormGroup.get('City').value;
     this.SelectedBPVendorOnBoarding.State = this.SelectedBPVendorOnBoardingView.State = this.vendorRegistrationFormGroup.get('State').value;
     this.SelectedBPVendorOnBoarding.Country = this.SelectedBPVendorOnBoardingView.Country = this.vendorRegistrationFormGroup.get('Country').value;
@@ -699,7 +730,7 @@ export class VendorRegistrationComponent implements OnInit {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        // this.GetAllVendorOnBoardings();
+        // this.GetRegisteredVendorOnBoardings();
       },
       (err) => {
         console.error(err);
@@ -721,7 +752,7 @@ export class VendorRegistrationComponent implements OnInit {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor registration updated successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        // this.GetAllVendorOnBoardings();
+        // this.GetRegisteredVendorOnBoardings();
       },
       (err) => {
         console.error(err);
@@ -739,9 +770,48 @@ export class VendorRegistrationComponent implements OnInit {
       (data) => {
         // console.log(data);
         this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('BPVendorOnBoarding deleted successfully', SnackBarStatus.success);
+        this.notificationSnackBarComponent.openSnackBar('Vendor deleted successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        // this.GetAllVendorOnBoardings();
+        // this.GetRegisteredVendorOnBoardings();
+      },
+      (err) => {
+        console.error(err);
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+        this.IsProgressBarVisibile = false;
+      }
+    );
+  }
+
+  ApproveVendor(): void {
+    // this.GetBPVendorOnBoardingValues();
+    // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.IsProgressBarVisibile = true;
+    this._vendorRegistrationService.ApproveVendor(this.SelectedBPVendorOnBoarding).subscribe(
+      (data) => {
+        // console.log(data);
+        this.ResetControl();
+        this.notificationSnackBarComponent.openSnackBar('Vendor approved successfully', SnackBarStatus.success);
+        this.IsProgressBarVisibile = false;
+        this.GetRegisteredVendorOnBoardings();
+      },
+      (err) => {
+        console.error(err);
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+        this.IsProgressBarVisibile = false;
+      }
+    );
+  }
+  RejectVendor(): void {
+    // this.GetBPVendorOnBoardingValues();
+    // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.IsProgressBarVisibile = true;
+    this._vendorRegistrationService.RejectVendor(this.SelectedBPVendorOnBoarding).subscribe(
+      (data) => {
+        // console.log(data);
+        this.ResetControl();
+        this.notificationSnackBarComponent.openSnackBar('Vendor rejected successfully', SnackBarStatus.success);
+        this.IsProgressBarVisibile = false;
+        this.GetRegisteredVendorOnBoardings();
       },
       (err) => {
         console.error(err);
@@ -780,35 +850,28 @@ export class VendorRegistrationComponent implements OnInit {
 
   }
 
-
-  SaveClicked(): void {
+  ApproveClicked(): void {
     if (this.vendorRegistrationFormGroup.valid) {
-      // const file: File = this.fileToUpload;
       this.GetBPVendorOnBoardingValues();
       this.GetBPVendorOnBoardingSubItemValues();
-      // if (this.SelectedBPVendorOnBoarding.Type.toLocaleLowerCase() === 'ui') {
-      //   if (this.SelectedBPVendorOnBoardingView.bPIdentities && this.SelectedBPVendorOnBoardingView.bPIdentities.length &&
-      //     this.SelectedBPVendorOnBoardingView.bPIdentities.length > 0) {
-      //     this.SetActionToOpenConfirmation();
-      //   } else {
-      //     this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity table', SnackBarStatus.danger);
-      //   }
-      // } else {
-      //   this.SetActionToOpenConfirmation();
-      // }
-      this.SetActionToOpenConfirmation();
+      this.SetActionToOpenConfirmation('Approve');
+    } else {
+      this.ShowValidationErrors(this.vendorRegistrationFormGroup);
+    }
+  }
+  RejectClicked(): void {
+    if (this.vendorRegistrationFormGroup.valid) {
+      this.GetBPVendorOnBoardingValues();
+      this.GetBPVendorOnBoardingSubItemValues();
+      this.SetActionToOpenConfirmation('Reject');
     } else {
       this.ShowValidationErrors(this.vendorRegistrationFormGroup);
     }
   }
 
-  SetActionToOpenConfirmation(): void {
+  SetActionToOpenConfirmation(actiontype: string): void {
     if (this.SelectedBPVendorOnBoarding.TransID) {
-      const Actiontype = 'Update';
-      const Catagory = 'Vendor';
-      this.OpenConfirmationDialog(Actiontype, Catagory);
-    } else {
-      const Actiontype = 'Register';
+      const Actiontype = actiontype;
       const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     }
@@ -886,4 +949,3 @@ export class VendorRegistrationComponent implements OnInit {
   //   });
   // }
 }
-

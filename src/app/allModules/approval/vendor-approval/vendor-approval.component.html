@@ -1,10 +1,10 @@
 <div id="chat" class="page-layout carded fullwidth">
   <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
     <div fxLayout class="content-card1">
-      <!-- <div fxFlex="23" class="side-bar">
+      <div fxFlex="23" class="side-bar">
         <mat-card class="cardHeader p-8" style="height: 52px !important;background-color: #fffdf9;">
           <div fxLayout fxFlex fxLayoutAlign="center" class="h2">
-            <b>VendorOnBoarding ({{AllVendorOnBoardings?.length}})</b>
+            <b>Vendors ({{AllVendorOnBoardings?.length}})</b>
           </div>
         </mat-card>
         <div class="sidenav-header" style="background-color: #f5f5f5;">
@@ -26,7 +26,10 @@
                     [style.border-left-color]="selectID==usr.TransID?'#efb577':'#cccccc'">
                     <div fxLayout fxLayoutAlign="space-between center">
                       <div fxFlex><strong>{{usr.Name}}</strong></div>
-                      <div fxFlex fxLayoutAlign="end" class="mr-8">{{usr.Type}}</div>
+                      <div fxFlex fxLayoutAlign="end" class="mr-8">{{usr.LegalName}}</div>
+                    </div>
+                    <div fxLayout fxLayoutAlign="start">
+                      <div fxFlex>{{usr.Role}}</div>
                     </div>
                   </div>
                 </div>
@@ -39,17 +42,17 @@
           </div>
         </div>
         <div class="borderRight1"></div>
-      </div> -->
-      <div fxFlex class="side-bar">
+      </div>
+      <div fxFlex="77" class="side-bar">
         <mat-card class="cardHeader p-8" style="background-color: #fffdf9;">
           <div fxLayout fxFlex fxLayoutAlign="center">
-            <span class="sectionHeader pt-8">Registration</span>
+            <!-- <span class="sectionHeader pt-8">{{SelectedBPVendorOnBoarding?.Name}}</span> -->
           </div>
           <div fxLayout fxFlex class="h2" fxLayoutAlign="end">
-            <button (click)="SaveClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
-              Save as Draft</button>
-            <button (click)="SaveClicked()" class="SaveBtn" mat-raised-button>
-              Save</button>
+            <button (click)="RejectClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
+              Reject</button>
+            <button (click)="ApproveClicked()" class="SaveBtn" mat-raised-button>
+              Approve</button>
           </div>
         </mat-card>
         <div class="sidenav-content" fxFlex fxLayout="column">
@@ -168,8 +171,8 @@
                     <mat-form-field class="pl-8 pr-20" style="width: 100%;">
                       <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
                       <input matInput placeholder="Phone1" formControlName="Phone1">
-                      <img *ngIf="!IsDisplayPhone2" class="addFieldIcon" matSuffix
-                        src="assets/images/logos/add-button.png" (click)="DisplayPhone2()">
+                      <!-- <img *ngIf="!IsDisplayPhone2" class="addFieldIcon" matSuffix
+                        src="assets/images/logos/add-button.png" (click)="DisplayPhone2()"> -->
                       <!-- <mat-icon *ngIf="!IsDisplayPhone2" matSuffix svgIcon="addIcon" class="addFieldIcon" (click)="DisplayPhone2()"></mat-icon> -->
                       <mat-error
                         *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
@@ -183,7 +186,7 @@
                   </div>
                 </div>
 
-                <div fxFlex="33" *ngIf="IsDisplayPhone2" fxLayout>
+                <div fxFlex="33" *ngIf="SelectedBPVendorOnBoarding.Phone2" fxLayout>
                   <!-- <div fxFlex="12">
                     <mat-form-field class="pl-8" style="width: 100%;">
                       <input matInput value="+91" placeholder="">
@@ -208,8 +211,8 @@
                 <div fxFlex="33">
                   <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                     <input matInput placeholder="Email1" formControlName="Email1">
-                    <img *ngIf="!IsDisplayEmail2" class="addFieldIcon" matSuffix
-                      src="assets/images/logos/add-button.png" (click)="DisplayEmail2()">
+                    <!-- <img *ngIf="!IsDisplayEmail2" class="addFieldIcon" matSuffix
+                      src="assets/images/logos/add-button.png" (click)="DisplayEmail2()"> -->
                     <!-- <mat-icon *ngIf="!IsDisplayEmail2" matSuffix svgIcon="addIcon" class="addFieldIcon" (click)="DisplayEmail2()"></mat-icon> -->
                     <mat-error
                       *ngIf="vendorRegistrationFormGroup.get('Email1').touched && vendorRegistrationFormGroup.get('Email1').hasError('required')">
@@ -222,7 +225,7 @@
                   </mat-form-field>
                 </div>
 
-                <div fxFlex="33" *ngIf="IsDisplayEmail2">
+                <div fxFlex="33" *ngIf="SelectedBPVendorOnBoarding.Email2">
                   <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                     <input matInput placeholder="Email2" formControlName="Email2">
                     <mat-error
@@ -238,14 +241,14 @@
 
               </div>
             </form>
-            <div fxFlex fxLayout="column" class="mt-24">
+            <div fxFlex fxLayout="column" class="mt-24" *ngIf="IdentificationsByVOB?.length">
               <div style="margin-left: 7px">
                 <!-- <span class="SectionTitle"><strong>Identification Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Identification Table</strong>
                 </div>
               </div>
-              <div class="mt-8">
+              <!-- <div class="mt-8">
                 <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
                   [formGroup]="identificationFormGroup">
                   <div fxFlex="30">
@@ -283,7 +286,7 @@
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddIdentificationToTable()">
                   </div>
                 </form>
-              </div>
+              </div> -->
               <div style="margin-left: 8px;margin-top: 10px;">
                 <table *ngIf="IdentificationsByVOB?.length" class="table" mat-table
                   [dataSource]="identificationDataSource" matSort>
@@ -304,13 +307,13 @@
                     <td mat-cell *matCellDef="let element" style="width: 35%;"> {{element.ValidUntil | date}} </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Action">
+                  <!-- <ng-container matColumnDef="Action">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
                     <td mat-cell *matCellDef="let element" style="width: 5%;text-align: center;">
                       <img class="removeIcon" src="assets/images/remove-button.png"
                         (click)="RemoveIdentificationFromTable(element)">
                     </td>
-                  </ng-container>
+                  </ng-container> -->
 
                   <tr mat-header-row *matHeaderRowDef="identificationDisplayedColumns;sticky: true"></tr>
                   <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;" matRipple
@@ -324,13 +327,13 @@
               </div>
             </div>
 
-            <div fxFlex fxLayout="column">
+            <div fxFlex fxLayout="column" *ngIf="BanksByVOB?.length">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
                   <strong>Bank Table</strong>
                 </div>
               </div>
-              <div class="mt-8">
+              <!-- <div class="mt-8">
                 <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form"
                   novalidate [formGroup]="bankDetailsFormGroup">
                   <div fxFlex fxLayout="row">
@@ -403,7 +406,7 @@
                   </div>
 
                 </form>
-              </div>
+              </div> -->
               <div style="margin-left: 8px;margin-top: 10px;">
                 <div style="overflow-x:auto;">
                   <table *ngIf="BanksByVOB?.length" class="table" mat-table [dataSource]="bankDetailsDataSource"
@@ -440,13 +443,13 @@
                       <td mat-cell *matCellDef="let element"> {{element.City}} </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="Action">
+                    <!-- <ng-container matColumnDef="Action">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header> </th>
                       <td mat-cell *matCellDef="let element" style="text-align: center;">
                         <img class="removeIcon" src="assets/images/remove-button.png"
                           (click)="RemoveBankFromTable(element)">
                       </td>
-                    </ng-container>
+                    </ng-container> -->
 
                     <tr mat-header-row *matHeaderRowDef="bankDetailsDisplayedColumns;sticky: true"></tr>
                     <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;" matRipple
@@ -461,14 +464,13 @@
                 <!-- </div> -->
               </div>
             </div>
-            <div fxFlex fxLayout="column">
+            <div fxFlex fxLayout="column" *ngIf="ContactsByVOB?.length">
               <div style="margin-left: 7px">
-                <!-- <span><strong>Contact Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Contact Table</strong>
                 </div>
               </div>
-              <div class="mt-8">
+              <!-- <div class="mt-8">
                 <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
                   [formGroup]="contactFormGroup">
                   <div fxFlex="20">
@@ -532,7 +534,7 @@
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddContactToTable()">
                   </div>
                 </form>
-              </div>
+              </div> -->
               <div style="margin-left: 8px;margin-top: 10px;">
                 <table *ngIf="ContactsByVOB?.length" class="table" mat-table [dataSource]="contactDataSource" matSort>
 
@@ -562,13 +564,13 @@
                     <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Email}} </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Action">
+                  <!-- <ng-container matColumnDef="Action">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
                     <td mat-cell *matCellDef="let element" style="width: 5%;text-align: center;">
                       <img class="removeIcon" src="assets/images/remove-button.png"
                         (click)="RemoveContactFromTable(element)">
                     </td>
-                  </ng-container>
+                  </ng-container> -->
 
                   <tr mat-header-row *matHeaderRowDef="contactDisplayedColumns;sticky: true"></tr>
                   <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;" matRipple
@@ -582,14 +584,13 @@
               </div>
             </div>
 
-            <div fxFlex fxLayout="column">
+            <div fxFlex fxLayout="column" *ngIf="ActivityLogsByVOB?.length">
               <div style="margin-left: 7px">
-                <!-- <span><strong>Activity Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Activity Table</strong>
                 </div>
               </div>
-              <div class="mt-8">
+              <!-- <div class="mt-8">
                 <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
                   [formGroup]="activityLogFormGroup">
                   <div fxFlex="25">
@@ -617,8 +618,6 @@
 
                   <div fxFlex="20">
                     <mat-form-field class="px-32" style="width: 100%;">
-                      <!-- <input matInput placeholder="Time" formControlName="Time" (keyup.enter)="keytab('activityText')"
-                        #activityTime> -->
                       <input matInput placeholder="Time" [ngxTimepicker]="picker" formControlName="Time"
                         (keyup.enter)="keytab('activityText')">
                       <ngx-material-timepicker #picker></ngx-material-timepicker>
@@ -644,7 +643,7 @@
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddActivityLogToTable()">
                   </div>
                 </form>
-              </div>
+              </div> -->
               <div style="margin-left: 8px;margin-top: 10px;">
                 <table *ngIf="ActivityLogsByVOB?.length" class="table" mat-table [dataSource]="activityLogDataSource"
                   matSort>
@@ -670,13 +669,13 @@
                     <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.Text}} </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Action">
+                  <!-- <ng-container matColumnDef="Action">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
                     <td mat-cell *matCellDef="let element" style="width: 5%;text-align: center;">
                       <img class="removeIcon" src="assets/images/remove-button.png"
                         (click)="RemoveActivityLogFromTable(element)">
                     </td>
-                  </ng-container>
+                  </ng-container> -->
 
                   <tr mat-header-row *matHeaderRowDef="activityLogDisplayedColumns;sticky: true"></tr>
                   <tr mat-row *matRowDef="let row; columns: activityLogDisplayedColumns;" matRipple
