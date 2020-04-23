@@ -41,7 +41,7 @@
         <div class="borderRight1"></div>
       </div> -->
       <div fxFlex class="side-bar">
-        <mat-card class="cardHeader p-8" style="background-color: #fffdf9;">
+        <!-- <mat-card class="cardHeader p-8" style="background-color: #fffdf9;">
           <div fxLayout fxFlex fxLayoutAlign="center">
             <span class="sectionHeader pt-8">Registration</span>
           </div>
@@ -51,190 +51,239 @@
             <button (click)="SaveClicked()" class="SaveBtn" mat-raised-button>
               Save</button>
           </div>
-        </mat-card>
+        </mat-card> -->
         <div class="sidenav-content" fxFlex fxLayout="column">
           <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
+            <div fxFlex class="mr-40" fxLayout="row" fxLayoutAlign="center">
+              <div>
+                Initiated
+              </div>
+              <div fxFlex fxLayoutAlign="center">
+                Data Verification
+              </div>
+              <div>
+                Completed
+              </div>
+            </div>
+            <div fxLayout class="mt-4 mb-24 mr-40">
+              <div fxFlex="50" fxLayout>
+                <div class="round1"></div>
+                <div class="green-timeline" fxFlex></div>
+                <div class="round"></div>
+              </div>
+              <div fxFlex="50" fxLayout>
+                <div class="white-timeline" fxFlex></div>
+                <div class="round"></div>
+              </div>
+            </div>
+            <div fxLayout>
+              <div fxFlex="80">
+                <div class="hrl"></div>
+              </div>
+              <div fxFlex="20" fxLayoutAlign="end">
+                <button class="GSTNBtn mr-40" mat-stroked-button>
+                  Adopt from GSTN</button>
+              </div>
+            </div>
             <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
               [formGroup]="vendorRegistrationFormGroup">
+              <div fxLayout class="mt-20">
+                <div fxFlex fxLayout="column">
+                  <div fxLayout="row wrap" fxLayoutAlign="start">
+                    <div fxFlex="100">
+                      <div class="SectionTitle mb-8">
+                        <strong>Basic Details</strong>
+                      </div>
+                    </div>
+                    <div fxFlex="66">
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <input matInput placeholder="Name" formControlName="Name">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Name').touched && vendorRegistrationFormGroup.get('Name').hasError('required')">
+                          Name is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="33">
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <!-- <input matInput placeholder="Role" formControlName="Role"> -->
+                        <mat-select matInput placeholder="Role" formControlName="Role">
+                          <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Role').touched && vendorRegistrationFormGroup.get('Role').hasError('required')">
+                          Role is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <input matInput placeholder="Legal Name" formControlName="LegalName">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
+                          Legal Name is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="50">
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <!-- <input matInput placeholder="Type" formControlName="Type"> -->
+                        <mat-select matInput placeholder="Type" formControlName="Type">
+                          <mat-option *ngFor="let type of AllTypes" [value]="type">{{type}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
+                          Type is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100">
+                      <div class="SectionTitle mb-8">
+                        <strong>Contact Info.</strong>
+                      </div>
+                    </div>
+
+                    <div fxFlex="50" fxLayout>
+                      <div fxFlex>
+                        <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
+                          <input matInput placeholder="Phone1" formControlName="Phone1">
+                          <mat-error
+                            *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
+                            Phone1 is required
+                          </mat-error>
+                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
+                        vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
+                            Please enter a valid phone number
+                          </mat-error>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <div fxFlex="50" fxLayout>
+                      <div fxFlex>
+                        <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
+                          <input matInput placeholder="Phone2" formControlName="Phone2">
+                          <mat-error
+                            *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
+                            Phone2 is required
+                          </mat-error>
+                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
+                        vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
+                            Please enter a valid phone number
+                          </mat-error>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <input matInput placeholder="Email1" formControlName="Email1">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Email1').touched && vendorRegistrationFormGroup.get('Email1').hasError('required')">
+                          Email1 is required
+                        </mat-error>
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
+                        vendorRegistrationFormGroup.get('Email1').hasError('email')">
+                          Please enter a valid email address
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <input matInput placeholder="Email2" formControlName="Email2">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Email2').touched && vendorRegistrationFormGroup.get('Email2').hasError('required')">
+                          Email2 is required
+                        </mat-error>
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Email2').touched && !vendorRegistrationFormGroup.get('Email2').hasError('required') &&
+                        vendorRegistrationFormGroup.get('Email2').hasError('email')">
+                          Please enter a valid email address
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div fxFlex fxLayout="column">
+                  <div fxLayout="row wrap" fxLayoutAlign="start">
+                    <div fxFlex="100">
+                      <div class="SectionTitle mb-8">
+                        <strong>Address</strong>
+                      </div>
+                    </div>
+                    <div fxFlex="50">
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <!-- <input matInput placeholder="Country" formControlName="Country"> -->
+                        <mat-select matInput placeholder="Country" formControlName="Country">
+                          <mat-option *ngFor="let country of AllCountries" [value]="country">{{country}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Country').touched && vendorRegistrationFormGroup.get('Country').hasError('required')">
+                          Country is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="50">
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <input matInput placeholder="Pin Code" formControlName="PinCode"
+                          (blur)="GetLocationByPincode($event)">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
+                          Pin Code is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <input matInput placeholder="City" formControlName="City">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('City').touched && vendorRegistrationFormGroup.get('City').hasError('required')">
+                          City is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <!-- <input matInput placeholder="State" formControlName="State"> -->
+                        <mat-select matInput placeholder="State" formControlName="State">
+                          <mat-option *ngFor="let sta of AllStates" [value]="sta">{{sta}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
+                          State is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <input matInput placeholder="Address Line1" formControlName="AddressLine1">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
+                          Address Line1 is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100">
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <input matInput placeholder="Address Line2" formControlName="AddressLine2">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('AddressLine2').touched && vendorRegistrationFormGroup.get('AddressLine2').hasError('required')">
+                          Address Line2 is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div fxLayout="row wrap" fxLayoutAlign="start">
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Name" formControlName="Name">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('Name').touched && vendorRegistrationFormGroup.get('Name').hasError('required')">
-                      Name is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Role" formControlName="Role">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('Role').touched && vendorRegistrationFormGroup.get('Role').hasError('required')">
-                      Role is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-20" style="width: 100%;">
-                    <input matInput placeholder="Legal Name" formControlName="LegalName">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
-                      Legal Name is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Address Line1" formControlName="AddressLine1">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
-                      Address Line1 is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Address Line2" formControlName="AddressLine2">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('AddressLine2').touched && vendorRegistrationFormGroup.get('AddressLine2').hasError('required')">
-                      Address Line2 is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-20" style="width: 100%;">
-                    <input matInput placeholder="Pin Code" formControlName="PinCode" (blur)="GetLocationByPincode($event)">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
-                      Pin Code is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-
-                <div fxFlex="14">
-                  <mat-form-field class="pl-8 pr-20" style="width: 100%;">
-                    <input matInput placeholder="City" formControlName="City">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('City').touched && vendorRegistrationFormGroup.get('City').hasError('required')">
-                      City is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="19">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="State" formControlName="State">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
-                      State is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Country" formControlName="Country">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('Country').touched && vendorRegistrationFormGroup.get('Country').hasError('required')">
-                      Country is required
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <!-- <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Type" formControlName="Type">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
-                      Type is required
-                    </mat-error>
-                  </mat-form-field>
-                </div> -->
-
-                <div fxFlex="33" fxLayout>
-                  <!-- <div fxFlex="12">
-                    <mat-form-field class="pl-8" style="width: 100%;">
-                      <input matInput value="+91" placeholder="">
-                    </mat-form-field>
-                  </div> -->
-                  <div fxFlex>
-                    <mat-form-field class="pl-8 pr-20" style="width: 100%;">
-                      <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                      <input matInput placeholder="Phone1" formControlName="Phone1">
-                      <img *ngIf="!IsDisplayPhone2" class="addFieldIcon" matSuffix
-                        src="assets/images/logos/add-button.png" (click)="DisplayPhone2()">
-                      <!-- <mat-icon *ngIf="!IsDisplayPhone2" matSuffix svgIcon="addIcon" class="addFieldIcon" (click)="DisplayPhone2()"></mat-icon> -->
-                      <mat-error
-                        *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
-                        Phone1 is required
-                      </mat-error>
-                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
-                    vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
-                        Please enter a valid phone number
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                </div>
-
-                <div fxFlex="33" *ngIf="IsDisplayPhone2" fxLayout>
-                  <!-- <div fxFlex="12">
-                    <mat-form-field class="pl-8" style="width: 100%;">
-                      <input matInput value="+91" placeholder="">
-                    </mat-form-field>
-                  </div> -->
-                  <div fxFlex>
-                    <mat-form-field class="pl-8 pr-20" style="width: 100%;">
-                      <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                      <input matInput placeholder="Phone2" formControlName="Phone2">
-                      <mat-error
-                        *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
-                        Phone2 is required
-                      </mat-error>
-                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
-                    vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
-                        Please enter a valid phone number
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                </div>
-
-                <div fxFlex="33">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Email1" formControlName="Email1">
-                    <img *ngIf="!IsDisplayEmail2" class="addFieldIcon" matSuffix
-                      src="assets/images/logos/add-button.png" (click)="DisplayEmail2()">
-                    <!-- <mat-icon *ngIf="!IsDisplayEmail2" matSuffix svgIcon="addIcon" class="addFieldIcon" (click)="DisplayEmail2()"></mat-icon> -->
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('Email1').touched && vendorRegistrationFormGroup.get('Email1').hasError('required')">
-                      Email1 is required
-                    </mat-error>
-                    <mat-error *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
-                    vendorRegistrationFormGroup.get('Email1').hasError('email')">
-                      Please enter a valid email address
-                    </mat-error>
-                  </mat-form-field>
-                </div>
-
-                <div fxFlex="33" *ngIf="IsDisplayEmail2">
-                  <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                    <input matInput placeholder="Email2" formControlName="Email2">
-                    <mat-error
-                      *ngIf="vendorRegistrationFormGroup.get('Email2').touched && vendorRegistrationFormGroup.get('Email2').hasError('required')">
-                      Email2 is required
-                    </mat-error>
-                    <mat-error *ngIf="vendorRegistrationFormGroup.get('Email2').touched && !vendorRegistrationFormGroup.get('Email2').hasError('required') &&
-                    vendorRegistrationFormGroup.get('Email2').hasError('email')">
-                      Please enter a valid email address
-                    </mat-error>
-                  </mat-form-field>
-                </div>
 
               </div>
             </form>
@@ -248,7 +297,7 @@
               <div class="mt-8">
                 <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
                   [formGroup]="identificationFormGroup">
-                  <div fxFlex="30">
+                  <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
                       <mat-error
@@ -257,7 +306,7 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="30">
+                  <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <input matInput placeholder="ID" formControlName="IDNumber" (keyup.enter)="keytab('validUntil')"
                         #iDNumber>
@@ -267,7 +316,7 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="35">
+                  <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
                         #validUntil (keydown.enter)="IdentificationEnterKeyDown()">
@@ -279,6 +328,13 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
+                  <div fxFlex="20" fxLayoutAlign="start center">
+                    <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput1.click()">
+                    <span class="attachClass" (click)="fileInput1.click()">
+                      Add Attachment
+                    </span>
+                    <input hidden type="file" #fileInput1 id="file" (change)="handleFileInput($event)" />
+                  </div>
                   <div fxFlex="5" fxLayoutAlign="center">
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddIdentificationToTable()">
                   </div>
@@ -289,19 +345,24 @@
                   [dataSource]="identificationDataSource" matSort>
 
                   <ng-container matColumnDef="Type">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 30%;"> Type </th>
-                    <td mat-cell *matCellDef="let element" style="width: 30%;" class="tableLeftBorder">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> Type </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;" class="tableLeftBorder">
                       {{element.Type}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="IDNumber">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 30%;"> IDNumber </th>
-                    <td mat-cell *matCellDef="let element" style="width: 30%;"> {{element.IDNumber}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> IDNumber </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.IDNumber}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="ValidUntil">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 35%;"> ValidUntil </th>
-                    <td mat-cell *matCellDef="let element" style="width: 35%;"> {{element.ValidUntil | date}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> ValidUntil </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.ValidUntil | date}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="Attachment">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Attachment </th>
+                    <td mat-cell *matCellDef="let element" style="width: 20%;"> </td>
                   </ng-container>
 
                   <ng-container matColumnDef="Action">
@@ -331,12 +392,22 @@
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form"
+                <form autocomplete="off" fxLayout="column" name="form"
                   novalidate [formGroup]="bankDetailsFormGroup">
                   <div fxFlex fxLayout="row">
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="Account No" formControlName="AccountNo"
+                    <div fxFlex="10">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
+                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc
+                          (keyup.enter)="keytab('accountNo')">
+                        <mat-error
+                          *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
+                          IFSC is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="15">
+                      <mat-form-field class="pr-16" style="width: 100%;">
+                        <input matInput placeholder="Acc No" formControlName="AccountNo" #accountNo
                           (keyup.enter)="keytab('accHolderName')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('AccountNo').touched && bankDetailsFormGroup.get('AccountNo').hasError('required')">
@@ -344,64 +415,57 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="Name" formControlName="Name" #accHolderName
-                          (keyup.enter)="keytab('ifsc')">
+                    <div fxFlex="20">
+                      <mat-form-field class="pr-16" style="width: 100%;">
+                        <input matInput placeholder="Acc Holders name" formControlName="Name" #accHolderName
+                          (keyup.enter)="keytab('bankName')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('Name').touched && bankDetailsFormGroup.get('Name').hasError('required')">
                           Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="35">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc
-                          (keyup.enter)="keytab('bankName')">
-                        <mat-error
-                          *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
-                          IFSC is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-                    <div fxFlex="5"></div>
-                  </div>
-                  <div fxFlex fxLayout="row">
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
+                    <div fxFlex="15">
+                      <mat-form-field class="pr-16" style="width: 100%;">
                         <input matInput placeholder="Bank Name" formControlName="BankName" #bankName
-                          (keyup.enter)="keytab('branch')">
+                          (keyup.enter)="keytab('bankCity')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('BankName').touched && bankDetailsFormGroup.get('BankName').hasError('required')">
                           Bank Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="Branch" formControlName="Branch" #branch
-                          (keyup.enter)="keytab('bankCity')">
-                        <mat-error
-                          *ngIf="bankDetailsFormGroup.get('Branch').touched && bankDetailsFormGroup.get('Branch').hasError('required')">
-                          Branch is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-                    <div fxFlex="35">
-                      <mat-form-field class="px-40" style="width: 100%;">
+                    <div fxFlex="10">
+                      <mat-form-field class="pr-16" style="width: 100%;">
                         <input matInput placeholder="City" formControlName="City" #bankCity
-                          (keydown.enter)="BankEnterKeyDown()">
+                          (keyup.enter)="keytab('branch')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('City').touched && bankDetailsFormGroup.get('City').hasError('required')">
                           City is required
                         </mat-error>
                       </mat-form-field>
                     </div>
+                    <div fxFlex="15">
+                      <mat-form-field class="pr-16" style="width: 100%;">
+                        <input matInput placeholder="Branch" formControlName="Branch" #branch
+                          (keydown.enter)="BankEnterKeyDown()">
+                        <mat-error
+                          *ngIf="bankDetailsFormGroup.get('Branch').touched && bankDetailsFormGroup.get('Branch').hasError('required')">
+                          Branch is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="10" fxLayoutAlign="start center">
+                      <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput2.click()">
+                      <span class="attachClass" (click)="fileInput2.click()">
+                        Add Attachment
+                      </span>
+                      <input hidden type="file" #fileInput2 id="file1" (change)="handleFileInput($event)" />
+                    </div>
                     <div fxFlex="5" fxLayoutAlign="center">
                       <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddBankToTable()">
                     </div>
                   </div>
-
                 </form>
               </div>
               <div style="margin-left: 8px;margin-top: 10px;">
@@ -409,35 +473,45 @@
                   <table *ngIf="BanksByVOB?.length" class="table" mat-table [dataSource]="bankDetailsDataSource"
                     matSort>
 
+                    <ng-container matColumnDef="IFSC">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> IFSC </th>
+                      <td mat-cell *matCellDef="let element" class="tableLeftBorder" style="width: 10%;">
+                        {{element.IFSC}} </td>
+                    </ng-container>
+
+
                     <ng-container matColumnDef="AccountNo">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> AccountNo </th>
-                      <td mat-cell *matCellDef="let element" class="tableLeftBorder">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> AccountNo </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;">
                         {{element.AccountNo}} </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Name">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-                      <td mat-cell *matCellDef="let element"> {{element.Name}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Acc Holders name </th>
+                      <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Name}} </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="IFSC">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> IFSC </th>
-                      <td mat-cell *matCellDef="let element"> {{element.IFSC}} </td>
-                    </ng-container>
 
                     <ng-container matColumnDef="BankName">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> BankName </th>
-                      <td mat-cell *matCellDef="let element"> {{element.BankName}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> BankName </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.BankName}} </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="City">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> City </th>
+                      <td mat-cell *matCellDef="let element" style="width: 10%;"> {{element.City}} </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Branch">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Branch </th>
-                      <td mat-cell *matCellDef="let element"> {{element.Branch}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> Branch </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.Branch}} </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="City">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> City </th>
-                      <td mat-cell *matCellDef="let element"> {{element.City}} </td>
+
+                    <ng-container matColumnDef="Attachment">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> Attachment </th>
+                      <td mat-cell *matCellDef="let element" style="width: 10%;"> </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
@@ -482,8 +556,8 @@
                   </div>
                   <div fxFlex="20">
                     <mat-form-field class="px-28" style="width: 100%;">
-                      <input matInput placeholder="Department" formControlName="Department" (keyup.enter)="keytab('title')"
-                        #department>
+                      <input matInput placeholder="Department" formControlName="Department"
+                        (keyup.enter)="keytab('title')" #department>
                       <mat-error
                         *ngIf="contactFormGroup.get('Department').touched && contactFormGroup.get('Department').hasError('required')">
                         Department is required

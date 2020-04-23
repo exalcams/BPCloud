@@ -30,8 +30,10 @@ export class BPIdentity extends CommonClass {
     TransID: number;
     Type: string;
     IDNumber: string;
-    DocID: string;
     ValidUntil?: Date;
+    DocID: string;
+    AttachmentName: string;
+    BPAttachment: any;
     IsValid: boolean;
 }
 export class BPBank extends CommonClass {
@@ -43,6 +45,8 @@ export class BPBank extends CommonClass {
     Branch: string;
     City: string;
     DocID: string;
+    AttachmentName: string;
+    BPAttachment: any;
     IsValid: boolean;
 }
 export class BPContact extends CommonClass {
