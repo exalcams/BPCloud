@@ -51,15 +51,17 @@ export class VendorRegistrationComponent implements OnInit {
     'Type',
     'IDNumber',
     'ValidUntil',
+    'Attachment',
     'Action'
   ];
   bankDetailsDisplayedColumns: string[] = [
+    'IFSC',
     'AccountNo',
     'Name',
-    'IFSC',
     'BankName',
-    'Branch',
     'City',
+    'Branch',
+    'Attachment',
     'Action'
   ];
 
@@ -86,6 +88,7 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('iDNumber') iDNumber: ElementRef;
   @ViewChild('validUntil') validUntil: ElementRef;
   @ViewChild('accHolderName') accHolderName: ElementRef;
+  @ViewChild('accountNo') accountNo: ElementRef;
   @ViewChild('ifsc') ifsc: ElementRef;
   @ViewChild('bankName') bankName: ElementRef;
   @ViewChild('branch') branch: ElementRef;
@@ -99,6 +102,10 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('activityText') activityText: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
+  AllRoles: string[] = [];
+  AllTypes: string[] = [];
+  AllCountries: string[] = [];
+  AllStates: string[] = [];
   math = Math;
   constructor(
     private _fuseConfigService: FuseConfigService,
@@ -133,6 +140,47 @@ export class VendorRegistrationComponent implements OnInit {
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
+    this.AllRoles = ['IND'];
+    this.AllTypes = ['Service'];
+    this.AllCountries = ['India'];
+    this.AllStates = [
+      'ANDAMAN AND NICOBAR ISLANDS',
+      'ANDHRA PRADESH',
+      'ARUNACHAL PRADESH',
+      'ASSAM',
+      'BIHAR',
+      'CHANDIGARH',
+      'CHHATTISGARH',
+      'DADRA AND NAGAR HAVELI',
+      'DAMAN AND DIU',
+      'DELHI',
+      'GOA',
+      'GUJARAT',
+      'HARYANA',
+      'HIMACHAL PRADESH',
+      'JAMMU AND KASHMIR',
+      'JHARKHAND',
+      'KARNATAKA',
+      'KERALA',
+      'LAKSHADWEEP',
+      'MADHYA PRADESH',
+      'MAHARASHTRA',
+      'MANIPUR',
+      'MEGHALAYA',
+      'MIZORAM',
+      'NAGALAND',
+      'ORISSA',
+      'PONDICHERRY',
+      'PUNJAB',
+      'RAJASTHAN',
+      'SIKKIM',
+      'TAMIL NADU',
+      'TELANGANA',
+      'TRIPURA',
+      'UTTARANCHAL',
+      'UTTAR PRADESH',
+      'WEST BENGAL'
+    ];
   }
 
   ngOnInit(): void {
@@ -162,7 +210,7 @@ export class VendorRegistrationComponent implements OnInit {
     });
     this.vendorRegistrationFormGroup.get('City').disable();
     this.vendorRegistrationFormGroup.get('State').disable();
-    this.vendorRegistrationFormGroup.get('Country').disable();
+    // this.vendorRegistrationFormGroup.get('Country').disable();
   }
 
   InitializeIdentificationFormGroup(): void {
@@ -516,6 +564,10 @@ export class VendorRegistrationComponent implements OnInit {
         this.validUntil.nativeElement.focus();
         break;
       }
+      case 'accountNo': {
+        this.accountNo.nativeElement.focus();
+        break;
+      }
       case 'accHolderName': {
         this.accHolderName.nativeElement.focus();
         break;
@@ -826,10 +878,10 @@ export class VendorRegistrationComponent implements OnInit {
     // }
   }
 
-  handleFileBPIdentity(evt): void {
+  handleFileInput(evt): void {
     if (evt.target.files && evt.target.files.length > 0) {
       this.fileToUpload = evt.target.files[0];
-      this.fileToUploadList.push(this.fileToUpload);
+      // this.fileToUploadList.push(this.fileToUpload);
     }
   }
 

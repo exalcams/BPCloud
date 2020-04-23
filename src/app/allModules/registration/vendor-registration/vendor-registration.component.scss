@@ -288,6 +288,56 @@
     background-color: white;
     color: #efb577;
   }
+
+  .roundCommon {
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+    border-width: 3px;
+    border-style: solid;
+  }
+
+  .round {
+    @extend .roundCommon;
+    background-color: white;
+    border-color: gray;
+  }
+  .round1 {
+    @extend .roundCommon;
+    background-color: white;
+    border-color: #34ad65;
+  }
+  .hor-timeline {
+    height: 8px;
+    margin-top: 5px;
+    //border-radius: 4px;
+  }
+  .green-timeline {
+    @extend .hor-timeline;
+    background-color: #34ad65;
+  }
+  .white-timeline {
+    @extend .hor-timeline;
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+  }
+  // .horizontal-timeline {
+  //   height: 10px;
+  //   border: 2px solid rgba(0, 0, 0, .2);
+  //   background: white;
+  //   margin-top: 4px;
+  // }
+  .GSTNBtn {
+    background-color: #fffdf4;
+    color: #efb577;
+  }
+  .hrl {
+    height: 1px;
+    opacity: 0.2;
+    background-color: #000000;
+    margin-top: 20px;
+    margin-left: 24px;
+  }
   .leftCard {
     @include mat-elevation(2);
     background: white;
@@ -300,9 +350,25 @@
   }
   .addIcon {
     height: 20px;
-    margin-top: 25px;
+    margin-top: 26px;
     padding-left: 4px;
     cursor: pointer !important;
+  }
+  .addAttachmentClass{
+    margin-top: 25px;
+    color: #4784f7;
+    cursor: pointer !important;
+  }
+  .addBlueIcon {
+    @extend .addIcon;
+    margin-top: 0px;
+    height: 15px;
+  }
+  .attachClass {
+    // margin-top: 25px;
+    padding-left: 8px;
+    cursor: pointer !important;
+    color: #4784f7;
   }
   .removeIcon {
     height: 20px;
@@ -359,9 +425,9 @@
   .mat-icon {
     @include md-icon-size(12px);
   }
-   .mat-input-element:disabled {
-      color: gray !important;
-      background: whitesmoke !important;
-      cursor: not-allowed !important;
-    }
+  .mat-input-element:disabled {
+    color: gray !important;
+    background: whitesmoke !important;
+    cursor: not-allowed !important;
+  }
 }
