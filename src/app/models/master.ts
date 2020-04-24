@@ -84,3 +84,7 @@ export class UserNotification {
     CreatedOn: Date;
     ModifiedOn?: Date;
 }
+export class VendorUser {
+    Email: string;
+    Phone: string;
+}

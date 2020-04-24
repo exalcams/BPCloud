@@ -65,7 +65,7 @@
                 Completed
               </div>
             </div>
-            <div fxLayout class="mt-4 mb-24 mr-40">
+            <div fxLayout class="mt-4 mr-40">
               <div fxFlex="50" fxLayout>
                 <div class="round1"></div>
                 <div class="green-timeline" fxFlex></div>
@@ -74,6 +74,11 @@
               <div fxFlex="50" fxLayout>
                 <div class="white-timeline" fxFlex></div>
                 <div class="round"></div>
+              </div>
+            </div>
+            <div fxFlex class="mt-4 mr-40  mb-24" fxLayout="row" fxLayoutAlign="start">
+              <div>
+                Raja Rahul M
               </div>
             </div>
             <div fxLayout>
@@ -362,7 +367,9 @@
 
                   <ng-container matColumnDef="Attachment">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Attachment </th>
-                    <td mat-cell *matCellDef="let element" style="width: 20%;"> </td>
+                    <td mat-cell *matCellDef="let element" style="width: 20%;">
+                      <mat-icon *ngIf="element.AttachmentName">attach_file</mat-icon>
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="Action">
@@ -392,8 +399,7 @@
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="column" name="form"
-                  novalidate [formGroup]="bankDetailsFormGroup">
+                <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup">
                   <div fxFlex fxLayout="row">
                     <div fxFlex="10">
                       <mat-form-field class="pl-20 pr-16" style="width: 100%;">
@@ -511,7 +517,9 @@
 
                     <ng-container matColumnDef="Attachment">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> Attachment </th>
-                      <td mat-cell *matCellDef="let element" style="width: 10%;"> </td>
+                      <td mat-cell *matCellDef="let element" style="width: 10%;">
+                        <mat-icon *ngIf="element.AttachmentName">attach_file</mat-icon>
+                      </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
@@ -765,6 +773,14 @@
             </div>
           </mat-card>
         </div>
+      </div>
+    </div>
+    <div fxLayout id="footerCard">
+      <div fxLayout fxFlex class="my-8 px-24" fxLayoutAlign="end">
+        <button (click)="SaveClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
+          Save as Draft</button>
+        <button (click)="SaveClicked()" class="SaveBtn mr-40" mat-raised-button>
+          Save</button>
       </div>
     </div>
     <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="progressBarPostion" color="accent" mode="indeterminate">
