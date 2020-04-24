@@ -354,7 +354,7 @@
     padding-left: 4px;
     cursor: pointer !important;
   }
-  .addAttachmentClass{
+  .addAttachmentClass {
     margin-top: 25px;
     color: #4784f7;
     cursor: pointer !important;
@@ -429,5 +429,16 @@
     color: gray !important;
     background: whitesmoke !important;
     cursor: not-allowed !important;
+  }
+  #footerCard {
+    position: fixed;
+    height: 50px;
+    box-shadow: 0 -5px 10px 0 rgba(0, 0, 0, 0.16);
+    background-color: #ffffff;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin-bottom: 0px;
+    z-index: 100;
   }
 }

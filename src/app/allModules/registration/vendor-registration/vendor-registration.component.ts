@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MenuApp, AuthenticationDetails, UserView } from 'app/models/master';
+import { MenuApp, AuthenticationDetails, UserView, VendorUser } from 'app/models/master';
 import { Guid } from 'guid-typescript';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
@@ -262,7 +262,8 @@ export class VendorRegistrationComponent implements OnInit {
     });
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
-    // this.fileToUpload = null;
+    this.fileToUpload = null;
+    this.fileToUploadList = [];
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
@@ -463,6 +464,11 @@ export class VendorRegistrationComponent implements OnInit {
       bPIdentity.Type = this.identificationFormGroup.get('Type').value;
       bPIdentity.IDNumber = this.identificationFormGroup.get('IDNumber').value;
       bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+      if (this.fileToUpload) {
+        bPIdentity.AttachmentName = this.fileToUpload.name;
+        this.fileToUploadList.push(this.fileToUpload);
+        this.fileToUpload = null;
+      }
       if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
         this.IdentificationsByVOB = [];
       }
@@ -483,6 +489,11 @@ export class VendorRegistrationComponent implements OnInit {
       bPBank.BankName = this.bankDetailsFormGroup.get('BankName').value;
       bPBank.Branch = this.bankDetailsFormGroup.get('Branch').value;
       bPBank.City = this.bankDetailsFormGroup.get('City').value;
+      if (this.fileToUpload) {
+        bPBank.AttachmentName = this.fileToUpload.name;
+        this.fileToUploadList.push(this.fileToUpload);
+        this.fileToUpload = null;
+      }
       if (!this.BanksByVOB || !this.BanksByVOB.length) {
         this.BanksByVOB = [];
       }
@@ -671,7 +682,7 @@ export class VendorRegistrationComponent implements OnInit {
           if (Actiontype === 'Register') {
             this.CreateVendorOnBoarding();
           } else if (Actiontype === 'Update') {
-            this.UpdateVendorOnBoarding();
+            this.CreateVendorOnBoarding();
           } else if (Actiontype === 'Delete') {
             this.DeleteVendorOnBoarding();
           }
@@ -744,22 +755,52 @@ export class VendorRegistrationComponent implements OnInit {
     // this.GetBPVendorOnBoardingValues();
     // this.GetBPVendorOnBoardingSubItemValues();
     // this.SelectedBPVendorOnBoardingView.CreatedBy = this.authenticationDetails.userID.toString();
+    const vendorUser: VendorUser = new VendorUser();
+    vendorUser.Email = this.SelectedBPVendorOnBoardingView.Email1;
+    vendorUser.Phone = this.SelectedBPVendorOnBoardingView.Phone1;
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.CreateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
-        this.SelectedBPVendorOnBoarding.TransID = +data;
-        this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-        this.IsProgressBarVisibile = false;
-        // this.GetAllVendorOnBoardings();
+        this.SelectedBPVendorOnBoarding.TransID = +(data as BPVendorOnBoarding).TransID;
+        if (this.fileToUploadList && this.fileToUploadList.length) {
+          this._vendorRegistrationService.AddUserAttachment(this.SelectedBPVendorOnBoarding.TransID, this.SelectedBPVendorOnBoarding.Email1, this.fileToUploadList).subscribe(
+            (dat) => {
+              this._masterService.CreateVendorUser(vendorUser).subscribe(
+                (da) => {
+                  this.ResetControl();
+                  this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                  this.IsProgressBarVisibile = false;
+                },
+                (err) => {
+                  this.showErrorNotificationSnackBar(err);
+                });
+            },
+            (err) => {
+              this.showErrorNotificationSnackBar(err);
+            }
+          );
+        } else {
+          this._masterService.CreateVendorUser(vendorUser).subscribe(
+            (da) => {
+              this.ResetControl();
+              this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+              this.IsProgressBarVisibile = false;
+            },
+            (err) => {
+              this.showErrorNotificationSnackBar(err);
+            });
+        }
       },
       (err) => {
-        console.error(err);
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-        this.IsProgressBarVisibile = false;
+        this.showErrorNotificationSnackBar(err);
       }
     );
+  }
 
+  showErrorNotificationSnackBar(err: any): void {
+    console.error(err);
+    this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+    this.IsProgressBarVisibile = false;
   }
 
   UpdateVendorOnBoarding(): void {

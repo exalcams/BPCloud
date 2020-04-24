@@ -4,7 +4,7 @@ import { Observable, throwError, Subject } from 'rxjs';
 import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { MenuApp, RoleWithApp, UserWithRole, UserNotification, Reason, UserView } from 'app/models/master';
+import { MenuApp, RoleWithApp, UserWithRole, UserNotification, Reason, UserView, VendorUser } from 'app/models/master';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +34,7 @@ export class MasterService {
 
   // App
   CreateMenuApp(menuApp: MenuApp): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateApp`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateApp`,
       menuApp,
       {
         headers: new HttpHeaders({
@@ -45,12 +45,12 @@ export class MasterService {
   }
 
   GetAllMenuApp(): Observable<MenuApp[] | string> {
-    return this._httpClient.get<MenuApp[]>(`${this.baseAddress}api/Master/GetAllApps`)
+    return this._httpClient.get<MenuApp[]>(`${this.baseAddress}authenticationapi/Master/GetAllApps`)
       .pipe(catchError(this.errorHandler));
   }
 
   UpdateMenuApp(menuApp: MenuApp): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateApp`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/UpdateApp`,
       menuApp,
       {
         headers: new HttpHeaders({
@@ -61,7 +61,7 @@ export class MasterService {
   }
 
   DeleteMenuApp(menuApp: MenuApp): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteApp`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/DeleteApp`,
       menuApp,
       {
         headers: new HttpHeaders({
@@ -73,7 +73,7 @@ export class MasterService {
 
   // Reason
   CreateReason(reason: Reason): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateReason`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateReason`,
       reason,
       {
         headers: new HttpHeaders({
@@ -84,12 +84,12 @@ export class MasterService {
   }
 
   GetAllReasons(): Observable<Reason[] | string> {
-    return this._httpClient.get<Reason[]>(`${this.baseAddress}api/Master/GetAllReasons`)
+    return this._httpClient.get<Reason[]>(`${this.baseAddress}authenticationapi/Master/GetAllReasons`)
       .pipe(catchError(this.errorHandler));
   }
 
   UpdateReason(reason: Reason): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateReason`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/UpdateReason`,
       reason,
       {
         headers: new HttpHeaders({
@@ -100,7 +100,7 @@ export class MasterService {
   }
 
   DeleteReason(reason: Reason): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteReason`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/DeleteReason`,
       reason,
       {
         headers: new HttpHeaders({
@@ -112,7 +112,7 @@ export class MasterService {
 
   // Role
   CreateRole(role: RoleWithApp): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateRole`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateRole`,
       role,
       {
         headers: new HttpHeaders({
@@ -123,12 +123,12 @@ export class MasterService {
   }
 
   GetAllRoles(): Observable<RoleWithApp[] | string> {
-    return this._httpClient.get<RoleWithApp[]>(`${this.baseAddress}api/Master/GetAllRoles`)
+    return this._httpClient.get<RoleWithApp[]>(`${this.baseAddress}authenticationapi/Master/GetAllRoles`)
       .pipe(catchError(this.errorHandler));
   }
 
   UpdateRole(role: RoleWithApp): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateRole`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/UpdateRole`,
       role,
       {
         headers: new HttpHeaders({
@@ -139,7 +139,7 @@ export class MasterService {
   }
 
   DeleteRole(role: RoleWithApp): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteRole`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/DeleteRole`,
       role,
       {
         headers: new HttpHeaders({
@@ -156,7 +156,7 @@ export class MasterService {
     formData.append('uploadFile', file, file.name);
     formData.append('userName', user.UserName);
 
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateUser1`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateUser1`,
       formData,
       // {
       //   headers: new HttpHeaders({
@@ -169,8 +169,20 @@ export class MasterService {
 
   CreateUser(user: UserWithRole): Observable<any> {
 
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateUser`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateUser`,
       user,
+      // {
+      //   headers: new HttpHeaders({
+      //     'Content-Type': 'application/json'
+      //   })
+      // }
+    ).pipe(catchError(this.errorHandler));
+
+  }
+  CreateVendorUser(vendorUser: VendorUser): Observable<any> {
+
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateVendorUser`,
+      vendorUser,
       // {
       //   headers: new HttpHeaders({
       //     'Content-Type': 'application/json'
@@ -181,22 +193,22 @@ export class MasterService {
   }
 
   GetAllUsers(): Observable<UserWithRole[] | string> {
-    return this._httpClient.get<UserWithRole[]>(`${this.baseAddress}api/Master/GetAllUsers`)
+    return this._httpClient.get<UserWithRole[]>(`${this.baseAddress}authenticationapi/Master/GetAllUsers`)
       .pipe(catchError(this.errorHandler));
   }
 
   GetAllDevelopers(): Observable<UserView[] | string> {
-    return this._httpClient.get<UserView[]>(`${this.baseAddress}api/Master/GetAllDevelopers`)
+    return this._httpClient.get<UserView[]>(`${this.baseAddress}authenticationapi/Master/GetAllDevelopers`)
       .pipe(catchError(this.errorHandler));
   }
 
   GetAllDevelopersAndTLs(): Observable<UserView[] | string> {
-    return this._httpClient.get<UserView[]>(`${this.baseAddress}api/Master/GetAllDevelopersAndTLs`)
+    return this._httpClient.get<UserView[]>(`${this.baseAddress}authenticationapi/Master/GetAllDevelopersAndTLs`)
       .pipe(catchError(this.errorHandler));
   }
 
   UpdateUser(user: UserWithRole): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateUser`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/UpdateUser`,
       user,
       // {
       //   headers: new HttpHeaders({
@@ -208,7 +220,7 @@ export class MasterService {
   }
 
   DeleteUser(user: UserWithRole): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteUser`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/DeleteUser`,
       user,
       {
         headers: new HttpHeaders({
@@ -219,12 +231,12 @@ export class MasterService {
   }
 
   GetAllNotificationByUserID(UserID: string): Observable<UserNotification[] | string> {
-    return this._httpClient.get<UserNotification[]>(`${this.baseAddress}api/Notification/GetAllNotificationByUserID?UserID=${UserID}`)
+    return this._httpClient.get<UserNotification[]>(`${this.baseAddress}authenticationapi/Notification/GetAllNotificationByUserID?UserID=${UserID}`)
       .pipe(catchError(this.errorHandler));
   }
 
   UpdateNotification(SelectedNotification: UserNotification): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Notification/UpdateNotification`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Notification/UpdateNotification`,
       SelectedNotification, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

@@ -4,6 +4,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
 import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView } from 'app/models/vendor-registration';
+import { Guid } from 'guid-typescript';
 
 @Injectable({
   providedIn: 'root'
@@ -103,4 +104,27 @@ export class VendorRegistrationService {
     return this._httpClient.get<BPActivityLog[]>(`${this.baseAddress}vendorregisterapi/Registration/GetActivityLogsByVOB?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));
   }
+
+  AddUserAttachment(TransID: number, CreatedBy: string, selectedFiles: File[]): Observable<any> {
+    const formData: FormData = new FormData();
+    if (selectedFiles && selectedFiles.length) {
+      selectedFiles.forEach(x => {
+        formData.append(x.name, x, x.name);
+      });
+    }
+    formData.append('TransID', TransID.toString());
+    formData.append('CreatedBy', CreatedBy.toString());
+
+    return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Attachment/AddUserAttachment`,
+      formData,
+      // {
+      //   headers: new HttpHeaders({
+      //     'Content-Type': 'application/json'
+      //   })
+      // }
+    ).pipe(catchError(this.errorHandler));
+
+  }
+
+
 }
