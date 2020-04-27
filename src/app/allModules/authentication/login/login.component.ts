@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   navigation: FuseNavigation[] = [];
   authenticationDetails: AuthenticationDetails;
-  MenuItems: string[];
+  MenuItems: string[] = [];
   children: FuseNavigation[] = [];
   subChildren: FuseNavigation[] = [];
   private _unsubscribeAll: Subject<any>;
@@ -83,26 +83,27 @@ export class LoginComponent implements OnInit {
 
   LoginClicked(): void {
     if (this.loginForm.valid) {
-      this.IsProgressBarVisibile = true;
-      this._authService.login(this.loginForm.get('userName').value, this.loginForm.get('password').value).subscribe(
-        (data) => {
-          this.IsProgressBarVisibile = false;
-          const dat = data as AuthenticationDetails;
-          if (data.isChangePasswordRequired === 'Yes') {
-            this.OpenChangePasswordDialog(dat);
-          } else {
-            this.saveUserDetails(dat);
-          }
-        },
-        (err) => {
-          this.IsProgressBarVisibile = false;
-          console.error(err);
-          // console.log(err instanceof Object);
-          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-        }
-      );
-      // this._router.navigate(['dashboard']);
-      // this.notificationSnackBarComponent.openSnackBar('Logged in successfully', SnackBarStatus.success);
+      // this.IsProgressBarVisibile = true;
+      // this._authService.login(this.loginForm.get('userName').value, this.loginForm.get('password').value).subscribe(
+      //   (data) => {
+      //     this.IsProgressBarVisibile = false;
+      //     const dat = data as AuthenticationDetails;
+      //     if (data.isChangePasswordRequired === 'Yes') {
+      //       this.OpenChangePasswordDialog(dat);
+      //     } else {
+      //       this.saveUserDetails(dat);
+      //     }
+      //   },
+      //   (err) => {
+      //     this.IsProgressBarVisibile = false;
+      //     console.error(err);
+      //     // console.log(err instanceof Object);
+      //     this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      //   }
+      // );
+      this.UpdateMenu();
+      this._router.navigate(['pages/dashboard']);
+      this.notificationSnackBarComponent.openSnackBar('Logged in successfully', SnackBarStatus.success);
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
         const abstractControl = this.loginForm.get(key);
@@ -190,14 +191,14 @@ export class LoginComponent implements OnInit {
       // console.log(this.MenuItems);
     } else {
     }
-    if (this.MenuItems.indexOf('Dashboard') >= 0) {
+    if (true) {
       this.children.push(
         {
           id: 'dashboard',
           title: 'Dashboard',
           translate: 'NAV.SAMPLE.TITLE',
           type: 'item',
-          icon: 'dashboardIcon',
+          icon: 'detailsIcon',
           isSvgIcon: true,
           // icon: 'dashboard',
           url: '/pages/dashboard',
@@ -287,7 +288,7 @@ export class LoginComponent implements OnInit {
     //     }
     //   );
     // }
-    if (this.MenuItems.indexOf('App') >= 0) {
+    if (true || this.MenuItems.indexOf('App') >= 0) {
       this.subChildren.push(
         {
           id: 'menuapp',
@@ -297,7 +298,7 @@ export class LoginComponent implements OnInit {
         },
       );
     }
-    if (this.MenuItems.indexOf('Role') >= 0) {
+    if (true || this.MenuItems.indexOf('Role') >= 0) {
       this.subChildren.push(
         {
           id: 'role',
@@ -307,7 +308,7 @@ export class LoginComponent implements OnInit {
         },
       );
     }
-    if (this.MenuItems.indexOf('User') >= 0) {
+    if (true || this.MenuItems.indexOf('User') >= 0) {
       this.subChildren.push(
         {
           id: 'user',
@@ -318,7 +319,7 @@ export class LoginComponent implements OnInit {
       );
     }
 
-    if (this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
+    if (true || this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
       this.MenuItems.indexOf('User') >= 0) {
       this.children.push({
         id: 'master',

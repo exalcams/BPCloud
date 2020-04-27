@@ -42,6 +42,7 @@ import {
 } from '@angular/material';
 
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgxDonutChartModule } from 'ngx-doughnut-chart';
 import {
     FuseCountdownModule,
     FuseHighlightModule,
@@ -58,6 +59,8 @@ import { ProjectComponent } from './project/project.component';
 import { TaskComponent } from './task/task.component';
 import { AttachmentDialogComponent } from './attachment-dialog/attachment-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { NgCircleProgressModule } from 'ng-circle-progress';
+
 
 const routes = [
     {
@@ -125,7 +128,8 @@ const routes = [
         MatTreeModule,
 
         NgxChartsModule,
-
+        NgxDonutChartModule,
+        
         FuseSharedModule,
         FuseSidebarModule,
 
@@ -136,6 +140,16 @@ const routes = [
         // NgMultiSelectDropDownModule,
 
         FormsModule,
+        NgCircleProgressModule.forRoot({
+            // set defaults here
+            radius: 60,
+            outerStrokeWidth: 5,
+            innerStrokeWidth: 2,
+            outerStrokeColor: '#f3705a',
+            innerStrokeColor: '#f3705a',
+            showInnerStroke: true,
+            animationDuration: 300,
+        })
 
     ],
     declarations: [DashboardComponent, TaskGroupComponent, ProjectComponent, TaskComponent, AttachmentDialogComponent],
