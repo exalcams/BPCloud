@@ -60,7 +60,9 @@ import { TaskComponent } from './task/task.component';
 import { AttachmentDialogComponent } from './attachment-dialog/attachment-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-
+import { ChartsModule } from 'ng2-charts';
+import 'chartjs-plugin-labels';
+// import 'chart.piecelabel.js';
 
 const routes = [
     {
@@ -129,7 +131,9 @@ const routes = [
 
         NgxChartsModule,
         NgxDonutChartModule,
-        
+
+        ChartsModule,
+
         FuseSharedModule,
         FuseSidebarModule,
 

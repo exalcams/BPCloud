@@ -13,6 +13,7 @@ import { ProjectService } from 'app/services/project.service';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { Guid } from 'guid-typescript';
 import { AttachmentDialogComponent } from '../attachment-dialog/attachment-dialog.component';
+import { PO } from '../dashboard/dashboard.component';
 
 @Component({
   selector: 'app-task',
@@ -962,4 +963,23 @@ export class TaskComponent implements OnInit {
     }
     return '';
   }
+
+
+
+
+  getRestTimeline(element: PO, StatusFor: string): string {
+    switch (StatusFor) {
+      case 'ASN':
+        return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : 'green-timeline';
+      case 'Gate':
+        return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' : 'green-timeline';
+      case 'GRN':
+        return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :
+          element.Status === 'Gate' ? 'white-timeline' : 'green-timeline';
+      default:
+        return '';
+    }
+  }
+
+
 }
