@@ -16,7 +16,9 @@ import { AttachmentDialogComponent } from '../attachment-dialog/attachment-dialo
 import { DomSanitizer } from '@angular/platform-browser';
 import { DashboardService } from 'app/services/dashboard.service';
 import { ShareParameterService } from 'app/services/share-parameters.service';
-
+import { ChartType } from 'chart.js';
+// import 'chart.piecelabel.js';
+// import 'chartjs-plugin-labels';
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
@@ -38,15 +40,16 @@ export class DashboardComponent implements OnInit {
     AllOpenTasksCount: number;
     AllEscalatedTasksCount: number;
     AllReworkTasksCount: number;
-    displayedColumns: string[] = [
-        'TaskGroup',
-        'TaskSubGroup',
-        'TaskName',
-        'OwnerName',
-        'PlannedCompletionDate',
-        'Status'
+    posDisplayedColumns: string[] = [
+        'TransID',
+        'Version',
+        'PODate',
+        'Status',
+        'Document',
+        'NextProcess',
+        'Action'
     ];
-    dataSource: MatTableDataSource<Task>;
+    posDataSource: MatTableDataSource<PO>;
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     selection = new SelectionModel<any>(true, []);
@@ -55,6 +58,86 @@ export class DashboardComponent implements OnInit {
     Fulfilments: any[] = [];
     donutChartData: any[] = [];
     DeliveryStatus: any[] = [];
+    searchText = '';
+    FilterVal = 'All';
+    Pos: PO[] = [];
+    public doughnutChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: { position: 'left' },
+        cutoutPercentage: 80,
+        elements: {
+            arc: {
+                borderWidth: 0
+            }
+        },
+        // pieceLabel: [
+        //     {
+        //         render: 'label',
+        //         position: 'outside'
+        //     },
+        //     {
+        //         render: 'value'
+        //     }
+        // ]
+        plugins: {
+            labels: {
+                // tslint:disable-next-line:typedef
+                render: function (args) {
+                    return args.value + ' %';
+                },
+                fontColor: '#000',
+                position: 'outside'
+            }
+        }
+    };
+    public doughnutChartType: ChartType = 'doughnut';
+    public doughnutChartLabels: any[] = ['Open', 'Scheduled', 'In Progress', 'Pending'];
+    public doughnutChartData: any[] = [
+        [40, 20, 30, 10]
+    ];
+    public colors: any[] = [{ backgroundColor: ['#fb863a', '#40a8e2', '#485865', '#40ed9a'] }];
+
+    // public doughnutChartData: any[] = [
+    //     [40, 20, 30, 10], [19], [1]
+    // ];
+    // public colors: any[] = [{ backgroundColor: ['#fb863a', '#40a8e2', '#485865', '#40ed9a'] }, { backgroundColor: ['#ffffff'] }, { backgroundColor: ['#fb863a'] }];
+
+    public barChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            position: 'top',
+            align: 'end'
+        },
+        // // We use these empty structures as placeholders for dynamic theming.
+        scales: {
+            xAxes: [{
+                barPercentage: 0.6,
+            }],
+            yAxes: [{
+                ticks: {
+                    stepSize: 25,
+                    beginAtZero: true
+                }
+            }]
+        },
+        // plugins: {
+        //     datalabels: {
+        //         anchor: 'end',
+        //         align: 'end',
+        //     }
+        // }
+    };
+    public barChartLabels: any[] = ['17/02/20', '18/02/20', '19/02/20', '20/02/20', '21/02/20'];
+    public barChartType: ChartType = 'bar';
+    public barChartLegend = true;
+    // public barChartPlugins = [pluginDataLabels];
+    public barChartData: any[] = [
+        { data: [87, 50, 40, 71, 56], label: 'Planned' },
+        { data: [45, 70, 65, 20, 80], label: 'Actual' }
+    ];
+    public barColors: any[] = [{ backgroundColor: '#fb863a' }, { backgroundColor: '#40a8e2' }];
     constructor(
         private _router: Router,
         private _dashboardService: DashboardService,
@@ -169,6 +252,15 @@ export class DashboardComponent implements OnInit {
                 ]
             },
         ];
+
+        this.Pos = [
+            { TransID: 122, Version: '1.1', PODate: new Date(), Status: 'Open', Document: '', NextProcess: 'Acknowledgement' },
+            { TransID: 123, Version: '1.1', PODate: new Date(), Status: 'PO', Document: '', NextProcess: 'Acknowledgement' },
+            { TransID: 124, Version: '1.1', PODate: new Date(), Status: 'ASN', Document: '', NextProcess: 'Acknowledgement' },
+            { TransID: 125, Version: '1.1', PODate: new Date(), Status: 'Gate', Document: '', NextProcess: 'Acknowledgement' },
+            { TransID: 126, Version: '1.1', PODate: new Date(), Status: 'GRN', Document: '', NextProcess: 'Acknowledgement' },
+        ];
+        this.posDataSource = new MatTableDataSource(this.Pos);
     }
 
     formatSubtitle = (): string => {
@@ -181,4 +273,53 @@ export class DashboardComponent implements OnInit {
         }
         return name;
     }
+
+    getStatusColor(element: PO, StatusFor: string): string {
+        switch (StatusFor) {
+            case 'ASN':
+                return element.Status === 'Open' ? 'gray' : element.Status === 'PO' ? '#efb577' : '#34ad65';
+            case 'Gate':
+                return element.Status === 'Open' ? 'gray' : element.Status === 'PO' ? 'gray' : element.Status === 'ASN' ? '#efb577' : '#34ad65';
+            case 'GRN':
+                return element.Status === 'Open' ? 'gray' : element.Status === 'PO' ? 'gray' : element.Status === 'ASN' ? 'gray' :
+                    element.Status === 'Gate' ? '#efb577' : '#34ad65';
+            default:
+                return '';
+        }
+    }
+    getTimeline(element: PO, StatusFor: string): string {
+        switch (StatusFor) {
+            case 'ASN':
+                return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'orange-timeline' : 'green-timeline';
+            case 'Gate':
+                return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : element.Status === 'ASN' ? 'orange-timeline' : 'green-timeline';
+            case 'GRN':
+                return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :
+                    element.Status === 'Gate' ? 'orange-timeline' : 'green-timeline';
+            default:
+                return '';
+        }
+    }
+    getRestTimeline(element: PO, StatusFor: string): string {
+        switch (StatusFor) {
+            case 'ASN':
+                return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : 'green-timeline';
+            case 'Gate':
+                return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' : 'green-timeline';
+            case 'GRN':
+                return element.Status === 'Open' ? 'white-timeline' : element.Status === 'PO' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :
+                    element.Status === 'Gate' ? 'white-timeline' : 'green-timeline';
+            default:
+                return '';
+        }
+    }
+}
+
+export class PO {
+    TransID: number;
+    Version: string;
+    PODate: Date;
+    Status: string;
+    Document: string;
+    NextProcess: string;
 }

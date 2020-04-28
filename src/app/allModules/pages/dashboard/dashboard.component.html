@@ -1,21 +1,11 @@
 <div id="dashboard" class="page-layout carded" fusePerfectScrollbar>
   <div class="center" fxLayout="column" fxLayoutGap="10px">
     <div fxFlex fxLayout class="p-24">
-      <div class="tile mx-20" fxFlex="17" fxLayout="column" fxLayoutAlign="start">
-        <div fxFlex fxLayoutAlign="start center" class="pt-8">
+      <div class="tile mr-20" fxFlex="17" fxLayout="column" fxLayoutAlign="start">
+        <div fxLayoutAlign="start center" class="pt-8">
           <span class="boldClass orangeBorderBottom pl-8"> Time In Full (OTIF)</span>
         </div>
         <div fxFlex fxLayoutAlign="center" class="pt-8">
-          <!-- <div class="outer-circle">
-            <div class="inner-circle">
-
-            </div>
-          </div> -->
-          <!-- <mat-progress-spinner class="example-margin" color="accent" mode="determinate" value="75">
-            <div class="inner-circle">
-
-            </div>
-          </mat-progress-spinner> -->
           <circle-progress [percent]="85" [radius]="60" [subtitleFormat]="formatSubtitle" [subtitleColor]="'#ee4057'"
             [outerStrokeWidth]="5" [innerStrokeWidth]="2" [outerStrokeColor]="'#f3705a'" [innerStrokeColor]="'#f3705a'">
           </circle-progress>
@@ -23,7 +13,7 @@
         </div>
       </div>
       <div class="tile mx-20" fxFlex="17" fxLayout="column" fxLayoutAlign="start">
-        <div fxFlex fxLayoutAlign="start center" class="pt-8">
+        <div fxLayoutAlign="start center" class="pt-8">
           <span class="boldClass orangeBorderBottom pl-8"> Quality Index</span>
         </div>
         <div fxFlex fxLayoutAlign="center" class="pt-8">
@@ -34,36 +24,149 @@
 
         </div>
       </div>
-      <div class="tile mx-20" fxFlex="30" fxLayout="column" fxLayoutAlign="start">
-        <div fxFlex fxLayoutAlign="start center" class="pt-8">
+      <div class="tile mx-20" fxFlex="25" fxLayout="column" fxLayoutAlign="start">
+        <div fxLayoutAlign="start center" class="pt-8">
           <span class="boldClass orangeBorderBottom pl-8"> Fulfilment </span>
         </div>
-        <div fxFlex fxLayoutAlign="start" class="pt-8">
-          <ngx-charts-pie-chart [view]="[200, 150]" [scheme]="{domain: ['#fb863a', '#40a8e2', '#485865','#40ed9a']}"
+        <div id="doughnutChart" fxFlex fxLayoutAlign="start" class="pt-8">
+          <!-- <ngx-charts-pie-chart [view]="[200, 150]" [scheme]="{domain: ['#fb863a', '#40a8e2', '#485865','#40ed9a']}"
             [results]="Fulfilments" [doughnut]="true" [labels]="false" [legend]="true" [legendTitle]="''"
             [labelFormatting]="pieChartLabel.bind(this, Fulfilments)">
-          </ngx-charts-pie-chart>
+          </ngx-charts-pie-chart> -->
           <!-- <ngx-donut-chart [data]="donutChartData" [title]="'Sessions'" [radius]="88" [thickness]="10" [margin]="30">
           </ngx-donut-chart> -->
+          <canvas baseChart [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="doughnutChartType"
+            [options]="doughnutChartOptions" [colors]="colors">
+          </canvas>
+        </div>
+        <div fxFlex fxLayout fxLayoutAlign="end center">
+          <div fxFlex class="doughnutChartPosition boldClass"> Fulfilment status </div>
         </div>
       </div>
-      <div class="tile mx-20" fxFlex="36" fxLayout="column" fxLayoutAlign="start">
-        <div fxFlex fxLayoutAlign="start center" class="pt-8">
+      <div class="tile mx-20" fxFlex="41" fxLayout="column" fxLayoutAlign="start">
+        <div fxLayoutAlign="start" class="pt-8">
           <span class="boldClass orangeBorderBottom pl-8"> Delivery status </span>
         </div>
-        <div fxFlex fxLayoutAlign="start" class="pt-8">
-          <ngx-charts-bar-vertical-2d [view]="[250,150]" [scheme]="{domain: ['#fb863a', '#40a8e2']}"
+        <div id="barChart" fxFlex fxLayoutAlign="start" class="pt-8">
+          <!-- <ngx-charts-bar-vertical-2d [view]="[250,150]" [scheme]="{domain: ['#fb863a', '#40a8e2']}"
             [results]="DeliveryStatus" [gradient]="true" [xAxis]="true" [yAxis]="true" [legend]="true"
             [showXAxisLabel]="false" [showYAxisLabel]="false" [legendTitle]="''">
-          </ngx-charts-bar-vertical-2d>
+          </ngx-charts-bar-vertical-2d> -->
           <!-- <ngx-donut-chart [data]="donutChartData" [title]="'Sessions'" [radius]="88" [thickness]="10" [margin]="30">
           </ngx-donut-chart> -->
+          <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+            [legend]="barChartLegend" [chartType]="barChartType" [colors]="barColors">
+          </canvas>
         </div>
       </div>
     </div>
-    <div class="sidenav-content mt-4" fxFlex fxLayout>
+    <div class="sidenav-content px-24 mt-4" fxFlex>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+          <mat-icon class="s-16">search</mat-icon>
+          <input [(ngModel)]="searchText" type="text" placeholder="Search" fxFlex>
+        </div>
+        <div fxFlex class="mr-24" align="end">
+          <mat-form-field>
+            <mat-select [(ngModel)]="FilterVal">
+              <mat-option value="All">All</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div fxLayout>
+        <table *ngIf="Pos?.length" class="table" mat-table [dataSource]="posDataSource" matSort>
+
+          <ng-container matColumnDef="TransID">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> PO </th>
+            <td mat-cell *matCellDef="let element;let odd=odd" class="tableLeftBorder pl-0">
+              <div fxLayout>
+                <div class="tableCellBorder" [style.background-color]="odd?'#6f52ed':'#d87e39'"></div>
+                <div fxFlex class="pl-4">{{element.TransID}} </div>
+              </div>
+            </td>
+          </ng-container>
 
 
+          <ng-container matColumnDef="Version">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Version </th>
+            <td mat-cell *matCellDef="let element">
+              {{element.Version}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="PODate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+            <td mat-cell *matCellDef="let element"> {{element.PODate | date}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+            <td mat-cell *matCellDef="let element" style="width:400px">
+              <div fxLayout class="mt-4 mr-40 ml-8">
+                <div fxFlex="30" fxLayout>
+                  <div class="round" [style.border-color]="element.Status==='Open'?'#efb577':'#34ad65'"></div>
+                  <div style="width: 10px;" [class]="element.Status==='Open'?'orange-timeline':'green-timeline'"></div>
+                  <div [class]="element.Status==='Open'?'white-timeline':'green-timeline'" fxFlex></div>
+                </div>
+                <div fxFlex="30" fxLayout>
+                  <div style="width: 10px;" [class]="getTimeline(element,'ASN')"></div>
+                  <div class="round" [style.border-color]="getStatusColor(element,'ASN')"></div>
+                  <div style="width: 10px;" [class]="getTimeline(element,'ASN')"></div>
+                  <div [class]="getRestTimeline(element,'ASN')" fxFlex></div>
+                </div>
+                <div fxFlex="30" fxLayout>
+                  <div style="width: 10px;" [class]="getTimeline(element,'Gate')"></div>
+                  <div class="round" [style.border-color]="getStatusColor(element,'Gate')"></div>
+                  <div style="width: 10px;" [class]="getTimeline(element,'Gate')"></div>
+                  <div [class]="getRestTimeline(element,'Gate')" fxFlex></div>
+                </div>
+                <div fxFlex="10" fxLayout>
+                  <div style="width: 10px;" [class]="getTimeline(element,'GRN')"></div>
+                  <div class="round" [style.border-color]="getStatusColor(element,'GRN')"></div>
+                </div>
+              </div>
+              <div fxLayout class="mr-40 ml-8">
+                <div fxFlex="30">PO</div>
+                <div fxFlex="30">ASN</div>
+                <div fxFlex="30">Gate</div>
+                <div fxFlex="10">GRN</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Document">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
+            <td mat-cell *matCellDef="let element">
+              <div fxLayout class="Rectangle">
+                <div class="Rectangle-106 m-8">
+                  <img class="m-8" src="assets/images/imageIcon.png">
+                </div>
+                <div fxFlex class="m-8" fxLayout="column">
+                  <div fxFlex>attachment.jpg</div>
+                  <div fxFlex>10KB</div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="NextProcess">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> NextProcess </th>
+            <td mat-cell *matCellDef="let element"> {{element.NextProcess}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Action </th>
+            <td mat-cell *matCellDef="let element" style="text-align: center;">
+              <button mat-stroked-button>Actions</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="posDisplayedColumns;sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: posDisplayedColumns;let even=even" matRipple
+            style=" cursor: pointer;">
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
   <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="progressBarPostion" color="accent" mode="indeterminate">
