@@ -113,14 +113,15 @@ export class DashboardComponent implements OnInit {
         // // We use these empty structures as placeholders for dynamic theming.
         scales: {
             xAxes: [{
-                barPercentage: 0.6,
+                barPercentage: 1.3,
+                categoryPercentage: -0.5
             }],
             yAxes: [{
                 ticks: {
                     stepSize: 25,
                     beginAtZero: true
                 }
-            }]
+            }],
         },
         // plugins: {
         //     datalabels: {
@@ -134,10 +135,10 @@ export class DashboardComponent implements OnInit {
     public barChartLegend = true;
     // public barChartPlugins = [pluginDataLabels];
     public barChartData: any[] = [
-        { data: [87, 50, 40, 71, 56], label: 'Planned' },
-        { data: [45, 70, 65, 20, 80], label: 'Actual' }
+        { data: [45, 70, 65, 20, 80], label: 'Actual' },
+        { data: [87, 50, 40, 71, 56], label: 'Planned' }
     ];
-    public barColors: any[] = [{ backgroundColor: '#fb863a' }, { backgroundColor: '#40a8e2' }];
+    public barColors: any[] = [{ backgroundColor: '#40a8e2' }, { backgroundColor: '#fb863a' }];
     constructor(
         private _router: Router,
         private _dashboardService: DashboardService,
