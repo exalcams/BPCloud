@@ -122,6 +122,7 @@
       @include TableBorderRight(rgba(0, 0, 0, 0.12));
       @extend .TablePadFont;
       font-size: 12px;
+      text-align: center;
       min-width: max-content !important;
     }
 
@@ -218,11 +219,11 @@
     position: relative;
   }
   .inner-circle {
-    height: 75px;
-    width: 75px;
-    border: 1px solid #f3705a;
-    border-radius: 50%;
-    background-color: white;
+    // height: 75px;
+    // width: 75px;
+    // border: 1px solid #f3705a;
+    // border-radius: 50%;
+    // background-color: white;
     position: absolute;
     top: 11%;
     left: 11%;
@@ -260,20 +261,20 @@
     }
   }
   .doughnutChartPosition {
-    // margin-top: 8px;
+    margin-bottom: 8px;
     position: relative;
     left: 54%;
   }
   #doughnutChart {
     canvas {
       // width: 200px !important;
-      height: 150px !important;
+      height: 140px !important;
     }
   }
   #barChart {
     canvas {
       // width: 200px !important;
-      height: 150px !important;
+      height: 170px !important;
     }
   }
 
@@ -392,5 +393,57 @@
     width: 10px;
     background-color: #d87e39;
     opacity: 0.7;
+  }
+  .next {
+    background-color: #e8ffeb;
+    padding: 4px 2px;
+  }
+
+  .mat-form-field-flex > .mat-form-field-infix {
+    padding: 0.3em 0px !important;
+  }
+  .mat-form-field-label-wrapper {
+    top: -1.5em;
+  }
+  .mat-form-field-wrapper {
+    margin: 1em 0 0 0;
+    padding-bottom: 1em;
+  }
+
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+    transform: translateY(-1.1em) scale(0.75);
+    width: 133.33333%;
+  }
+
+  .progress__svg {
+    transform: rotate(-90deg);
+  }
+
+  .progress__meter,
+  .progress__value {
+    fill: none;
+  }
+
+  // .progress__meter {
+  //   stroke: #ccc;
+  //   stroke-dasharray: 2;
+  // }
+
+  // .progress__value {
+  //   stroke: green;
+  //   stroke-dasharray: 2;
+  //   transition: all;
+  // }
+  .progress__meter {
+    stroke: #f3705a;
+  }
+
+  .progress__value {
+    stroke: #efefef;
+    opacity: 0.9;
+    transition: all 100ms;
+  }
+  .progressSubtitle {
+    fill: #f3705a !important;
   }
 }

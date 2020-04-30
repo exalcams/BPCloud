@@ -62,6 +62,7 @@ import { AttachmentDialogComponent } from './attachment-dialog/attachment-dialog
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ChartsModule } from 'ng2-charts';
 import 'chartjs-plugin-labels';
+import 'chartjs-plugin-annotation';
 // import 'chart.piecelabel.js';
 
 const routes = [

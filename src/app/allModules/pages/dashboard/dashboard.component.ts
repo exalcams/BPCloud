@@ -1,22 +1,19 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-import { MatTableDataSource, MatPaginator, MatSort, MatSnackBar, MatTabChangeEvent, MatIconRegistry, MatDialog, MatDialogConfig } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort, MatSnackBar, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MenuApp, AuthenticationDetails, UserView, UserWithRole } from 'app/models/master';
+import { AuthenticationDetails, UserWithRole } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { MasterService } from 'app/services/master.service';
 import { Router } from '@angular/router';
-import { Task, TaskView, Input, Output, Logic, Validation, TaskSubGroupView, SketchView, AttachmentDetails } from 'app/models/task';
-import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
+import { Task } from 'app/models/task';
 import { ProjectService } from 'app/services/project.service';
-import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { Guid } from 'guid-typescript';
-import { AttachmentDialogComponent } from '../attachment-dialog/attachment-dialog.component';
-import { DomSanitizer } from '@angular/platform-browser';
 import { DashboardService } from 'app/services/dashboard.service';
 import { ShareParameterService } from 'app/services/share-parameters.service';
 import { ChartType } from 'chart.js';
+// import 'chartjs-plugin-annotation';
 // import 'chart.piecelabel.js';
 // import 'chartjs-plugin-labels';
 @Component({
@@ -60,31 +57,40 @@ export class DashboardComponent implements OnInit {
     DeliveryStatus: any[] = [];
     searchText = '';
     FilterVal = 'All';
+    ActionModel = 'Actions';
     Pos: PO[] = [];
+
+    // Circular Progress bar
+    radius = 60;
+    circumference = 2 * Math.PI * this.radius;
+    dashoffset1: number;
+    dashoffset2: number;
+    progressPercentage1 = 0;
+    progressPercentage2 = 0;
+
+    // Doughnut Chart
     public doughnutChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        legend: { position: 'left' },
+        legend: {
+            position: 'left',
+            labels: {
+                fontSize: 10,
+                padding: 20,
+                usePointStyle: true
+            }
+        },
         cutoutPercentage: 80,
         elements: {
             arc: {
                 borderWidth: 0
             }
         },
-        // pieceLabel: [
-        //     {
-        //         render: 'label',
-        //         position: 'outside'
-        //     },
-        //     {
-        //         render: 'value'
-        //     }
-        // ]
         plugins: {
             labels: {
                 // tslint:disable-next-line:typedef
                 render: function (args) {
-                    return args.value + ' %';
+                    return args.value + '%';
                 },
                 fontColor: '#000',
                 position: 'outside'
@@ -98,17 +104,17 @@ export class DashboardComponent implements OnInit {
     ];
     public colors: any[] = [{ backgroundColor: ['#fb863a', '#40a8e2', '#485865', '#40ed9a'] }];
 
-    // public doughnutChartData: any[] = [
-    //     [40, 20, 30, 10], [19], [1]
-    // ];
-    // public colors: any[] = [{ backgroundColor: ['#fb863a', '#40a8e2', '#485865', '#40ed9a'] }, { backgroundColor: ['#ffffff'] }, { backgroundColor: ['#fb863a'] }];
-
+    // Bar chart
     public barChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         legend: {
             position: 'top',
-            align: 'end'
+            align: 'end',
+            labels: {
+                fontSize: 10,
+                usePointStyle: true
+            }
         },
         // // We use these empty structures as placeholders for dynamic theming.
         scales: {
@@ -123,36 +129,43 @@ export class DashboardComponent implements OnInit {
                 }
             }],
         },
-        // plugins: {
-        //     datalabels: {
-        //         anchor: 'end',
-        //         align: 'end',
+        plugins: {
+            labels: {
+                // tslint:disable-next-line:typedef
+                render: function (args) {
+                    return args.value + '%';
+                },
+                fontColor: '#000',
+                position: 'outside'
+            }
+        }
+        // plugins: [{
+        //     // tslint:disable-next-line:typedef
+        //     beforeInit: function (chart, options) {
+        //         // tslint:disable-next-line:typedef
+        //         chart.legend.afterFit = function () {
+        //             this.height += 100; // must use `function` and not => because of `this`
+        //         };
         //     }
-        // }
+        // }]
     };
     public barChartLabels: any[] = ['17/02/20', '18/02/20', '19/02/20', '20/02/20', '21/02/20'];
     public barChartType: ChartType = 'bar';
     public barChartLegend = true;
-    // public barChartPlugins = [pluginDataLabels];
     public barChartData: any[] = [
         { data: [45, 70, 65, 20, 80], label: 'Actual' },
         { data: [87, 50, 40, 71, 56], label: 'Planned' }
     ];
     public barColors: any[] = [{ backgroundColor: '#40a8e2' }, { backgroundColor: '#fb863a' }];
+
     constructor(
-        private _router: Router,
-        private _dashboardService: DashboardService,
-        private _shareParameterService: ShareParameterService,
-        public snackBar: MatSnackBar,
-        private _masterService: MasterService,
-        private _projectService: ProjectService,
-        private dialog: MatDialog,
-        private _formBuilder: FormBuilder
-    ) {
+        public snackBar: MatSnackBar) {
         this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
         this.authenticationDetails = new AuthenticationDetails();
         this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
         this.IsProgressBarVisibile = false;
+        this.progress1(85);
+        this.progress2(99);
     }
 
     ngOnInit(): void {
@@ -263,7 +276,16 @@ export class DashboardComponent implements OnInit {
         ];
         this.posDataSource = new MatTableDataSource(this.Pos);
     }
-
+    progress1(value: number): void {
+        const progress = value / 100;
+        this.progressPercentage1 = Math.round(progress * 100);
+        this.dashoffset1 = this.circumference * (progress);
+    }
+    progress2(value: number): void {
+        const progress = value / 100;
+        this.progressPercentage2 = Math.round(progress * 100);
+        this.dashoffset2 = this.circumference * (progress);
+    }
     formatSubtitle = (): string => {
         return 'Effiency';
     }
