@@ -83,27 +83,27 @@ export class LoginComponent implements OnInit {
 
   LoginClicked(): void {
     if (this.loginForm.valid) {
-      // this.IsProgressBarVisibile = true;
-      // this._authService.login(this.loginForm.get('userName').value, this.loginForm.get('password').value).subscribe(
-      //   (data) => {
-      //     this.IsProgressBarVisibile = false;
-      //     const dat = data as AuthenticationDetails;
-      //     if (data.isChangePasswordRequired === 'Yes') {
-      //       this.OpenChangePasswordDialog(dat);
-      //     } else {
-      //       this.saveUserDetails(dat);
-      //     }
-      //   },
-      //   (err) => {
-      //     this.IsProgressBarVisibile = false;
-      //     console.error(err);
-      //     // console.log(err instanceof Object);
-      //     this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-      //   }
-      // );
-      this.UpdateMenu();
-      this._router.navigate(['pages/dashboard']);
-      this.notificationSnackBarComponent.openSnackBar('Logged in successfully', SnackBarStatus.success);
+      this.IsProgressBarVisibile = true;
+      this._authService.login(this.loginForm.get('userName').value, this.loginForm.get('password').value).subscribe(
+        (data) => {
+          this.IsProgressBarVisibile = false;
+          const dat = data as AuthenticationDetails;
+          if (data.isChangePasswordRequired === 'Yes') {
+            this.OpenChangePasswordDialog(dat);
+          } else {
+            this.saveUserDetails(dat);
+          }
+        },
+        (err) => {
+          this.IsProgressBarVisibile = false;
+          console.error(err);
+          // console.log(err instanceof Object);
+          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+        }
+      );
+      // this.UpdateMenu();
+      // this._router.navigate(['pages/dashboard']);
+      // this.notificationSnackBarComponent.openSnackBar('Logged in successfully', SnackBarStatus.success);
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
         const abstractControl = this.loginForm.get(key);
