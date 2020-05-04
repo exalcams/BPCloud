@@ -54,7 +54,7 @@
           <span class="boldClass orangeBorderBottom pl-8"> Delivery status </span>
         </div>
         <div id="barChart" fxFlex fxLayoutAlign="start" class="pt-0 px-8">
-          <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+          <canvas #barCanvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
             [legend]="barChartLegend" [chartType]="barChartType" [colors]="barColors">
           </canvas>
         </div>

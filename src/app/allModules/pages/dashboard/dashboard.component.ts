@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { MatTableDataSource, MatPaginator, MatSort, MatSnackBar, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -149,6 +149,7 @@ export class DashboardComponent implements OnInit {
         //     }
         // }]
     };
+    @ViewChild('barCanvas') barCanvas: ElementRef;
     public barChartLabels: any[] = ['17/02/20', '18/02/20', '19/02/20', '20/02/20', '21/02/20'];
     public barChartType: ChartType = 'bar';
     public barChartLegend = true;
@@ -185,6 +186,16 @@ export class DashboardComponent implements OnInit {
         // } else {
         //     this._router.navigate(['/auth/login']);
         // }
+
+        // const gradient = this.barCanvas.nativeElement.getContext('2d').createLinearGradient(0, 0, 0, 600);
+        // gradient.addColorStop(0, 'red');
+        // gradient.addColorStop(1, 'green');
+        // this.barColors = [
+        //     {
+        //         backgroundColor: gradient
+        //     }
+        // ];
+
         this.Fulfilments = [
             {
                 'name': 'Open',
