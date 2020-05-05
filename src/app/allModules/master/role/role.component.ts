@@ -48,7 +48,7 @@ export class RoleComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       if (this.MenuItems.indexOf('User') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
@@ -162,7 +162,7 @@ export class RoleComponent implements OnInit {
 
   CreateRole(): void {
     this.GetRoleValues();
-    this.SelectedRole.CreatedBy = this.authenticationDetails.userID.toString();
+    this.SelectedRole.CreatedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.CreateRole(this.SelectedRole).subscribe(
       (data) => {
@@ -183,7 +183,7 @@ export class RoleComponent implements OnInit {
 
   UpdateRole(): void {
     this.GetRoleValues();
-    this.SelectedRole.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedRole.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.UpdateRole(this.SelectedRole).subscribe(
       (data) => {
@@ -203,7 +203,7 @@ export class RoleComponent implements OnInit {
 
   DeleteRole(): void {
     this.GetRoleValues();
-    this.SelectedRole.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedRole.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.DeleteRole(this.SelectedRole).subscribe(
       (data) => {

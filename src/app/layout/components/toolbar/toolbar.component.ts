@@ -137,9 +137,9 @@ export class ToolbarComponent implements OnInit, OnDestroy, OnChanges {
         const retrievedObject = localStorage.getItem('authorizationData');
         if (retrievedObject) {
             this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-            this.CurrentLoggedInUser = this.authenticationDetails.displayName;
-            if (this.authenticationDetails.profile && this.authenticationDetails.profile !== 'Empty') {
-                this.CurrentLoggedInUserProfile = this.authenticationDetails.profile;
+            this.CurrentLoggedInUser = this.authenticationDetails.DisplayName;
+            if (this.authenticationDetails.Profile && this.authenticationDetails.Profile !== 'Empty') {
+                this.CurrentLoggedInUserProfile = this.authenticationDetails.Profile;
             }
         }
 
@@ -166,8 +166,8 @@ export class ToolbarComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     GetAllNotificationByUserID(): void {
-        if (this.authenticationDetails.userID) {
-            this._masterService.GetAllNotificationByUserID(this.authenticationDetails.userID.toString()).subscribe(
+        if (this.authenticationDetails.UserID) {
+            this._masterService.GetAllNotificationByUserID(this.authenticationDetails.UserID.toString()).subscribe(
                 (data) => {
                     this.AllNotificationByUserID = data as UserNotification[];
                     this.NotificationCount = this.AllNotificationByUserID.length;
@@ -206,7 +206,7 @@ export class ToolbarComponent implements OnInit, OnDestroy, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         const retrievedObject = localStorage.getItem('authorizationData');
         this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-        this.CurrentLoggedInUser = this.authenticationDetails.displayName;
+        this.CurrentLoggedInUser = this.authenticationDetails.DisplayName;
         console.log(this.authenticationDetails);
     }
 
@@ -239,7 +239,7 @@ export class ToolbarComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     logOutClick(): void {
-        this._authService.SignOut(this.authenticationDetails.userID).subscribe(
+        this._authService.SignOut(this.authenticationDetails.UserID).subscribe(
             (data) => {
                 localStorage.removeItem('authorizationData');
                 localStorage.removeItem('menuItemsData');
@@ -267,8 +267,8 @@ export class ToolbarComponent implements OnInit, OnDestroy, OnChanges {
             result => {
                 if (result) {
                     const changePassword = result as ChangePassword;
-                    changePassword.UserID = this.authenticationDetails.userID;
-                    changePassword.UserName = this.authenticationDetails.userName;
+                    changePassword.UserID = this.authenticationDetails.UserID;
+                    changePassword.UserName = this.authenticationDetails.UserName;
                     this._authService.ChangePassword(changePassword).subscribe(
                         (res) => {
                             console.log(res);

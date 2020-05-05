@@ -45,7 +45,7 @@ export class UserComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       if (this.MenuItems.indexOf('User') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
@@ -152,7 +152,7 @@ export class UserComponent implements OnInit {
 
   CreateUser(): void {
     this.GetUserValues();
-    this.SelectedUser.CreatedBy = this.authenticationDetails.userID.toString();
+    this.SelectedUser.CreatedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.CreateUser(this.SelectedUser).subscribe(
       (data) => {
@@ -173,7 +173,7 @@ export class UserComponent implements OnInit {
 
   UpdateUser(): void {
     this.GetUserValues();
-    this.SelectedUser.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedUser.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.UpdateUser(this.SelectedUser).subscribe(
       (data) => {
@@ -193,7 +193,7 @@ export class UserComponent implements OnInit {
 
   DeleteUser(): void {
     this.GetUserValues();
-    this.SelectedUser.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedUser.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.DeleteUser(this.SelectedUser).subscribe(
       (data) => {

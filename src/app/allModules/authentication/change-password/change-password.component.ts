@@ -95,8 +95,8 @@ export class ChangePasswordComponent implements OnInit {
     if (this.resetPasswordForm.valid) {
       this.IsProgressBarVisibile = true;
       this.changePassword = new ChangePassword();
-      this.changePassword.UserID = this.authenticationDetails.userID;
-      this.changePassword.UserName = this.authenticationDetails.userName;
+      this.changePassword.UserID = this.authenticationDetails.UserID;
+      this.changePassword.UserName = this.authenticationDetails.UserName;
       this.changePassword.CurrentPassword = this.resetPasswordForm.get('currentPassword').value;
       this.changePassword.NewPassword = this.resetPasswordForm.get('newPassword').value;
       this._authService.ChangePassword(this.changePassword).subscribe(

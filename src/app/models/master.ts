@@ -47,24 +47,30 @@ export class Reason {
     ModifiedBy: string;
 }
 export class AuthenticationDetails {
-    isAuth: boolean;
-    userID: Guid;
-    userName: string;
-    displayName: string;
-    emailAddress: string;
-    userRole: string;
-    menuItemNames: string;
-    profile: string;
-    refreahToken: string;
-    expires: string;
-    issued: string;
-    expiresin: string;
+    IsAuth: boolean;
+    UserID: Guid;
+    UserName: string;
+    DisplayName: string;
+    EmailAddress: string;
+    UserRole: string;
+    Token: string;
+    MenuItemNames: string;
+    Profile: string;
+    RefreahToken: string;
+    Expires: string;
+    Issued: string;
+    Expiresin: string;
 }
 export class ChangePassword {
     UserID: Guid;
     UserName: string;
     CurrentPassword: string;
     NewPassword: string;
+}
+export class LoginModel {
+    UserName: string;
+    Password: string;
+    clientId: string;
 }
 export class EMailModel {
     EmailAddress: string;

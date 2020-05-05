@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
@@ -20,6 +20,7 @@ import { NotificationSnackBarComponent } from './notifications/notification-snac
 import { DatePipe } from '@angular/common';
 import { NotificationDialogComponent } from './notifications/notification-dialog/notification-dialog.component';
 import { WINDOW_PROVIDERS } from './window.providers';
+import { AuthInterceptorService } from './services/auth-interceptor.service';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 
@@ -93,6 +94,7 @@ const appRoutes: Routes = [
     providers: [
         DatePipe,
         WINDOW_PROVIDERS,
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
         { provide: MAT_DATE_LOCALE, useValue: 'en-IN' }
     ],
     bootstrap: [

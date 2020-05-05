@@ -145,8 +145,8 @@ export class NavbarVerticalStyle1Component implements OnInit, OnDestroy {
         const retrievedObject = localStorage.getItem('authorizationData');
         if (retrievedObject) {
             this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-            this.CurrentLoggedInUser = this.authenticationDetails.displayName;
-            this.CurrentLoggedInUserEmailAddress = this.authenticationDetails.emailAddress;
+            this.CurrentLoggedInUser = this.authenticationDetails.DisplayName;
+            this.CurrentLoggedInUserEmailAddress = this.authenticationDetails.EmailAddress;
             // if (this.authenticationDetails.profile && this.authenticationDetails.profile !== 'Empty') {
             //     this.CurrentLoggedInUserProfile = this.authenticationDetails.profile;
             // }
@@ -193,7 +193,7 @@ export class NavbarVerticalStyle1Component implements OnInit, OnDestroy {
     }
 
     logOutClick(): void {
-        this._authService.SignOut(this.authenticationDetails.userID).subscribe(
+        this._authService.SignOut(this.authenticationDetails.UserID).subscribe(
             (data) => {
                 localStorage.removeItem('authorizationData');
                 localStorage.removeItem('menuItemsData');

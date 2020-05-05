@@ -174,8 +174,8 @@ export class DashboardComponent implements OnInit {
         // const retrievedObject = localStorage.getItem('authorizationData');
         // if (retrievedObject) {
         //     this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-        //     this.currentUserID = this.authenticationDetails.userID;
-        //     this.currentUserRole = this.authenticationDetails.userRole;
+        //     this.currentUserID = this.authenticationDetails.UserID;
+        //     this.currentUserRole = this.authenticationDetails.UserRole;
         //     this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
         //     if (this.MenuItems.indexOf('Dashboard') < 0) {
         //         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger
