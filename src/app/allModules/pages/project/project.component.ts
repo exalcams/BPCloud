@@ -55,7 +55,7 @@ export class ProjectComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       if (this.MenuItems.indexOf('Project') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
@@ -206,7 +206,7 @@ export class ProjectComponent implements OnInit {
 
   CreateProject(): void {
     this.GetProjectValues();
-    this.SelectedProject.CreatedBy = this.authenticationDetails.userID.toString();
+    this.SelectedProject.CreatedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._projectService.CreateProject(this.SelectedProject).subscribe(
       (data) => {
@@ -229,7 +229,7 @@ export class ProjectComponent implements OnInit {
 
   UpdateProject(): void {
     this.GetProjectValues();
-    this.SelectedProject.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedProject.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._projectService.UpdateProject(this.SelectedProject).subscribe(
       (data) => {
@@ -249,7 +249,7 @@ export class ProjectComponent implements OnInit {
 
   DeleteProject(): void {
     this.GetProjectValues();
-    this.SelectedProject.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedProject.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._projectService.DeleteProject(this.SelectedProject).subscribe(
       (data) => {

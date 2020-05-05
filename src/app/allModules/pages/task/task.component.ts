@@ -110,9 +110,9 @@ export class TaskComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.CurrentUserID = this.authenticationDetails.userID;
-      this.CurrentUserRole = this.authenticationDetails.userRole;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.CurrentUserID = this.authenticationDetails.UserID;
+      this.CurrentUserRole = this.authenticationDetails.UserRole;
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       if (this.MenuItems.indexOf('Task') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
@@ -753,7 +753,7 @@ export class TaskComponent implements OnInit {
   CreateTask(): void {
     // this.GetTaskValues();
     // this.GetTaskSubItemValues();
-    this.SelectedTaskView.CreatedBy = this.authenticationDetails.userID.toString();
+    this.SelectedTaskView.CreatedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._projectService.CreateTask(this.SelectedTaskView).subscribe(
       (data) => {
@@ -792,7 +792,7 @@ export class TaskComponent implements OnInit {
     // this.GetTaskValues();
     // this.GetTaskSubItemValues();
     this.SelectedTaskView.TaskID = this.SelectedTask.TaskID;
-    this.SelectedTaskView.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedTaskView.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._projectService.UpdateTask(this.SelectedTaskView).subscribe(
       (data) => {
@@ -827,7 +827,7 @@ export class TaskComponent implements OnInit {
 
   DeleteTask(): void {
     this.GetTaskValues();
-    this.SelectedTask.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedTask.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._projectService.DeleteTask(this.SelectedTask).subscribe(
       (data) => {

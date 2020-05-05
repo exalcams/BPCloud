@@ -96,7 +96,7 @@
 
           <ng-container matColumnDef="PODate">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
-            <td mat-cell *matCellDef="let element"> {{element.PODate | date}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.PODate | date :'dd/MM/yyyy'}} </td>
           </ng-container>
 
           <ng-container matColumnDef="Status">

@@ -53,10 +53,10 @@ export class ReasonComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.CurrentUserName = this.authenticationDetails.userName;
-      this.CurrentUserID = this.authenticationDetails.userID;
-      this.CurrentUserRole = this.authenticationDetails.userRole;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.CurrentUserName = this.authenticationDetails.UserName;
+      this.CurrentUserID = this.authenticationDetails.UserID;
+      this.CurrentUserRole = this.authenticationDetails.UserRole;
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       if (this.MenuItems.indexOf('Reason') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);

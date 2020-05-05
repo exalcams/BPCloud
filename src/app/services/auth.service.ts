@@ -3,7 +3,7 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Guid } from 'guid-typescript';
-import { ChangePassword, ForgotPassword, EMailModel } from 'app/models/master';
+import { ChangePassword, ForgotPassword, EMailModel, LoginModel } from 'app/models/master';
 import { environment } from 'environments/environment';
 
 
@@ -30,15 +30,22 @@ export class AuthService {
 
   login(userName: string, password: string): Observable<any> {
     // tslint:disable-next-line:prefer-const
-    let data = `grant_type=password&username=${userName}&password=${password}&client_id=${this.clientId}`;
-    return this._httpClient.post<any>(`${this.baseAddress}token`, data, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }).pipe(catchError(this.errorHandler));
+    // let data = `grant_type=password&username=${userName}&password=${password}&client_id=${this.clientId}`;
+    const loginModel: LoginModel = {
+      UserName: userName,
+      Password: password,
+      clientId: this.clientId
+    };
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Auth/token`, loginModel,
+      // {
+      //   headers: new HttpHeaders({
+      //     'Content-Type': 'application/json'
+      //   })
+      // }
+    ).pipe(catchError(this.errorHandler));
   }
 
-  GetIPAddress():  Observable<any> {
+  GetIPAddress(): Observable<any> {
     return this._httpClient
       .get<any>('https://freegeoip.net/json/?callback').pipe(
         map(response => response || {}),
@@ -48,12 +55,12 @@ export class AuthService {
 
 
   SignOut(UserID: Guid): Observable<any> {
-    return this._httpClient.get<any>(`${this.baseAddress}api/Master/SignOut?UserID=${UserID}`,
+    return this._httpClient.get<any>(`${this.baseAddress}authenticationapi/Master/SignOut?UserID=${UserID}`,
     ).pipe(catchError(this.errorHandler1));
   }
 
   ChangePassword(changePassword: ChangePassword): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/ChangePassword`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/ChangePassword`,
       changePassword,
       {
         headers: new HttpHeaders({
@@ -64,7 +71,7 @@ export class AuthService {
   }
 
   ForgotPassword(forgotPassword: ForgotPassword): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/ForgotPassword`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/ForgotPassword`,
       forgotPassword,
       {
         headers: new HttpHeaders({
@@ -75,7 +82,7 @@ export class AuthService {
   }
 
   SendResetLinkToMail(eMailModelmail: EMailModel): Observable<any> {
-    return this._httpClient.post<any>(`${this.baseAddress}api/Master/SendResetLinkToMail`,
+    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/SendResetLinkToMail`,
       eMailModelmail,
       {
         headers: new HttpHeaders({

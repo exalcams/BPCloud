@@ -104,10 +104,10 @@ export class TaskGroupComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      if (this.authenticationDetails.userRole === 'Developer') {
+      if (this.authenticationDetails.UserRole === 'Developer') {
         this.isDeveloper = true;
       }
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       if (this.MenuItems.indexOf('Task Group') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
@@ -427,7 +427,7 @@ export class TaskGroupComponent implements OnInit {
     // this.GetTaskGroupValues();
     // this.SelectedTaskGroup.ProjectID = this.taskGroupMainFormGroup.get('ProjectID').value;
     taskSubGroup.ProjectID = this.taskGroupMainFormGroup.get('ProjectID').value;
-    taskSubGroup.CreatedBy = this.authenticationDetails.userID.toString();
+    taskSubGroup.CreatedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._taskGroupService.AddTaskSubGroupByProjectID(taskSubGroup).subscribe(
       (data) => {
@@ -647,7 +647,7 @@ export class TaskGroupComponent implements OnInit {
 
   CreateTaskGroup(): void {
     this.GetTaskGroupValues();
-    this.SelectedTaskGroup.CreatedBy = this.authenticationDetails.userID.toString();
+    this.SelectedTaskGroup.CreatedBy = this.authenticationDetails.UserID.toString();
     this.GetTaskSubGroupValuesFromTable();
     this.SelectedTaskGroup.taskSubGroups = this.AllTaskSubGroups;
     this.IsProgressBarVisibile = true;
@@ -671,7 +671,7 @@ export class TaskGroupComponent implements OnInit {
 
   UpdateTaskGroup(): void {
     this.GetTaskGroupValues();
-    this.SelectedTaskGroup.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedTaskGroup.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.GetTaskSubGroupValuesFromTable();
     this.SelectedTaskGroup.taskSubGroups = this.AllTaskSubGroups;
     this.IsProgressBarVisibile = true;
@@ -694,7 +694,7 @@ export class TaskGroupComponent implements OnInit {
 
   DeleteTaskGroup(): void {
     this.GetTaskGroupValues();
-    this.SelectedTaskGroup.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedTaskGroup.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.GetTaskSubGroupValuesFromTable();
     this.SelectedTaskGroup.taskSubGroups = this.AllTaskSubGroups;
     this.IsProgressBarVisibile = true;

@@ -135,8 +135,8 @@ export class LoginComponent implements OnInit {
       result => {
         if (result) {
           const changePassword = result as ChangePassword;
-          changePassword.UserID = data.userID;
-          changePassword.UserName = data.userName;
+          changePassword.UserID = data.UserID;
+          changePassword.UserName = data.UserName;
           this._authService.ChangePassword(changePassword).subscribe(
             (res) => {
               // console.log(res);
@@ -187,7 +187,7 @@ export class LoginComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       // console.log(this.MenuItems);
     } else {
     }

@@ -44,7 +44,7 @@ export class MenuAppComponent implements OnInit {
     const retrievedObject = localStorage.getItem('authorizationData');
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-      this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
       // if (this.MenuItems.indexOf('User') < 0) {
       //   this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
       //   this._router.navigate(['/auth/login']);
@@ -124,7 +124,7 @@ export class MenuAppComponent implements OnInit {
 
   CreateMenuApp(): void {
     this.GetMenuAppValues();
-    this.SelectedMenuApp.CreatedBy = this.authenticationDetails.userID.toString();
+    this.SelectedMenuApp.CreatedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.CreateMenuApp(this.SelectedMenuApp).subscribe(
       (data) => {
@@ -145,7 +145,7 @@ export class MenuAppComponent implements OnInit {
 
   UpdateMenuApp(): void {
     this.GetMenuAppValues();
-    this.SelectedMenuApp.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedMenuApp.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.UpdateMenuApp(this.SelectedMenuApp).subscribe(
       (data) => {
@@ -165,7 +165,7 @@ export class MenuAppComponent implements OnInit {
 
   DeleteMenuApp(): void {
     this.GetMenuAppValues();
-    this.SelectedMenuApp.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedMenuApp.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._masterService.DeleteMenuApp(this.SelectedMenuApp).subscribe(
       (data) => {
