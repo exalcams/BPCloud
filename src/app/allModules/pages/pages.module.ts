@@ -54,9 +54,6 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DecimalPipe } from '@angular/common';
-import { TaskGroupComponent } from './task-group/task-group.component';
-import { ProjectComponent } from './project/project.component';
-import { TaskComponent } from './task/task.component';
 import { AttachmentDialogComponent } from './attachment-dialog/attachment-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgCircleProgressModule } from 'ng-circle-progress';
@@ -69,18 +66,6 @@ const routes = [
     {
         path: 'dashboard',
         component: DashboardComponent
-    },
-    {
-        path: 'task-group',
-        component: TaskGroupComponent
-    },
-    {
-        path: 'project',
-        component: ProjectComponent
-    },
-    {
-        path: 'task',
-        component: TaskComponent
     },
     {
         path: '**',
@@ -157,7 +142,7 @@ const routes = [
         })
 
     ],
-    declarations: [DashboardComponent, TaskGroupComponent, ProjectComponent, TaskComponent, AttachmentDialogComponent],
+    declarations: [DashboardComponent, AttachmentDialogComponent],
     providers: [
         DecimalPipe
     ],

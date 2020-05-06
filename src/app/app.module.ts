@@ -38,10 +38,6 @@ const appRoutes: Routes = [
         loadChildren: './allModules/master/master.module#MasterModule'
     },
     {
-        path: 'reports',
-        loadChildren: './allModules/reports/reports.module#ReportsModule'
-    },
-    {
         path: 'register',
         loadChildren: './allModules/registration/registration.module#RegistrationModule'
     },
