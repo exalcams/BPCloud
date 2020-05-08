@@ -60,6 +60,10 @@ const routes = [
         component: VendorApprovalComponent
     },
     {
+        path: ':ID',
+        component: VendorApprovalComponent
+    },
+    {
         path: '**',
         redirectTo: '/auth/login'
     }

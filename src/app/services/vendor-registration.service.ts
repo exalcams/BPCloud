@@ -28,10 +28,20 @@ export class VendorRegistrationService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetVendorOnBoardingsByID(TransID: number): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetVendorOnBoardingsByID?TransID=${TransID}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetVendorOnBoardingsByEmailID(EmailID: string): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetVendorOnBoardingsByEmailID?EmailID=${EmailID}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
   GetRegisteredVendorOnBoardings(): Observable<any | string> {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetRegisteredVendorOnBoardings`)
       .pipe(catchError(this.errorHandler));
-  } 
+  }
 
   CreateVendorOnBoarding(VendorOnBoarding: BPVendorOnBoardingView): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Registration/CreateVendorOnBoarding`,
@@ -95,7 +105,7 @@ export class VendorRegistrationService {
     return this._httpClient.get<BPBank[]>(`${this.baseAddress}vendorregisterapi/Registration/GetBanksByVOB?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));
   }
- 
+
   GetContactsByVOB(TransID: number): Observable<BPContact[] | string> {
     return this._httpClient.get<BPContact[]>(`${this.baseAddress}vendorregisterapi/Registration/GetContactsByVOB?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));

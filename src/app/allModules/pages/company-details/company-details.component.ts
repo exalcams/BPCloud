@@ -16,11 +16,11 @@ import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notific
 import { Guid } from 'guid-typescript';
 
 @Component({
-  selector: 'app-vendor-approval',
-  templateUrl: './vendor-approval.component.html',
-  styleUrls: ['./vendor-approval.component.scss']
+  selector: 'app-company-details',
+  templateUrl: './company-details.component.html',
+  styleUrls: ['./company-details.component.scss']
 })
-export class VendorApprovalComponent implements OnInit {
+export class CompanyDetailsComponent implements OnInit {
   SelectedID: number;
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
@@ -182,41 +182,32 @@ export class VendorApprovalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // const retrievedObject = localStorage.getItem('authorizationData');
-    // if (retrievedObject) {
-    //   this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
-    //   this.CurrentUserID = this.authenticationDetails.userID;
-    //   this.CurrentUserRole = this.authenticationDetails.userRole;
-    //   this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
-    // if (this.MenuItems.indexOf('Dashboard') < 0) {
-    //     this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger
-    //     );
-    //     this._router.navigate(['/auth/login']);
-    // }
-    this._activatedRoute.params.subscribe(x => {
-      if (x['ID']) {
-        this.SelectedID = +x['ID'];
+    const retrievedObject = localStorage.getItem('authorizationData');
+    if (retrievedObject) {
+      this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
+      this.CurrentUserID = this.authenticationDetails.UserID;
+      this.CurrentUserRole = this.authenticationDetails.UserRole;
+      this.MenuItems = this.authenticationDetails.MenuItemNames.split(',');
+      if (this.MenuItems.indexOf('Company Details') < 0) {
+        this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger
+        );
+        this._router.navigate(['/auth/login']);
       }
-    });
-    if (this.SelectedID) {
-      console.log(this.SelectedID);
-      this.GetVendorOnBoardingsByID();
+      this.GetVendorOnBoardingsByEmailID();
+      this.InitializeVendorRegistrationFormGroup();
+      this.InitializeIdentificationFormGroup();
+      this.InitializeBankDetailsFormGroup();
+      this.InitializeContactFormGroup();
+      this.InitializeActivityLogFormGroup();
+      // this.GetRegisteredVendorOnBoardings();
     }
-
-    this.InitializeVendorRegistrationFormGroup();
-    this.InitializeIdentificationFormGroup();
-    this.InitializeBankDetailsFormGroup();
-    this.InitializeContactFormGroup();
-    this.InitializeActivityLogFormGroup();
-    // this.GetRegisteredVendorOnBoardings();
-    // } else {
-    //   this._router.navigate(['/auth/login']);
-    // }
+    else {
+      this._router.navigate(['/auth/login']);
+    }
   }
-
-  GetVendorOnBoardingsByID(): void {
+  GetVendorOnBoardingsByEmailID(): void {
     this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.GetVendorOnBoardingsByID(this.SelectedID).subscribe(
+    this._vendorRegistrationService.GetVendorOnBoardingsByEmailID(this.authenticationDetails.EmailAddress).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
         this.BPVendorOnBoarding = <BPVendorOnBoarding>data;

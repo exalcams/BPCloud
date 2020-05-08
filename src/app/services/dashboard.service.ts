@@ -34,5 +34,10 @@ export class DashboardService {
         return throwError(error.error || error.message || 'Server Error');
     }
 
-   
+    GetAllVendorOnBoardings(): Observable<any | string> {
+        return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllVendorOnBoardings`)
+            .pipe(catchError(this.errorHandler));
+    }
+
+
 }
