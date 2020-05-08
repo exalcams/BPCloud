@@ -1,6 +1,6 @@
-<div id="chat" class="page-layout carded fullwidth">
+<div id="companydetails" class="page-layout carded fullwidth">
   <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
-    <div fxLayout class="content-card1">
+    <div  class="content-card1">
       <div fxFlex class="side-bar">
         <!-- <mat-card class="cardHeader p-8" style="background-color: #fffdf9;">
           <div fxLayout fxFlex fxLayoutAlign="center">
@@ -669,16 +669,14 @@
           </mat-card>
         </div>
       </div>
-      <div fxLayout id="footerCard">
+      <!-- <div fxLayout id="footerCard">
         <div fxLayout fxFlex class="my-8 px-24" fxLayoutAlign="end">
-          <button (click)="RejectClicked()" *ngIf="SelectedBPVendorOnBoarding.Status!=='Rejected'
-         && SelectedBPVendorOnBoarding.Status!=='Approved'" class="SaveAsDraftBtn mr-8" mat-stroked-button>
+          <button (click)="RejectClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
             Reject</button>
-          <button (click)="ApproveClicked()" *ngIf="SelectedBPVendorOnBoarding.Status!=='Approved'
-          &&  SelectedBPVendorOnBoarding.Status!=='Rejected'" class="SaveBtn mr-40" mat-raised-button>
+          <button (click)="ApproveClicked()" class="SaveBtn mr-40" mat-raised-button>
             Approve</button>
         </div>
-      </div>
+      </div> -->
     </div>
     <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="progressBarPostion" color="accent" mode="indeterminate">
     </mat-progress-spinner>

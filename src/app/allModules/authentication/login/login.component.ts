@@ -117,12 +117,12 @@ export class LoginComponent implements OnInit {
     localStorage.setItem('authorizationData', JSON.stringify(data));
     this.UpdateMenu();
     this.notificationSnackBarComponent.openSnackBar('Logged in successfully', SnackBarStatus.success);
-    // if (data.userRole === 'Administrator') {
-    //   this._router.navigate(['master/user']);
-    // } else {
-    //   this._router.navigate(['pages/dashboard']);
-    // }
-    this._router.navigate(['pages/dashboard']);
+    if (data.UserRole === 'Administrator') {
+      this._router.navigate(['pages/dashboard']);
+    } else if (data.UserRole === 'Vendor') {
+      this._router.navigate(['pages/companydetails']);
+    }
+    // this._router.navigate(['pages/dashboard']);
   }
 
   OpenChangePasswordDialog(data: AuthenticationDetails): void {
@@ -191,7 +191,7 @@ export class LoginComponent implements OnInit {
       // console.log(this.MenuItems);
     } else {
     }
-    if (true) {
+    if (this.MenuItems.indexOf('Admin Dashboard') >= 0) {
       this.children.push(
         {
           id: 'dashboard',
@@ -205,134 +205,66 @@ export class LoginComponent implements OnInit {
         }
       );
     }
-    if (this.MenuItems.indexOf('Project') >= 0) {
+    if (this.MenuItems.indexOf('Company Details') >= 0) {
       this.children.push(
         {
-          id: 'project',
-          title: 'Project',
+          id: 'companydetails',
+          title: 'Company Details',
           translate: 'NAV.SAMPLE.TITLE',
           type: 'item',
-          icon: 'projectIcon',
-          isSvgIcon: true,
+          icon: 'home',
+          // isSvgIcon: true,
           // icon: 'dashboard',
-          url: '/pages/project',
-        }
-      );
-    }
-    if (this.MenuItems.indexOf('Task Group') >= 0) {
-      this.children.push(
-        {
-          id: 'taskGroup',
-          title: 'Task Group',
-          translate: 'NAV.SAMPLE.TITLE',
-          type: 'item',
-          icon: 'taskGroupIcon',
-          isSvgIcon: true,
-          // icon: 'dashboard',
-          url: '/pages/task-group',
-        }
-      );
-    }
-    if (this.MenuItems.indexOf('Task') >= 0) {
-      this.children.push(
-        {
-          id: 'task',
-          title: 'Task',
-          translate: 'NAV.SAMPLE.TITLE',
-          type: 'item',
-          icon: 'taskIcon',
-          isSvgIcon: true,
-          // icon: 'dashboard',
-          url: '/pages/task',
+          url: '/pages/companydetails',
         }
       );
     }
 
-    // if (this.MenuItems.indexOf('InvoiceDetails') >= 0) {
-    //   this.children.push(
+    // if (true || this.MenuItems.indexOf('App') >= 0) {
+    //   this.subChildren.push(
     //     {
-    //       id: 'invoiceDetails',
-    //       title: 'Invoices',
-    //       translate: 'NAV.SAMPLE.TITLE',
+    //       id: 'menuapp',
+    //       title: 'App',
     //       type: 'item',
-    //       icon: 'receiptIcon',
-    //       isSvgIcon: true,
-    //       // icon: 'receipt',
-    //       url: '/pages/invoices',
+    //       url: '/master/menuApp'
+    //     },
+    //   );
+    // }
+    // if (true || this.MenuItems.indexOf('Role') >= 0) {
+    //   this.subChildren.push(
+    //     {
+    //       id: 'role',
+    //       title: 'Role',
+    //       type: 'item',
+    //       url: '/master/role'
+    //     },
+    //   );
+    // }
+    // if (true || this.MenuItems.indexOf('User') >= 0) {
+    //   this.subChildren.push(
+    //     {
+    //       id: 'user',
+    //       title: 'User',
+    //       type: 'item',
+    //       url: '/master/user'
     //     }
     //   );
     // }
-    if (this.MenuItems.indexOf('Reports') >= 0) {
-      this.children.push(
-        {
-          id: 'reports',
-          title: 'Report',
-          translate: 'NAV.SAMPLE.TITLE',
-          type: 'item',
-          icon: 'reportIcon',
-          isSvgIcon: true,
-          // icon: 'assignment',
-          url: '/reports',
-        }
-      );
-    }
-    // if (this.MenuItems.indexOf('InvoiceItem') >= 0) {
-    //   this.children.push(
-    //     {
-    //       id: 'invItem',
-    //       title: 'Invoice Item',
-    //       translate: 'NAV.SAMPLE.TITLE',
-    //       type: 'item',
-    //       icon: 'dashboard',
-    //       url: '/pages/courses',
-    //     }
-    //   );
-    // }
-    if (true || this.MenuItems.indexOf('App') >= 0) {
-      this.subChildren.push(
-        {
-          id: 'menuapp',
-          title: 'App',
-          type: 'item',
-          url: '/master/menuApp'
-        },
-      );
-    }
-    if (true || this.MenuItems.indexOf('Role') >= 0) {
-      this.subChildren.push(
-        {
-          id: 'role',
-          title: 'Role',
-          type: 'item',
-          url: '/master/role'
-        },
-      );
-    }
-    if (true || this.MenuItems.indexOf('User') >= 0) {
-      this.subChildren.push(
-        {
-          id: 'user',
-          title: 'User',
-          type: 'item',
-          url: '/master/user'
-        }
-      );
-    }
 
-    if (true || this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
-      this.MenuItems.indexOf('User') >= 0) {
-      this.children.push({
-        id: 'master',
-        title: 'Master',
-        // translate: 'NAV.DASHBOARDS',
-        type: 'collapsable',
-        icon: 'viewListIcon',
-        isSvgIcon: true,
-        // icon: 'view_list',
-        children: this.subChildren
-      }
-      );
-    }
+    // if (true || this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
+    //   this.MenuItems.indexOf('User') >= 0) {
+    //   this.children.push({
+    //     id: 'master',
+    //     title: 'Master',
+    //     // translate: 'NAV.DASHBOARDS',
+    //     type: 'collapsable',
+    //     icon: 'viewListIcon',
+    //     isSvgIcon: true,
+    //     // icon: 'view_list',
+    //     children: this.subChildren
+    //   }
+    //   );
+    // }
     this.navigation.push({
       id: 'applications',
       title: '',
@@ -345,6 +277,7 @@ export class LoginComponent implements OnInit {
     // Update the service in order to update menu
     this._menuUpdationService.PushNewMenus(this.navigation);
   }
+
 }
 
 
