@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FuseSidebarModule } from '@fuse/components';
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 import {
     MatFormFieldModule,
@@ -122,6 +123,7 @@ const routes = [
 
         NgxChartsModule,
         NgxDonutChartModule,
+        NgxMaterialTimepickerModule,
 
         ChartsModule,
 

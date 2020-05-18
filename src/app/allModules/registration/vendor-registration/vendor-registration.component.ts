@@ -37,7 +37,7 @@ export class VendorRegistrationComponent implements OnInit {
   identificationFormGroup: FormGroup;
   bankDetailsFormGroup: FormGroup;
   contactFormGroup: FormGroup;
-  activityLogFormGroup: FormGroup;
+  // activityLogFormGroup: FormGroup;
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   selectID: number;
@@ -46,7 +46,7 @@ export class VendorRegistrationComponent implements OnInit {
   IdentificationsByVOB: BPIdentity[] = [];
   BanksByVOB: BPBank[] = [];
   ContactsByVOB: BPContact[] = [];
-  ActivityLogsByVOB: BPActivityLog[] = [];
+  // ActivityLogsByVOB: BPActivityLog[] = [];
   identificationDisplayedColumns: string[] = [
     'Type',
     'IDNumber',
@@ -73,17 +73,17 @@ export class VendorRegistrationComponent implements OnInit {
     'Email',
     'Action'
   ];
-  activityLogDisplayedColumns: string[] = [
-    'Activity',
-    'Date',
-    'Time',
-    'Text',
-    'Action'
-  ];
+  // activityLogDisplayedColumns: string[] = [
+  //   'Activity',
+  //   'Date',
+  //   'Time',
+  //   'Text',
+  //   'Action'
+  // ];
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
   contactDataSource = new MatTableDataSource<BPContact>();
-  activityLogDataSource = new MatTableDataSource<BPActivityLog>();
+  // activityLogDataSource = new MatTableDataSource<BPActivityLog>();
   selection = new SelectionModel<any>(true, []);
   @ViewChild('iDNumber') iDNumber: ElementRef;
   @ViewChild('validUntil') validUntil: ElementRef;
@@ -100,6 +100,7 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('activityDate') activityDate: ElementRef;
   @ViewChild('activityTime') activityTime: ElementRef;
   @ViewChild('activityText') activityText: ElementRef;
+  @ViewChild('legalName') legalName: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
   AllRoles: string[] = [];
@@ -140,8 +141,8 @@ export class VendorRegistrationComponent implements OnInit {
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
-    this.AllRoles = ['IND'];
-    this.AllTypes = ['Service'];
+    this.AllRoles = ['Vendor', 'Customer'];
+    this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
     this.AllCountries = ['India'];
     this.AllStates = [
       'ANDAMAN AND NICOBAR ISLANDS',
@@ -188,7 +189,11 @@ export class VendorRegistrationComponent implements OnInit {
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
-    this.InitializeActivityLogFormGroup();
+    // this.InitializeActivityLogFormGroup();
+  }
+
+  onArrowBackClick(): void {
+    this._router.navigate(['/auth/login']);
   }
 
   InitializeVendorRegistrationFormGroup(): void {
@@ -242,14 +247,14 @@ export class VendorRegistrationComponent implements OnInit {
     });
   }
 
-  InitializeActivityLogFormGroup(): void {
-    this.activityLogFormGroup = this._formBuilder.group({
-      Activity: ['', Validators.required],
-      Date: ['', Validators.required],
-      Time: ['', Validators.required],
-      Text: ['', Validators.required],
-    });
-  }
+  // InitializeActivityLogFormGroup(): void {
+  //   this.activityLogFormGroup = this._formBuilder.group({
+  //     Activity: ['', Validators.required],
+  //     Date: ['', Validators.required],
+  //     Time: ['', Validators.required],
+  //     Text: ['', Validators.required],
+  //   });
+  // }
 
   ResetControl(): void {
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
@@ -267,11 +272,11 @@ export class VendorRegistrationComponent implements OnInit {
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
-    this.ClearActivityLogFormGroup();
+    // this.ClearActivityLogFormGroup();
     this.ClearIdentificationDataSource();
     this.ClearBankDetailsDataSource();
     this.ClearContactDataSource();
-    this.ClearActivityLogDataSource();
+    // this.ClearActivityLogDataSource();
   }
 
   ClearIdentificationFormGroup(): void {
@@ -292,29 +297,32 @@ export class VendorRegistrationComponent implements OnInit {
       this.contactFormGroup.get(key).markAsUntouched();
     });
   }
-  ClearActivityLogFormGroup(): void {
-    this.activityLogFormGroup.reset();
-    Object.keys(this.activityLogFormGroup.controls).forEach(key => {
-      this.activityLogFormGroup.get(key).markAsUntouched();
-    });
-  }
+  // ClearActivityLogFormGroup(): void {
+  //   this.activityLogFormGroup.reset();
+  //   Object.keys(this.activityLogFormGroup.controls).forEach(key => {
+  //     this.activityLogFormGroup.get(key).markAsUntouched();
+  //   });
+  // }
 
   ClearIdentificationDataSource(): void {
     this.IdentificationsByVOB = [];
     this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
   }
+
   ClearBankDetailsDataSource(): void {
     this.BanksByVOB = [];
     this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
   }
+
   ClearContactDataSource(): void {
     this.ContactsByVOB = [];
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
-  ClearActivityLogDataSource(): void {
-    this.ActivityLogsByVOB = [];
-    this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-  }
+
+  // ClearActivityLogDataSource(): void {
+  //   this.ActivityLogsByVOB = [];
+  //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  // }
 
   GetLocationByPincode(event): void {
     const Pincode = event.target.value;
@@ -340,6 +348,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Phone2').updateValueAndValidity();
     this.IsDisplayPhone2 = true;
   }
+
   DisplayEmail2(): void {
     this.vendorRegistrationFormGroup.get('Email2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
     this.vendorRegistrationFormGroup.get('Email2').updateValueAndValidity();
@@ -354,12 +363,14 @@ export class VendorRegistrationComponent implements OnInit {
     this.SetBPVendorOnBoardingValues();
     this.GetBPVendorOnBoardingSubItems();
   }
+
   typeSelected(event): void {
     const selectedType = event.value;
     if (event.value) {
       this.SelectedBPVendorOnBoarding.Type = event.value;
     }
   }
+
   applyFilter(filterValue: string): void {
     this.identificationDataSource.filter = filterValue.trim().toLowerCase();
   }
@@ -369,6 +380,7 @@ export class VendorRegistrationComponent implements OnInit {
       this.vendorRegistrationFormGroup.get(key).enable();
     });
   }
+
   SetBPVendorOnBoardingValues(): void {
     this.vendorRegistrationFormGroup.get('Name').patchValue(this.SelectedBPVendorOnBoarding.Name);
     this.vendorRegistrationFormGroup.get('Type').patchValue(this.SelectedBPVendorOnBoarding.Type);
@@ -390,7 +402,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.GetIdentificationsByVOB();
     this.GetBanksByVOB();
     this.GetContactsByVOB();
-    this.GetActivityLogsByVOB();
+    // this.GetActivityLogsByVOB();
   }
 
   GetIdentificationsByVOB(): void {
@@ -441,22 +453,21 @@ export class VendorRegistrationComponent implements OnInit {
     );
   }
 
-  GetActivityLogsByVOB(): void {
-    this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.GetActivityLogsByVOB(this.SelectedBPVendorOnBoarding.TransID).subscribe(
-      (data) => {
-        this.IsProgressBarVisibile = false;
-        this.ActivityLogsByVOB = data as BPActivityLog[];
-        this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-      },
-      (err) => {
-        console.error(err);
-        this.IsProgressBarVisibile = false;
-        // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-      }
-    );
-  }
-
+  // GetActivityLogsByVOB(): void {
+  //   this.IsProgressBarVisibile = true;
+  //   this._vendorRegistrationService.GetActivityLogsByVOB(this.SelectedBPVendorOnBoarding.TransID).subscribe(
+  //     (data) => {
+  //       this.IsProgressBarVisibile = false;
+  //       this.ActivityLogsByVOB = data as BPActivityLog[];
+  //       this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  //     },
+  //     (err) => {
+  //       console.error(err);
+  //       this.IsProgressBarVisibile = false;
+  //       // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+  //     }
+  //   );
+  // }
 
   AddIdentificationToTable(): void {
     if (this.identificationFormGroup.valid) {
@@ -505,7 +516,6 @@ export class VendorRegistrationComponent implements OnInit {
     }
   }
 
-
   AddContactToTable(): void {
     if (this.contactFormGroup.valid) {
       const bPContact = new BPContact();
@@ -525,23 +535,23 @@ export class VendorRegistrationComponent implements OnInit {
     }
   }
 
-  AddActivityLogToTable(): void {
-    if (this.activityLogFormGroup.valid) {
-      const bPActivityLog = new BPActivityLog();
-      bPActivityLog.Activity = this.activityLogFormGroup.get('Activity').value;
-      bPActivityLog.Date = this.activityLogFormGroup.get('Date').value;
-      bPActivityLog.Time = this.activityLogFormGroup.get('Time').value;
-      bPActivityLog.Text = this.activityLogFormGroup.get('Text').value;
-      if (!this.ActivityLogsByVOB || !this.ActivityLogsByVOB.length) {
-        this.ActivityLogsByVOB = [];
-      }
-      this.ActivityLogsByVOB.push(bPActivityLog);
-      this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-      this.ClearActivityLogFormGroup();
-    } else {
-      this.ShowValidationErrors(this.activityLogFormGroup);
-    }
-  }
+  // AddActivityLogToTable(): void {
+  //   if (this.activityLogFormGroup.valid) {
+  //     const bPActivityLog = new BPActivityLog();
+  //     bPActivityLog.Activity = this.activityLogFormGroup.get('Activity').value;
+  //     bPActivityLog.Date = this.activityLogFormGroup.get('Date').value;
+  //     bPActivityLog.Time = this.activityLogFormGroup.get('Time').value;
+  //     bPActivityLog.Text = this.activityLogFormGroup.get('Text').value;
+  //     if (!this.ActivityLogsByVOB || !this.ActivityLogsByVOB.length) {
+  //       this.ActivityLogsByVOB = [];
+  //     }
+  //     this.ActivityLogsByVOB.push(bPActivityLog);
+  //     this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  //     this.ClearActivityLogFormGroup();
+  //   } else {
+  //     this.ShowValidationErrors(this.activityLogFormGroup);
+  //   }
+  // }
 
   IdentificationEnterKeyDown(): boolean {
     this.validUntil.nativeElement.blur();
@@ -554,16 +564,18 @@ export class VendorRegistrationComponent implements OnInit {
     this.AddBankToTable();
     return true;
   }
+
   ContactEnterKeyDown(): boolean {
     this.email.nativeElement.blur();
     this.AddContactToTable();
     return true;
   }
-  ActivityLogEnterKeyDown(): boolean {
-    this.activityText.nativeElement.blur();
-    this.AddActivityLogToTable();
-    return true;
-  }
+
+  // ActivityLogEnterKeyDown(): boolean {
+  //   this.activityText.nativeElement.blur();
+  //   this.AddActivityLogToTable();
+  //   return true;
+  // }
 
   keytab(elementName): void {
     switch (elementName) {
@@ -632,7 +644,25 @@ export class VendorRegistrationComponent implements OnInit {
       }
     }
   }
-
+  onKey(event): void {
+    this.legalName.nativeElement.focus();
+    const Pincode = event.target.value;
+    if (Pincode) {
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
 
   RemoveIdentificationFromTable(bPIdentity: BPIdentity): void {
     const index: number = this.IdentificationsByVOB.indexOf(bPIdentity);
@@ -659,13 +689,13 @@ export class VendorRegistrationComponent implements OnInit {
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
 
-  RemoveActivityLogFromTable(bPActivityLog: BPActivityLog): void {
-    const index: number = this.ActivityLogsByVOB.indexOf(bPActivityLog);
-    if (index > -1) {
-      this.ActivityLogsByVOB.splice(index, 1);
-    }
-    this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-  }
+  // RemoveActivityLogFromTable(bPActivityLog: BPActivityLog): void {
+  //   const index: number = this.ActivityLogsByVOB.indexOf(bPActivityLog);
+  //   if (index > -1) {
+  //     this.ActivityLogsByVOB.splice(index, 1);
+  //   }
+  //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  // }
 
   OpenConfirmationDialog(Actiontype: string, Catagory: string): void {
     const dialogConfig: MatDialogConfig = {
@@ -715,7 +745,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.GetBPIdentityValues();
     this.GetBPBankValues();
     this.GetBPContactValues();
-    this.GetBPActivityLogValues();
+    // this.GetBPActivityLogValues();
   }
 
   GetBPIdentityValues(): void {
@@ -742,13 +772,13 @@ export class VendorRegistrationComponent implements OnInit {
     });
   }
 
-  GetBPActivityLogValues(): void {
-    this.SelectedBPVendorOnBoardingView.bPActivityLogs = [];
-    // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
-    this.ActivityLogsByVOB.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
-    });
-  }
+  // GetBPActivityLogValues(): void {
+  //   this.SelectedBPVendorOnBoardingView.bPActivityLogs = [];
+  //   // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
+  //   this.ActivityLogsByVOB.forEach(x => {
+  //     this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
+  //   });
+  // }
 
 
   CreateVendorOnBoarding(): void {
@@ -770,6 +800,7 @@ export class VendorRegistrationComponent implements OnInit {
                   this.ResetControl();
                   this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
                   this.IsProgressBarVisibile = false;
+                  this._router.navigate(['/auth/login']);
                 },
                 (err) => {
                   this.showErrorNotificationSnackBar(err);
@@ -785,6 +816,7 @@ export class VendorRegistrationComponent implements OnInit {
               this.ResetControl();
               this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
               this.IsProgressBarVisibile = false;
+              this._router.navigate(['/auth/login']);
             },
             (err) => {
               this.showErrorNotificationSnackBar(err);
@@ -873,12 +905,22 @@ export class VendorRegistrationComponent implements OnInit {
 
   }
 
-
-  SaveClicked(): void {
+  SaveClicked(choice: string): void {
     if (this.vendorRegistrationFormGroup.valid) {
       // const file: File = this.fileToUpload;
       this.GetBPVendorOnBoardingValues();
       this.GetBPVendorOnBoardingSubItemValues();
+      if (choice.toLowerCase() === 'sumbit') {
+        if (this.IdentificationsByVOB.length > 0 && this.BanksByVOB.length > 0 && this.ContactsByVOB.length > 0) {
+          this.SetActionToOpenConfirmation();
+        }
+        else {
+          this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity,BPBank,BPContact table', SnackBarStatus.danger);
+        }
+      }
+      else {
+        this.SetActionToOpenConfirmation();
+      }
       // if (this.SelectedBPVendorOnBoarding.Type.toLocaleLowerCase() === 'ui') {
       //   if (this.SelectedBPVendorOnBoardingView.bPIdentities && this.SelectedBPVendorOnBoardingView.bPIdentities.length &&
       //     this.SelectedBPVendorOnBoardingView.bPIdentities.length > 0) {
@@ -889,7 +931,6 @@ export class VendorRegistrationComponent implements OnInit {
       // } else {
       //   this.SetActionToOpenConfirmation();
       // }
-      this.SetActionToOpenConfirmation();
     } else {
       this.ShowValidationErrors(this.vendorRegistrationFormGroup);
     }
