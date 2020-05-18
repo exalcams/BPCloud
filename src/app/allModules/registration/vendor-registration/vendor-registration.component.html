@@ -54,12 +54,18 @@
         </mat-card> -->
         <div class="sidenav-content" fxFlex fxLayout="column">
           <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
+            <div fxFlex fxLayoutAlign="end end" style="margin-top: -15px; margin-bottom: 10px;">
+              <button mat-fab style="padding: 7px 0;display: inline-block;line-height: 24px; background-color: #efb577;"
+                (click)="onArrowBackClick()">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+            </div>
             <div fxFlex class="mr-40" fxLayout="row" fxLayoutAlign="center">
               <div>
-                Initiated
+                Start Here
               </div>
               <div fxFlex fxLayoutAlign="center">
-                Data Verification
+                Submitted
               </div>
               <div>
                 Completed
@@ -77,13 +83,13 @@
               </div>
             </div>
             <div fxFlex class="mt-4 mr-40  mb-24" fxLayout="row" fxLayoutAlign="start">
-              <div>
+              <!-- <div>
                 Raja Rahul M
-              </div>
+              </div> -->
             </div>
             <div fxLayout>
               <div fxFlex="80">
-                <div class="hrl"></div>
+                <!-- <div class="hrl"></div> -->
               </div>
               <div fxFlex="20" fxLayoutAlign="end">
                 <button class="GSTNBtn mr-40" mat-stroked-button>
@@ -125,7 +131,7 @@
 
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput placeholder="Legal Name" formControlName="LegalName">
+                        <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
                           Legal Name is required
@@ -237,7 +243,7 @@
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Pin Code" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)">
+                          (blur)="GetLocationByPincode($event)" (keyup.enter)="onKey($event)">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           Pin Code is required
@@ -664,9 +670,8 @@
               </div>
             </div>
 
-            <div fxFlex fxLayout="column">
+            <!-- <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
-                <!-- <span><strong>Activity Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Activity Table</strong>
                 </div>
@@ -699,8 +704,6 @@
 
                   <div fxFlex="20">
                     <mat-form-field class="px-32" style="width: 100%;">
-                      <!-- <input matInput placeholder="Time" formControlName="Time" (keyup.enter)="keytab('activityText')"
-                        #activityTime> -->
                       <input matInput placeholder="Time" [ngxTimepicker]="picker" formControlName="Time"
                         (keyup.enter)="keytab('activityText')">
                       <ngx-material-timepicker #picker></ngx-material-timepicker>
@@ -770,17 +773,17 @@
                   </mat-paginator>
                 </div>
               </div>
-            </div>
+            </div> -->
           </mat-card>
         </div>
       </div>
     </div>
     <div fxLayout id="footerCard">
       <div fxLayout fxFlex class="my-8 px-24" fxLayoutAlign="end">
-        <button (click)="SaveClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
+        <button (click)="SaveClicked('Draft')" class="SaveAsDraftBtn mr-8" mat-stroked-button>
           Save as Draft</button>
-        <button (click)="SaveClicked()" class="SaveBtn mr-40" mat-raised-button>
-          Save</button>
+        <button (click)="SaveClicked('Submit')" class="SaveBtn mr-40" mat-raised-button>
+          Submit</button>
       </div>
     </div>
     <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="progressBarPostion" color="accent" mode="indeterminate">

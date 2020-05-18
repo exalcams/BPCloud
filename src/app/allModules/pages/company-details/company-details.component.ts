@@ -36,7 +36,7 @@ export class CompanyDetailsComponent implements OnInit {
   identificationFormGroup: FormGroup;
   bankDetailsFormGroup: FormGroup;
   contactFormGroup: FormGroup;
-  activityLogFormGroup: FormGroup;
+  // activityLogFormGroup: FormGroup;
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   selectID: number;
@@ -45,12 +45,12 @@ export class CompanyDetailsComponent implements OnInit {
   IdentificationsByVOB: BPIdentity[] = [];
   BanksByVOB: BPBank[] = [];
   ContactsByVOB: BPContact[] = [];
-  ActivityLogsByVOB: BPActivityLog[] = [];
+  // ActivityLogsByVOB: BPActivityLog[] = [];
   identificationDisplayedColumns: string[] = [
     'Type',
     'IDNumber',
     'ValidUntil',
-    // 'Action'
+    'Action'
   ];
   bankDetailsDisplayedColumns: string[] = [
     'AccountNo',
@@ -59,7 +59,7 @@ export class CompanyDetailsComponent implements OnInit {
     'BankName',
     'Branch',
     'City',
-    // 'Action'
+    'Action'
   ];
 
   contactDisplayedColumns: string[] = [
@@ -68,19 +68,19 @@ export class CompanyDetailsComponent implements OnInit {
     'Title',
     'Mobile',
     'Email',
-    // 'Action'
+    'Action'
   ];
-  activityLogDisplayedColumns: string[] = [
-    'Activity',
-    'Date',
-    'Time',
-    'Text',
-    // 'Action'
-  ];
+  // activityLogDisplayedColumns: string[] = [
+  //   'Activity',
+  //   'Date',
+  //   'Time',
+  //   'Text',
+  //   'Action'
+  // ];
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
   contactDataSource = new MatTableDataSource<BPContact>();
-  activityLogDataSource = new MatTableDataSource<BPActivityLog>();
+  // activityLogDataSource = new MatTableDataSource<BPActivityLog>();
   selection = new SelectionModel<any>(true, []);
   @ViewChild('iDNumber') iDNumber: ElementRef;
   @ViewChild('validUntil') validUntil: ElementRef;
@@ -138,8 +138,8 @@ export class CompanyDetailsComponent implements OnInit {
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
-    this.AllRoles = ['IND'];
-    this.AllTypes = ['Service'];
+    this.AllRoles = ['Vendor', 'Customer'];
+    this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
     this.AllCountries = ['India'];
     this.AllStates = [
       'ANDAMAN AND NICOBAR ISLANDS',
@@ -198,7 +198,7 @@ export class CompanyDetailsComponent implements OnInit {
       this.InitializeIdentificationFormGroup();
       this.InitializeBankDetailsFormGroup();
       this.InitializeContactFormGroup();
-      this.InitializeActivityLogFormGroup();
+      // this.InitializeActivityLogFormGroup();
       // this.GetRegisteredVendorOnBoardings();
     }
     else {
@@ -274,14 +274,14 @@ export class CompanyDetailsComponent implements OnInit {
     });
   }
 
-  InitializeActivityLogFormGroup(): void {
-    this.activityLogFormGroup = this._formBuilder.group({
-      Activity: ['', Validators.required],
-      Date: ['', Validators.required],
-      Time: ['', Validators.required],
-      Text: ['', Validators.required],
-    });
-  }
+  // InitializeActivityLogFormGroup(): void {
+  //   this.activityLogFormGroup = this._formBuilder.group({
+  //     Activity: ['', Validators.required],
+  //     Date: ['', Validators.required],
+  //     Time: ['', Validators.required],
+  //     Text: ['', Validators.required],
+  //   });
+  // }
 
   ResetControl(): void {
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
@@ -298,11 +298,11 @@ export class CompanyDetailsComponent implements OnInit {
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
-    this.ClearActivityLogFormGroup();
+    // this.ClearActivityLogFormGroup();
     this.ClearIdentificationDataSource();
     this.ClearBankDetailsDataSource();
     this.ClearContactDataSource();
-    this.ClearActivityLogDataSource();
+    // this.ClearActivityLogDataSource();
   }
 
   ClearIdentificationFormGroup(): void {
@@ -323,12 +323,12 @@ export class CompanyDetailsComponent implements OnInit {
       this.contactFormGroup.get(key).markAsUntouched();
     });
   }
-  ClearActivityLogFormGroup(): void {
-    this.activityLogFormGroup.reset();
-    Object.keys(this.activityLogFormGroup.controls).forEach(key => {
-      this.activityLogFormGroup.get(key).markAsUntouched();
-    });
-  }
+  // ClearActivityLogFormGroup(): void {
+  //   this.activityLogFormGroup.reset();
+  //   Object.keys(this.activityLogFormGroup.controls).forEach(key => {
+  //     this.activityLogFormGroup.get(key).markAsUntouched();
+  //   });
+  // }
 
   ClearIdentificationDataSource(): void {
     this.IdentificationsByVOB = [];
@@ -342,10 +342,10 @@ export class CompanyDetailsComponent implements OnInit {
     this.ContactsByVOB = [];
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
-  ClearActivityLogDataSource(): void {
-    this.ActivityLogsByVOB = [];
-    this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-  }
+  // ClearActivityLogDataSource(): void {
+  //   this.ActivityLogsByVOB = [];
+  //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  // }
 
   GetLocationByPincode(event): void {
     const Pincode = event.target.value;
@@ -440,7 +440,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.GetIdentificationsByVOB();
     this.GetBanksByVOB();
     this.GetContactsByVOB();
-    this.GetActivityLogsByVOB();
+    // this.GetActivityLogsByVOB();
   }
 
   GetIdentificationsByVOB(): void {
@@ -491,21 +491,21 @@ export class CompanyDetailsComponent implements OnInit {
     );
   }
 
-  GetActivityLogsByVOB(): void {
-    this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.GetActivityLogsByVOB(this.SelectedBPVendorOnBoarding.TransID).subscribe(
-      (data) => {
-        this.IsProgressBarVisibile = false;
-        this.ActivityLogsByVOB = data as BPActivityLog[];
-        this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-      },
-      (err) => {
-        console.error(err);
-        this.IsProgressBarVisibile = false;
-        // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-      }
-    );
-  }
+  // GetActivityLogsByVOB(): void {
+  //   this.IsProgressBarVisibile = true;
+  //   this._vendorRegistrationService.GetActivityLogsByVOB(this.SelectedBPVendorOnBoarding.TransID).subscribe(
+  //     (data) => {
+  //       this.IsProgressBarVisibile = false;
+  //       this.ActivityLogsByVOB = data as BPActivityLog[];
+  //       this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  //     },
+  //     (err) => {
+  //       console.error(err);
+  //       this.IsProgressBarVisibile = false;
+  //       // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+  //     }
+  //   );
+  // }
 
 
   AddIdentificationToTable(): void {
@@ -565,23 +565,23 @@ export class CompanyDetailsComponent implements OnInit {
     }
   }
 
-  AddActivityLogToTable(): void {
-    if (this.activityLogFormGroup.valid) {
-      const bPActivityLog = new BPActivityLog();
-      bPActivityLog.Activity = this.activityLogFormGroup.get('Activity').value;
-      bPActivityLog.Date = this.activityLogFormGroup.get('Date').value;
-      bPActivityLog.Time = this.activityLogFormGroup.get('Time').value;
-      bPActivityLog.Text = this.activityLogFormGroup.get('Text').value;
-      if (!this.ActivityLogsByVOB || !this.ActivityLogsByVOB.length) {
-        this.ActivityLogsByVOB = [];
-      }
-      this.ActivityLogsByVOB.push(bPActivityLog);
-      this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-      this.ClearActivityLogFormGroup();
-    } else {
-      this.ShowValidationErrors(this.activityLogFormGroup);
-    }
-  }
+  // AddActivityLogToTable(): void {
+  //   if (this.activityLogFormGroup.valid) {
+  //     const bPActivityLog = new BPActivityLog();
+  //     bPActivityLog.Activity = this.activityLogFormGroup.get('Activity').value;
+  //     bPActivityLog.Date = this.activityLogFormGroup.get('Date').value;
+  //     bPActivityLog.Time = this.activityLogFormGroup.get('Time').value;
+  //     bPActivityLog.Text = this.activityLogFormGroup.get('Text').value;
+  //     if (!this.ActivityLogsByVOB || !this.ActivityLogsByVOB.length) {
+  //       this.ActivityLogsByVOB = [];
+  //     }
+  //     this.ActivityLogsByVOB.push(bPActivityLog);
+  //     this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  //     this.ClearActivityLogFormGroup();
+  //   } else {
+  //     this.ShowValidationErrors(this.activityLogFormGroup);
+  //   }
+  // }
 
   IdentificationEnterKeyDown(): boolean {
     this.validUntil.nativeElement.blur();
@@ -601,7 +601,7 @@ export class CompanyDetailsComponent implements OnInit {
   }
   ActivityLogEnterKeyDown(): boolean {
     this.activityText.nativeElement.blur();
-    this.AddActivityLogToTable();
+    // this.AddActivityLogToTable();
     return true;
   }
 
@@ -695,13 +695,13 @@ export class CompanyDetailsComponent implements OnInit {
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
 
-  RemoveActivityLogFromTable(bPActivityLog: BPActivityLog): void {
-    const index: number = this.ActivityLogsByVOB.indexOf(bPActivityLog);
-    if (index > -1) {
-      this.ActivityLogsByVOB.splice(index, 1);
-    }
-    this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-  }
+  // RemoveActivityLogFromTable(bPActivityLog: BPActivityLog): void {
+  //   const index: number = this.ActivityLogsByVOB.indexOf(bPActivityLog);
+  //   if (index > -1) {
+  //     this.ActivityLogsByVOB.splice(index, 1);
+  //   }
+  //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  // }
 
   OpenConfirmationDialog(Actiontype: string, Catagory: string): void {
     const dialogConfig: MatDialogConfig = {
@@ -721,6 +721,8 @@ export class CompanyDetailsComponent implements OnInit {
             this.RejectVendor();
           } else if (Actiontype === 'Delete') {
             this.DeleteVendorOnBoarding();
+          } else if (Actiontype === 'Update') {
+            this.UpdateVendorOnBoarding();
           }
         }
       });
@@ -750,7 +752,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.GetBPIdentityValues();
     this.GetBPBankValues();
     this.GetBPContactValues();
-    this.GetBPActivityLogValues();
+    // this.GetBPActivityLogValues();
   }
 
   GetBPIdentityValues(): void {
@@ -777,13 +779,13 @@ export class CompanyDetailsComponent implements OnInit {
     });
   }
 
-  GetBPActivityLogValues(): void {
-    this.SelectedBPVendorOnBoardingView.bPActivityLogs = [];
-    // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
-    this.ActivityLogsByVOB.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
-    });
-  }
+  // GetBPActivityLogValues(): void {
+  //   this.SelectedBPVendorOnBoardingView.bPActivityLogs = [];
+  //   // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
+  //   this.ActivityLogsByVOB.forEach(x => {
+  //     this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
+  //   });
+  // }
 
 
   CreateVendorOnBoarding(): void {
@@ -868,6 +870,7 @@ export class CompanyDetailsComponent implements OnInit {
       }
     );
   }
+
   RejectVendor(): void {
     // this.GetBPVendorOnBoardingValues();
     // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
@@ -886,6 +889,27 @@ export class CompanyDetailsComponent implements OnInit {
         this.IsProgressBarVisibile = false;
       }
     );
+  }
+
+  SaveClicked(): void {
+    if (this.vendorRegistrationFormGroup.valid) {
+      // const file: File = this.fileToUpload;
+      this.GetBPVendorOnBoardingValues();
+      this.GetBPVendorOnBoardingSubItemValues();
+      // if (this.SelectedBPVendorOnBoarding.Type.toLocaleLowerCase() === 'ui') {
+      //   if (this.SelectedBPVendorOnBoardingView.bPIdentities && this.SelectedBPVendorOnBoardingView.bPIdentities.length &&
+      //     this.SelectedBPVendorOnBoardingView.bPIdentities.length > 0) {
+      //     this.SetActionToOpenConfirmation();
+      //   } else {
+      //     this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity table', SnackBarStatus.danger);
+      //   }
+      // } else {
+      //   this.SetActionToOpenConfirmation();
+      // }
+      this.SetActionToOpenConfirmation('Update');
+    } else {
+      this.ShowValidationErrors(this.vendorRegistrationFormGroup);
+    }
   }
 
   ShowValidationErrors(formGroup: FormGroup): void {

@@ -29,7 +29,6 @@ export class DashboardComponent implements OnInit {
     IsProgressBarVisibile: boolean;
     AllUserWithRoles: UserWithRole[] = [];
     VendorOnBoardingsDisplayedColumns: string[] = [
-        'TransID',
         'Name',
         'LegalName',
         'Type',
@@ -37,21 +36,22 @@ export class DashboardComponent implements OnInit {
         'Phone1',
         'Email1',
         'CreatedOn',
+        'Status',
         'Action'
     ];
     VendorOnBoardingsDataSource: MatTableDataSource<BPVendorOnBoarding>;
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
-
     selection = new SelectionModel<any>(true, []);
-    AllTickets: any[] = [];
-    AllActivities: any[] = [];
-    Fulfilments: any[] = [];
-    DeliveryStatus: any[] = [];
     searchText = '';
-    FilterVal = 'All';
-    ActionModel = 'Actions';
     AllVendorOnBoardings: BPVendorOnBoarding[] = [];
+    public tab1: boolean;
+    public tab2: boolean;
+    public tab3: boolean;
+    public tabCount: number;
+    public OpenCount: number;
+    public ApprovedCount: number;
+    public RejectedCount: number;
 
     constructor(
         public snackBar: MatSnackBar,
@@ -62,10 +62,14 @@ export class DashboardComponent implements OnInit {
         private _vendorRegistrationService: VendorRegistrationService) {
         this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
         this.authenticationDetails = new AuthenticationDetails();
-        this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
         this.IsProgressBarVisibile = false;
+        this.tab1 = true;
+        this.tab2 = false;
+        this.tab3 = false;
     }
+
     ngOnInit(): void {
+        this.tabCount = 1;
         // Retrive authorizationData
         const retrievedObject = localStorage.getItem('authorizationData');
         if (retrievedObject) {
@@ -78,24 +82,49 @@ export class DashboardComponent implements OnInit {
                 );
                 this._router.navigate(['/auth/login']);
             }
-            this.GetAllVendorOnBoardings();
+            this.GetAllOpenVendorOnBoardings();
+            this.GetAllApprovedVendorOnBoardingsCount();
+            this.GetAllRejectedVendorOnBoardingsCount();
             this.GetAllUserWithRoles();
 
         } else {
             this._router.navigate(['/auth/login']);
         }
     }
+
+    tabone(): void {
+        this.tab1 = true;
+        this.tab2 = false;
+        this.tab3 = false;
+        this.GetAllOpenVendorOnBoardings();
+        this.tabCount = 1;
+    }
+
+    tabtwo(): void {
+        this.tab1 = false;
+        this.tab2 = true;
+        this.tab3 = false;
+        this.GetAllApprovedVendorOnBoardings();
+        this.tabCount = 2;
+    }
+
+    tabthree(): void {
+        this.tab1 = false;
+        this.tab2 = false;
+        this.tab3 = true;
+        this.GetAllRejectedVendorOnBoardings();
+        this.tabCount = 3;
+    }
+
     GetAllVendorOnBoardings(): void {
         this.IsProgressBarVisibile = true;
         this._vendorRegistrationService.GetAllVendorOnBoardings().subscribe(
             (data) => {
                 this.IsProgressBarVisibile = false;
                 this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
-                // this.AllVendorOnBoardings = JSON.parse(data.toString());
-                console.log(this.AllVendorOnBoardings);
                 this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
-                this.paginator = this.VendorOnBoardingsDataSource.paginator;
-                this.sort = this.VendorOnBoardingsDataSource.sort;
+                this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                this.VendorOnBoardingsDataSource.sort = this.sort;
             },
             (err) => {
                 console.error(err);
@@ -104,6 +133,114 @@ export class DashboardComponent implements OnInit {
             }
         );
     }
+
+    GetAllOpenVendorOnBoardings(): void {
+        this.IsProgressBarVisibile = true;
+        this._vendorRegistrationService.GetAllOpenVendorOnBoardings().subscribe(
+            (data) => {
+                this.IsProgressBarVisibile = false;
+                this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
+                if (this.AllVendorOnBoardings && this.AllVendorOnBoardings.length > 0) {
+                    this.OpenCount = this.AllVendorOnBoardings.length;
+                    this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                    this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                    this.VendorOnBoardingsDataSource.sort = this.sort;
+                }
+                else {
+                    this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                }
+            },
+            (err) => {
+                console.error(err);
+                this.IsProgressBarVisibile = false;
+                this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+            }
+        );
+    }
+
+    GetAllApprovedVendorOnBoardings(): void {
+        this.IsProgressBarVisibile = true;
+        this._vendorRegistrationService.GetAllApprovedVendorOnBoardings().subscribe(
+            (data) => {
+                this.IsProgressBarVisibile = false;
+                this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
+                this.ApprovedCount = this.AllVendorOnBoardings.length;
+                this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                this.VendorOnBoardingsDataSource.sort = this.sort;
+            },
+            (err) => {
+                console.error(err);
+                this.IsProgressBarVisibile = false;
+                this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+            }
+        );
+    }
+
+    GetAllRejectedVendorOnBoardings(): void {
+        this.IsProgressBarVisibile = true;
+        this._vendorRegistrationService.GetAllRejectedVendorOnBoardings().subscribe(
+            (data) => {
+                this.IsProgressBarVisibile = false;
+                this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
+                this.RejectedCount = this.AllVendorOnBoardings.length;
+                this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                this.VendorOnBoardingsDataSource.sort = this.sort;
+            },
+            (err) => {
+                console.error(err);
+                this.IsProgressBarVisibile = false;
+                this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+            }
+        );
+    }
+
+    GetAllOpenVendorOnBoardingsCount(): void {
+        this.IsProgressBarVisibile = true;
+        this._vendorRegistrationService.GetAllOpenVendorOnBoardingsCount().subscribe(
+            (data) => {
+                this.IsProgressBarVisibile = false;
+                this.OpenCount = <any>data;
+            },
+            (err) => {
+                console.error(err);
+                this.IsProgressBarVisibile = false;
+                this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+            }
+        );
+    }
+
+    GetAllApprovedVendorOnBoardingsCount(): void {
+        this.IsProgressBarVisibile = true;
+        this._vendorRegistrationService.GetAllApprovedVendorOnBoardingsCount().subscribe(
+            (data) => {
+                this.IsProgressBarVisibile = false;
+                this.ApprovedCount = <any>data;
+            },
+            (err) => {
+                console.error(err);
+                this.IsProgressBarVisibile = false;
+                this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+            }
+        );
+    }
+
+    GetAllRejectedVendorOnBoardingsCount(): void {
+        this.IsProgressBarVisibile = true;
+        this._vendorRegistrationService.GetAllRejectedVendorOnBoardingsCount().subscribe(
+            (data) => {
+                this.IsProgressBarVisibile = false;
+                this.RejectedCount = <any>data;
+            },
+            (err) => {
+                console.error(err);
+                this.IsProgressBarVisibile = false;
+                this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+            }
+        );
+    }
+
     GetAllUserWithRoles(): void {
         this._masterService.GetAllUsers().subscribe(
             (data) => {
@@ -114,14 +251,16 @@ export class DashboardComponent implements OnInit {
             }
         );
     }
+
     ReviewAndApproveVendor(bPVendorOnBoarding: BPVendorOnBoarding): void {
-        console.log(bPVendorOnBoarding);
-        // this._router.navigate(['approval/vendor']);
         this._router.navigate([
             '/approval',
             bPVendorOnBoarding.TransID
         ]);
     }
+
+
+
     // formatSubtitle = (): string => {
     //     return 'Effiency';
     // }
@@ -143,6 +282,7 @@ export class DashboardComponent implements OnInit {
     //         case 'ASN':
     //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'orange-timeline' : 'green-timeline';
     //         case 'Gate':
+    // tslint:disable-next-line:max-line-length
     //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'orange-timeline' : 'green-timeline';
     //         case 'GRN':
     //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :
@@ -156,6 +296,7 @@ export class DashboardComponent implements OnInit {
     //         case 'ASN':
     //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : 'green-timeline';
     //         case 'Gate':
+    // tslint:disable-next-line:max-line-length
     //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' : 'green-timeline';
     //         case 'GRN':
     //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :

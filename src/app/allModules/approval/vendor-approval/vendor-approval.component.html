@@ -15,6 +15,13 @@
         </mat-card> -->
         <div class="sidenav-content" fxFlex fxLayout="column">
           <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
+            
+            <div fxFlex fxLayoutAlign="end end" style="margin-top: -15px; margin-bottom: 10px;">
+              <button mat-fab style="padding: 7px 0;display: inline-block;line-height: 24px; background-color: #efb577;"
+                (click)="onArrowBackClick()">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+            </div>
 
             <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
               [formGroup]="vendorRegistrationFormGroup">
@@ -561,14 +568,14 @@
                 </div>
               </div>
             </div>
-
+            <!-- 
             <div fxFlex fxLayout="column" *ngIf="ActivityLogsByVOB?.length">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
                   <strong>Activity Table</strong>
                 </div>
               </div>
-              <!-- <div class="mt-8">
+               <div class="mt-8">
                 <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
                   [formGroup]="activityLogFormGroup">
                   <div fxFlex="25">
@@ -621,7 +628,7 @@
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddActivityLogToTable()">
                   </div>
                 </form>
-              </div> -->
+              </div> 
               <div style="margin-left: 8px;margin-top: 10px;">
                 <table *ngIf="ActivityLogsByVOB?.length" class="table" mat-table [dataSource]="activityLogDataSource"
                   matSort>
@@ -647,13 +654,13 @@
                     <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.Text}} </td>
                   </ng-container>
 
-                  <!-- <ng-container matColumnDef="Action">
+                  <ng-container matColumnDef="Action">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
                     <td mat-cell *matCellDef="let element" style="width: 5%;text-align: center;">
                       <img class="removeIcon" src="assets/images/remove-button.png"
                         (click)="RemoveActivityLogFromTable(element)">
                     </td>
-                  </ng-container> -->
+                  </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="activityLogDisplayedColumns;sticky: true"></tr>
                   <tr mat-row *matRowDef="let row; columns: activityLogDisplayedColumns;" matRipple
@@ -665,7 +672,7 @@
                   </mat-paginator>
                 </div>
               </div>
-            </div>
+            </div> -->
           </mat-card>
         </div>
       </div>

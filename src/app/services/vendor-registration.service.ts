@@ -28,6 +28,36 @@ export class VendorRegistrationService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetAllOpenVendorOnBoardings(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardings`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllApprovedVendorOnBoardings(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardings`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllRejectedVendorOnBoardings(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardings`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllOpenVendorOnBoardingsCount(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsCount`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllApprovedVendorOnBoardingsCount(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardingsCount`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllRejectedVendorOnBoardingsCount(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsCount`)
+      .pipe(catchError(this.errorHandler));
+  }
+
   GetVendorOnBoardingsByID(TransID: number): Observable<any | string> {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetVendorOnBoardingsByID?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));

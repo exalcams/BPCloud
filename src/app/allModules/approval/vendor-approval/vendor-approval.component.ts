@@ -36,7 +36,7 @@ export class VendorApprovalComponent implements OnInit {
   identificationFormGroup: FormGroup;
   bankDetailsFormGroup: FormGroup;
   contactFormGroup: FormGroup;
-  activityLogFormGroup: FormGroup;
+  // activityLogFormGroup: FormGroup;
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   selectID: number;
@@ -45,7 +45,7 @@ export class VendorApprovalComponent implements OnInit {
   IdentificationsByVOB: BPIdentity[] = [];
   BanksByVOB: BPBank[] = [];
   ContactsByVOB: BPContact[] = [];
-  ActivityLogsByVOB: BPActivityLog[] = [];
+  // ActivityLogsByVOB: BPActivityLog[] = [];
   identificationDisplayedColumns: string[] = [
     'Type',
     'IDNumber',
@@ -70,17 +70,17 @@ export class VendorApprovalComponent implements OnInit {
     'Email',
     // 'Action'
   ];
-  activityLogDisplayedColumns: string[] = [
-    'Activity',
-    'Date',
-    'Time',
-    'Text',
-    // 'Action'
-  ];
+  // activityLogDisplayedColumns: string[] = [
+  //   'Activity',
+  //   'Date',
+  //   'Time',
+  //   'Text',
+  //   // 'Action'
+  // ];
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
   contactDataSource = new MatTableDataSource<BPContact>();
-  activityLogDataSource = new MatTableDataSource<BPActivityLog>();
+  // activityLogDataSource = new MatTableDataSource<BPActivityLog>();
   selection = new SelectionModel<any>(true, []);
   @ViewChild('iDNumber') iDNumber: ElementRef;
   @ViewChild('validUntil') validUntil: ElementRef;
@@ -138,8 +138,8 @@ export class VendorApprovalComponent implements OnInit {
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
-    this.AllRoles = ['IND'];
-    this.AllTypes = ['Service'];
+    this.AllRoles = ['Vendor', 'Customer'];
+    this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
     this.AllCountries = ['India'];
     this.AllStates = [
       'ANDAMAN AND NICOBAR ISLANDS',
@@ -207,11 +207,15 @@ export class VendorApprovalComponent implements OnInit {
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
-    this.InitializeActivityLogFormGroup();
+    // this.InitializeActivityLogFormGroup();
     // this.GetRegisteredVendorOnBoardings();
     // } else {
     //   this._router.navigate(['/auth/login']);
     // }
+  }
+
+  onArrowBackClick(): void {
+    this._router.navigate(['/pages/dashboard']);
   }
 
   GetVendorOnBoardingsByID(): void {
@@ -283,14 +287,14 @@ export class VendorApprovalComponent implements OnInit {
     });
   }
 
-  InitializeActivityLogFormGroup(): void {
-    this.activityLogFormGroup = this._formBuilder.group({
-      Activity: ['', Validators.required],
-      Date: ['', Validators.required],
-      Time: ['', Validators.required],
-      Text: ['', Validators.required],
-    });
-  }
+  // InitializeActivityLogFormGroup(): void {
+  //   this.activityLogFormGroup = this._formBuilder.group({
+  //     Activity: ['', Validators.required],
+  //     Date: ['', Validators.required],
+  //     Time: ['', Validators.required],
+  //     Text: ['', Validators.required],
+  //   });
+  // }
 
   ResetControl(): void {
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
@@ -307,11 +311,11 @@ export class VendorApprovalComponent implements OnInit {
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
-    this.ClearActivityLogFormGroup();
+    // this.ClearActivityLogFormGroup();
     this.ClearIdentificationDataSource();
     this.ClearBankDetailsDataSource();
     this.ClearContactDataSource();
-    this.ClearActivityLogDataSource();
+    // this.ClearActivityLogDataSource();
   }
 
   ClearIdentificationFormGroup(): void {
@@ -320,41 +324,47 @@ export class VendorApprovalComponent implements OnInit {
       this.identificationFormGroup.get(key).markAsUntouched();
     });
   }
+
   ClearBankDetailsFormGroup(): void {
     this.bankDetailsFormGroup.reset();
     Object.keys(this.bankDetailsFormGroup.controls).forEach(key => {
       this.bankDetailsFormGroup.get(key).markAsUntouched();
     });
   }
+
   ClearContactFormGroup(): void {
     this.contactFormGroup.reset();
     Object.keys(this.contactFormGroup.controls).forEach(key => {
       this.contactFormGroup.get(key).markAsUntouched();
     });
   }
-  ClearActivityLogFormGroup(): void {
-    this.activityLogFormGroup.reset();
-    Object.keys(this.activityLogFormGroup.controls).forEach(key => {
-      this.activityLogFormGroup.get(key).markAsUntouched();
-    });
-  }
+
+  // ClearActivityLogFormGroup(): void {
+  //   this.activityLogFormGroup.reset();
+  //   Object.keys(this.activityLogFormGroup.controls).forEach(key => {
+  //     this.activityLogFormGroup.get(key).markAsUntouched();
+  //   });
+  // }
 
   ClearIdentificationDataSource(): void {
     this.IdentificationsByVOB = [];
     this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
   }
+
   ClearBankDetailsDataSource(): void {
     this.BanksByVOB = [];
     this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
   }
+
   ClearContactDataSource(): void {
     this.ContactsByVOB = [];
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
-  ClearActivityLogDataSource(): void {
-    this.ActivityLogsByVOB = [];
-    this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-  }
+
+  // ClearActivityLogDataSource(): void {
+  //   this.ActivityLogsByVOB = [];
+  //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  // }
 
   GetLocationByPincode(event): void {
     const Pincode = event.target.value;
@@ -380,6 +390,7 @@ export class VendorApprovalComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Phone2').updateValueAndValidity();
     this.IsDisplayPhone2 = true;
   }
+
   DisplayEmail2(): void {
     this.vendorRegistrationFormGroup.get('Email2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
     this.vendorRegistrationFormGroup.get('Email2').updateValueAndValidity();
@@ -412,12 +423,14 @@ export class VendorApprovalComponent implements OnInit {
     this.SetBPVendorOnBoardingValues();
     this.GetBPVendorOnBoardingSubItems();
   }
+
   typeSelected(event): void {
     const selectedType = event.value;
     if (event.value) {
       this.SelectedBPVendorOnBoarding.Type = event.value;
     }
   }
+
   applyFilter(filterValue: string): void {
     this.identificationDataSource.filter = filterValue.trim().toLowerCase();
   }
@@ -427,6 +440,7 @@ export class VendorApprovalComponent implements OnInit {
   //     this.vendorRegistrationFormGroup.get(key).enable();
   //   });
   // }
+
   SetBPVendorOnBoardingValues(): void {
     this.vendorRegistrationFormGroup.get('Name').patchValue(this.SelectedBPVendorOnBoarding.Name);
     this.vendorRegistrationFormGroup.get('Type').patchValue(this.SelectedBPVendorOnBoarding.Type);
@@ -449,7 +463,7 @@ export class VendorApprovalComponent implements OnInit {
     this.GetIdentificationsByVOB();
     this.GetBanksByVOB();
     this.GetContactsByVOB();
-    this.GetActivityLogsByVOB();
+    // this.GetActivityLogsByVOB();
   }
 
   GetIdentificationsByVOB(): void {
@@ -500,22 +514,21 @@ export class VendorApprovalComponent implements OnInit {
     );
   }
 
-  GetActivityLogsByVOB(): void {
-    this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.GetActivityLogsByVOB(this.SelectedBPVendorOnBoarding.TransID).subscribe(
-      (data) => {
-        this.IsProgressBarVisibile = false;
-        this.ActivityLogsByVOB = data as BPActivityLog[];
-        this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-      },
-      (err) => {
-        console.error(err);
-        this.IsProgressBarVisibile = false;
-        // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-      }
-    );
-  }
-
+  // GetActivityLogsByVOB(): void {
+  //   this.IsProgressBarVisibile = true;
+  //   this._vendorRegistrationService.GetActivityLogsByVOB(this.SelectedBPVendorOnBoarding.TransID).subscribe(
+  //     (data) => {
+  //       this.IsProgressBarVisibile = false;
+  //       this.ActivityLogsByVOB = data as BPActivityLog[];
+  //       this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  //     },
+  //     (err) => {
+  //       console.error(err);
+  //       this.IsProgressBarVisibile = false;
+  //       // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+  //     }
+  //   );
+  // }
 
   AddIdentificationToTable(): void {
     if (this.identificationFormGroup.valid) {
@@ -554,7 +567,6 @@ export class VendorApprovalComponent implements OnInit {
     }
   }
 
-
   AddContactToTable(): void {
     if (this.contactFormGroup.valid) {
       const bPContact = new BPContact();
@@ -574,23 +586,23 @@ export class VendorApprovalComponent implements OnInit {
     }
   }
 
-  AddActivityLogToTable(): void {
-    if (this.activityLogFormGroup.valid) {
-      const bPActivityLog = new BPActivityLog();
-      bPActivityLog.Activity = this.activityLogFormGroup.get('Activity').value;
-      bPActivityLog.Date = this.activityLogFormGroup.get('Date').value;
-      bPActivityLog.Time = this.activityLogFormGroup.get('Time').value;
-      bPActivityLog.Text = this.activityLogFormGroup.get('Text').value;
-      if (!this.ActivityLogsByVOB || !this.ActivityLogsByVOB.length) {
-        this.ActivityLogsByVOB = [];
-      }
-      this.ActivityLogsByVOB.push(bPActivityLog);
-      this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-      this.ClearActivityLogFormGroup();
-    } else {
-      this.ShowValidationErrors(this.activityLogFormGroup);
-    }
-  }
+  // AddActivityLogToTable(): void {
+  //   if (this.activityLogFormGroup.valid) {
+  //     const bPActivityLog = new BPActivityLog();
+  //     bPActivityLog.Activity = this.activityLogFormGroup.get('Activity').value;
+  //     bPActivityLog.Date = this.activityLogFormGroup.get('Date').value;
+  //     bPActivityLog.Time = this.activityLogFormGroup.get('Time').value;
+  //     bPActivityLog.Text = this.activityLogFormGroup.get('Text').value;
+  //     if (!this.ActivityLogsByVOB || !this.ActivityLogsByVOB.length) {
+  //       this.ActivityLogsByVOB = [];
+  //     }
+  //     this.ActivityLogsByVOB.push(bPActivityLog);
+  //     this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  //     this.ClearActivityLogFormGroup();
+  //   } else {
+  //     this.ShowValidationErrors(this.activityLogFormGroup);
+  //   }
+  // }
 
   IdentificationEnterKeyDown(): boolean {
     this.validUntil.nativeElement.blur();
@@ -603,16 +615,18 @@ export class VendorApprovalComponent implements OnInit {
     this.AddBankToTable();
     return true;
   }
+
   ContactEnterKeyDown(): boolean {
     this.email.nativeElement.blur();
     this.AddContactToTable();
     return true;
   }
-  ActivityLogEnterKeyDown(): boolean {
-    this.activityText.nativeElement.blur();
-    this.AddActivityLogToTable();
-    return true;
-  }
+
+  // ActivityLogEnterKeyDown(): boolean {
+  //   this.activityText.nativeElement.blur();
+  //   this.AddActivityLogToTable();
+  //   return true;
+  // }
 
   keytab(elementName): void {
     switch (elementName) {
@@ -678,7 +692,6 @@ export class VendorApprovalComponent implements OnInit {
     }
   }
 
-
   RemoveIdentificationFromTable(bPIdentity: BPIdentity): void {
     const index: number = this.IdentificationsByVOB.indexOf(bPIdentity);
     if (index > -1) {
@@ -695,7 +708,6 @@ export class VendorApprovalComponent implements OnInit {
     this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
   }
 
-
   RemoveContactFromTable(bPContact: BPContact): void {
     const index: number = this.ContactsByVOB.indexOf(bPContact);
     if (index > -1) {
@@ -704,13 +716,13 @@ export class VendorApprovalComponent implements OnInit {
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
 
-  RemoveActivityLogFromTable(bPActivityLog: BPActivityLog): void {
-    const index: number = this.ActivityLogsByVOB.indexOf(bPActivityLog);
-    if (index > -1) {
-      this.ActivityLogsByVOB.splice(index, 1);
-    }
-    this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
-  }
+  // RemoveActivityLogFromTable(bPActivityLog: BPActivityLog): void {
+  //   const index: number = this.ActivityLogsByVOB.indexOf(bPActivityLog);
+  //   if (index > -1) {
+  //     this.ActivityLogsByVOB.splice(index, 1);
+  //   }
+  //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
+  // }
 
   OpenConfirmationDialog(Actiontype: string, Catagory: string): void {
     const dialogConfig: MatDialogConfig = {
@@ -759,7 +771,7 @@ export class VendorApprovalComponent implements OnInit {
     this.GetBPIdentityValues();
     this.GetBPBankValues();
     this.GetBPContactValues();
-    this.GetBPActivityLogValues();
+    // this.GetBPActivityLogValues();
   }
 
   GetBPIdentityValues(): void {
@@ -786,14 +798,13 @@ export class VendorApprovalComponent implements OnInit {
     });
   }
 
-  GetBPActivityLogValues(): void {
-    this.SelectedBPVendorOnBoardingView.bPActivityLogs = [];
-    // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
-    this.ActivityLogsByVOB.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
-    });
-  }
-
+  // GetBPActivityLogValues(): void {
+  //   this.SelectedBPVendorOnBoardingView.bPActivityLogs = [];
+  //   // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
+  //   this.ActivityLogsByVOB.forEach(x => {
+  //     this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
+  //   });
+  // }
 
   CreateVendorOnBoarding(): void {
     // this.GetBPVendorOnBoardingValues();
@@ -877,6 +888,7 @@ export class VendorApprovalComponent implements OnInit {
       }
     );
   }
+
   RejectVendor(): void {
     // this.GetBPVendorOnBoardingValues();
     // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
@@ -935,6 +947,7 @@ export class VendorApprovalComponent implements OnInit {
       this.ShowValidationErrors(this.vendorRegistrationFormGroup);
     }
   }
+
   RejectClicked(): void {
     if (this.vendorRegistrationFormGroup.valid) {
       this.GetBPVendorOnBoardingValues();
