@@ -73,13 +73,18 @@
             </div>
             <div fxLayout class="mt-4 mr-40">
               <div fxFlex="50" fxLayout>
-                <div class="round1"></div>
-                <div class="green-timeline" fxFlex></div>
-                <div class="round"></div>
+                <!-- <div class="round1"></div> -->
+                <!-- <div class="green-timeline" fxFlex></div> -->
+                <!-- <div class="round"></div> -->
+                <div class="round" [style.border-color]="Status===''?'#34ad65':'#808080'"></div>
+                <div fxFlex [class]="Status==='Open'?'green-timeline':'white-timeline'"></div>
+                <div class="round" [style.border-color]="Status==='Open'?'#34ad65':'#808080'"></div>
               </div>
               <div fxFlex="50" fxLayout>
-                <div class="white-timeline" fxFlex></div>
-                <div class="round"></div>
+                <!-- <div class="white-timeline" fxFlex></div>
+                <div class="round"></div> -->
+                <div fxFlex [class]="Status==='Approved'?'green-timeline':'white-timeline'"></div>
+                <div class="round" [style.border-color]="Status==='Approved'?'#34ad65':'#808080'"></div>
               </div>
             </div>
             <div fxFlex class="mt-4 mr-40  mb-24" fxLayout="row" fxLayoutAlign="start">
@@ -240,6 +245,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
+
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Pin Code" formControlName="PinCode"
@@ -397,7 +403,6 @@
                 </div>
               </div>
             </div>
-
             <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">

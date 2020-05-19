@@ -51,7 +51,7 @@
 
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput placeholder="Legal Name" formControlName="LegalName">
+                        <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
                           Legal Name is required
@@ -163,7 +163,7 @@
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Pin Code" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)">
+                          (blur)="GetLocationByPincode($event)" (keyup.enter)="onKey($event)">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           Pin Code is required
@@ -218,8 +218,7 @@
 
               </div>
             </form>
-
-            <div fxFlex fxLayout="column" class="mt-24" *ngIf="IdentificationsByVOB?.length">
+            <div fxFlex fxLayout="column" class="mt-24">
               <div style="margin-left: 7px">
                 <!-- <span class="SectionTitle"><strong>Identification Table</strong></span> -->
                 <div class="SectionTitle">
@@ -229,7 +228,7 @@
               <div class="mt-8">
                 <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
                   [formGroup]="identificationFormGroup">
-                  <div fxFlex="30">
+                  <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
                       <mat-error
@@ -238,7 +237,7 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="30">
+                  <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <input matInput placeholder="ID" formControlName="IDNumber" (keyup.enter)="keytab('validUntil')"
                         #iDNumber>
@@ -248,7 +247,7 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="35">
+                  <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
                         #validUntil (keydown.enter)="IdentificationEnterKeyDown()">
@@ -260,6 +259,13 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
+                  <div fxFlex="20" fxLayoutAlign="start center">
+                    <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput1.click()">
+                    <span class="attachClass" (click)="fileInput1.click()">
+                      Add Attachment
+                    </span>
+                    <input hidden type="file" #fileInput1 id="file" (change)="handleFileInput($event)" />
+                  </div>
                   <div fxFlex="5" fxLayoutAlign="center">
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddIdentificationToTable()">
                   </div>
@@ -270,19 +276,26 @@
                   [dataSource]="identificationDataSource" matSort>
 
                   <ng-container matColumnDef="Type">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 30%;"> Type </th>
-                    <td mat-cell *matCellDef="let element" style="width: 30%;" class="tableLeftBorder">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> Type </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;" class="tableLeftBorder">
                       {{element.Type}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="IDNumber">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 30%;"> ID Number </th>
-                    <td mat-cell *matCellDef="let element" style="width: 30%;"> {{element.IDNumber}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> IDNumber </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.IDNumber}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="ValidUntil">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 35%;"> Valid Until </th>
-                    <td mat-cell *matCellDef="let element" style="width: 35%;"> {{element.ValidUntil | date}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> ValidUntil </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.ValidUntil | date}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="Attachment">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Attachment </th>
+                    <td mat-cell *matCellDef="let element" style="width: 20%;">
+                      <mat-icon *ngIf="element.AttachmentName">attach_file</mat-icon>
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="Action">
@@ -304,20 +317,28 @@
                 </div>
               </div>
             </div>
-
-            <div fxFlex fxLayout="column" *ngIf="BanksByVOB?.length">
+            <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
                   <strong>Bank Table</strong>
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form"
-                  novalidate [formGroup]="bankDetailsFormGroup">
+                <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup">
                   <div fxFlex fxLayout="row">
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="Account No" formControlName="AccountNo"
+                    <div fxFlex="10">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
+                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc
+                          (keyup.enter)="keytab('accountNo')">
+                        <mat-error
+                          *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
+                          IFSC is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="15">
+                      <mat-form-field class="pr-16" style="width: 100%;">
+                        <input matInput placeholder="Acc No" formControlName="AccountNo" #accountNo
                           (keyup.enter)="keytab('accHolderName')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('AccountNo').touched && bankDetailsFormGroup.get('AccountNo').hasError('required')">
@@ -325,64 +346,57 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="Name" formControlName="Name" #accHolderName
-                          (keyup.enter)="keytab('ifsc')">
+                    <div fxFlex="20">
+                      <mat-form-field class="pr-16" style="width: 100%;">
+                        <input matInput placeholder="Acc Holders name" formControlName="Name" #accHolderName
+                          (keyup.enter)="keytab('bankName')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('Name').touched && bankDetailsFormGroup.get('Name').hasError('required')">
                           Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="35">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc
-                          (keyup.enter)="keytab('bankName')">
-                        <mat-error
-                          *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
-                          IFSC is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-                    <div fxFlex="5"></div>
-                  </div>
-                  <div fxFlex fxLayout="row">
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
+                    <div fxFlex="15">
+                      <mat-form-field class="pr-16" style="width: 100%;">
                         <input matInput placeholder="Bank Name" formControlName="BankName" #bankName
-                          (keyup.enter)="keytab('branch')">
+                          (keyup.enter)="keytab('bankCity')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('BankName').touched && bankDetailsFormGroup.get('BankName').hasError('required')">
                           Bank Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="30">
-                      <mat-form-field class="px-40" style="width: 100%;">
-                        <input matInput placeholder="Branch" formControlName="Branch" #branch
-                          (keyup.enter)="keytab('bankCity')">
-                        <mat-error
-                          *ngIf="bankDetailsFormGroup.get('Branch').touched && bankDetailsFormGroup.get('Branch').hasError('required')">
-                          Branch is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-                    <div fxFlex="35">
-                      <mat-form-field class="px-40" style="width: 100%;">
+                    <div fxFlex="10">
+                      <mat-form-field class="pr-16" style="width: 100%;">
                         <input matInput placeholder="City" formControlName="City" #bankCity
-                          (keydown.enter)="BankEnterKeyDown()">
+                          (keyup.enter)="keytab('branch')">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('City').touched && bankDetailsFormGroup.get('City').hasError('required')">
                           City is required
                         </mat-error>
                       </mat-form-field>
                     </div>
+                    <div fxFlex="15">
+                      <mat-form-field class="pr-16" style="width: 100%;">
+                        <input matInput placeholder="Branch" formControlName="Branch" #branch
+                          (keydown.enter)="BankEnterKeyDown()">
+                        <mat-error
+                          *ngIf="bankDetailsFormGroup.get('Branch').touched && bankDetailsFormGroup.get('Branch').hasError('required')">
+                          Branch is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="10" fxLayoutAlign="start center">
+                      <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput2.click()">
+                      <span class="attachClass" (click)="fileInput2.click()">
+                        Add Attachment
+                      </span>
+                      <input hidden type="file" #fileInput2 id="file1" (change)="handleFileInput($event)" />
+                    </div>
                     <div fxFlex="5" fxLayoutAlign="center">
                       <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddBankToTable()">
                     </div>
                   </div>
-
                 </form>
               </div>
               <div style="margin-left: 8px;margin-top: 10px;">
@@ -390,35 +404,47 @@
                   <table *ngIf="BanksByVOB?.length" class="table" mat-table [dataSource]="bankDetailsDataSource"
                     matSort>
 
+                    <ng-container matColumnDef="IFSC">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> IFSC </th>
+                      <td mat-cell *matCellDef="let element" class="tableLeftBorder" style="width: 10%;">
+                        {{element.IFSC}} </td>
+                    </ng-container>
+
+
                     <ng-container matColumnDef="AccountNo">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Account No </th>
-                      <td mat-cell *matCellDef="let element" class="tableLeftBorder">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> AccountNo </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;">
                         {{element.AccountNo}} </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Name">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-                      <td mat-cell *matCellDef="let element"> {{element.Name}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Acc Holders name </th>
+                      <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Name}} </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="IFSC">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> IFSC </th>
-                      <td mat-cell *matCellDef="let element"> {{element.IFSC}} </td>
-                    </ng-container>
 
                     <ng-container matColumnDef="BankName">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Bank Name </th>
-                      <td mat-cell *matCellDef="let element"> {{element.BankName}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> BankName </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.BankName}} </td>
+                    </ng-container>
+
+
+                    <ng-container matColumnDef="City">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> City </th>
+                      <td mat-cell *matCellDef="let element" style="width: 10%;"> {{element.City}} </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Branch">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Branch </th>
-                      <td mat-cell *matCellDef="let element"> {{element.Branch}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> Branch </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.Branch}} </td>
                     </ng-container>
 
-                    <ng-container matColumnDef="City">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> City </th>
-                      <td mat-cell *matCellDef="let element"> {{element.City}} </td>
+
+                    <ng-container matColumnDef="Attachment">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> Attachment </th>
+                      <td mat-cell *matCellDef="let element" style="width: 10%;">
+                        <mat-icon *ngIf="element.AttachmentName">attach_file</mat-icon>
+                      </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
@@ -442,8 +468,9 @@
                 <!-- </div> -->
               </div>
             </div>
-            <div fxFlex fxLayout="column" *ngIf="ContactsByVOB?.length">
+            <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
+                <!-- <span><strong>Contact Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Contact Table</strong>
                 </div>
@@ -561,7 +588,6 @@
                 </div>
               </div>
             </div>
-
             <!-- <div fxFlex fxLayout="column" *ngIf="ActivityLogsByVOB?.length">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
