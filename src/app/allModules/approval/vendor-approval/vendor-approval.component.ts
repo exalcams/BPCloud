@@ -96,6 +96,7 @@ export class VendorApprovalComponent implements OnInit {
   @ViewChild('activityDate') activityDate: ElementRef;
   @ViewChild('activityTime') activityTime: ElementRef;
   @ViewChild('activityText') activityText: ElementRef;
+  @ViewChild('legalName') legalName: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
   math = Math;
@@ -689,6 +690,26 @@ export class VendorApprovalComponent implements OnInit {
       default: {
         break;
       }
+    }
+  }
+
+  onKey(event): void {
+    this.legalName.nativeElement.focus();
+    const Pincode = event.target.value;
+    if (Pincode) {
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
     }
   }
 
