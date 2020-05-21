@@ -359,20 +359,20 @@
   .mat-icon {
     @include md-icon-size(12px);
   }
-  .mat-input-element:disabled {
-    color: gray !important;
-    background: whitesmoke !important;
-    cursor: not-allowed !important;
-  }
-  #footerCard {
-    position: fixed;
-    height: 50px;
-    box-shadow: 0 -5px 10px 0 rgba(0, 0, 0, 0.16);
-    background-color: #ffffff;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    margin-bottom: 40px;
-    z-index: 100;
-  }
+   .mat-input-element:disabled {
+      color: gray !important;
+      background: whitesmoke !important;
+      cursor: not-allowed !important;
+    }
+    #footerCard {
+      position: fixed;
+      height: 50px;
+      box-shadow: 0 -5px 10px 0 rgba(0, 0, 0, 0.16);
+      background-color: #ffffff;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      margin-bottom: 40px;
+      z-index: 100;
+    }
 }

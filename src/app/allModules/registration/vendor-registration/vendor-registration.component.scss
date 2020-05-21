@@ -52,6 +52,7 @@
       //   }
     }
   }
+
   .borderRight1 {
     border-left: 1px solid black;
     border-radius: 1px;
@@ -137,15 +138,10 @@
   }
   .round {
     @extend .roundCommon;
-    // background-color: white;
+    background-color: white;
     // rgb(187, 185, 185)
     border: 2px solid gray;
     cursor: pointer !important;
-  }
-  .round1 {
-    @extend .roundCommon;
-    background-color: #2ecc71;
-    border: 2px solid #2ecc71;
   }
   .vertical-line {
     width: 3px;
@@ -164,6 +160,11 @@
   }
   .borderRightClass {
     border-right: 1px solid #dce1e9;
+  }
+  .round1 {
+    @extend .roundCommon;
+    background-color: #2ecc71;
+    border: 2px solid #2ecc71;
   }
   .highLight {
     // background: lightgray;
@@ -287,6 +288,7 @@
     background-color: white;
     color: #efb577;
   }
+
   .roundCommon {
     height: 20px;
     width: 20px;
@@ -294,6 +296,7 @@
     border-width: 3px;
     border-style: solid;
   }
+
   .round {
     @extend .roundCommon;
     background-color: white;
