@@ -516,19 +516,21 @@
   }
   .open-round1{
     @extend .tab-round1;
-    border-color: #8ba0f9
+    // border-color: #8ba0f9
+    border-color: #89e075
   }
   .open-round2{
     @extend .tab-round2;
-    border-color: #8ba0f9
+    border-color: #89e075
+    // border-color: #8ba0f9
   }
   .approved-round1{
     @extend .tab-round1;
-    border-color: #89e075
+    border-color: #f8d68f
   }
   .approved-round2{
     @extend .tab-round2;
-    border-color: #89e075
+    border-color: #f8d68f
   }
   .rejected-round1{
     @extend .tab-round1;
