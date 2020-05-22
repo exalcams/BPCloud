@@ -108,6 +108,7 @@ export class VendorRegistrationComponent implements OnInit {
   AllCountries: string[] = [];
   AllStates: string[] = [];
   math = Math;
+  Status: string;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -182,7 +183,9 @@ export class VendorRegistrationComponent implements OnInit {
       'UTTAR PRADESH',
       'WEST BENGAL'
     ];
+    this.Status = '';
   }
+
 
   ngOnInit(): void {
     this.InitializeVendorRegistrationFormGroup();
@@ -644,6 +647,7 @@ export class VendorRegistrationComponent implements OnInit {
       }
     }
   }
+  
   onKey(event): void {
     this.legalName.nativeElement.focus();
     const Pincode = event.target.value;
@@ -978,6 +982,36 @@ export class VendorRegistrationComponent implements OnInit {
     }
     return true;
   }
+
+  getStatusColor(StatusFor: string): string {
+    switch (StatusFor) {
+      case 'Start Here':
+        return this.Status === 'Open' ? 'gray' : this.Status === 'Approved' ? '#efb577' : '#34ad65';
+      case 'Submitted':
+        return this.Status === 'Open' ? 'gray' : this.Status === 'Approved' ? 'gray' : this.Status === 'ASN' ? '#efb577' : '#34ad65';
+      case 'Completed':
+        return this.Status === 'Open' ? 'gray' : this.Status === 'Approved' ? 'gray' : this.Status === 'ASN' ? 'gray' :
+          this.Status === 'Gate' ? '#efb577' : '#34ad65';
+      default:
+        return '';
+    }
+  }
+
+  getTimeline(StatusFor: string): string {
+    switch (StatusFor) {
+      case 'Start Here':
+        return this.Status === 'Open' ? 'white-timeline' : this.Status === 'Approved' ? 'orange-timeline' : 'green-timeline';
+      case 'Submitted':
+        return this.Status === 'Open' ? 'white-timeline' : this.Status === 'Approved' ? 'white-timeline' : this.Status === 'ASN' ? 'orange-timeline' : 'green-timeline';
+      case 'Completed':
+        return this.Status === 'Open' ? 'white-timeline' : this.Status === 'Approved' ? 'white-timeline' : this.Status === 'ASN' ? 'white-timeline' :
+          this.Status === 'Gate' ? 'orange-timeline' : 'green-timeline';
+      default:
+        return '';
+    }
+  }
+
+
   // GetAttachment(fileName: string, file?: File): void {
   //   if (file && file.size) {
   //     const blob = new Blob([file], { type: file.type });

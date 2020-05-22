@@ -58,7 +58,7 @@
 
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput placeholder="Legal Name" formControlName="LegalName">
+                        <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
                           Legal Name is required
@@ -170,7 +170,7 @@
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Pin Code" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)">
+                          (blur)="GetLocationByPincode($event)" (keyup.enter)="onKey($event)">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           Pin Code is required

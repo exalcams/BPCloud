@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MenuApp, AuthenticationDetails } from 'app/models/master';
+import { MenuApp, AuthenticationDetails, VendorUser } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { BPVendorOnBoarding, BPVendorOnBoardingView, BPIdentity, BPBank, BPContact, BPActivityLog } from 'app/models/vendor-registration';
@@ -21,7 +21,6 @@ import { Guid } from 'guid-typescript';
   styleUrls: ['./company-details.component.scss']
 })
 export class CompanyDetailsComponent implements OnInit {
-  SelectedID: number;
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
   SelectedMenuApp: MenuApp;
@@ -39,6 +38,7 @@ export class CompanyDetailsComponent implements OnInit {
   // activityLogFormGroup: FormGroup;
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
+  BPVendorOnBoarding: BPVendorOnBoarding;
   selectID: number;
   SelectedBPVendorOnBoarding: BPVendorOnBoarding;
   SelectedBPVendorOnBoardingView: BPVendorOnBoardingView;
@@ -50,15 +50,17 @@ export class CompanyDetailsComponent implements OnInit {
     'Type',
     'IDNumber',
     'ValidUntil',
+    'Attachment',
     'Action'
   ];
   bankDetailsDisplayedColumns: string[] = [
+    'IFSC',
     'AccountNo',
     'Name',
-    'IFSC',
     'BankName',
-    'Branch',
     'City',
+    'Branch',
+    'Attachment',
     'Action'
   ];
 
@@ -85,6 +87,7 @@ export class CompanyDetailsComponent implements OnInit {
   @ViewChild('iDNumber') iDNumber: ElementRef;
   @ViewChild('validUntil') validUntil: ElementRef;
   @ViewChild('accHolderName') accHolderName: ElementRef;
+  @ViewChild('accountNo') accountNo: ElementRef;
   @ViewChild('ifsc') ifsc: ElementRef;
   @ViewChild('bankName') bankName: ElementRef;
   @ViewChild('branch') branch: ElementRef;
@@ -96,21 +99,21 @@ export class CompanyDetailsComponent implements OnInit {
   @ViewChild('activityDate') activityDate: ElementRef;
   @ViewChild('activityTime') activityTime: ElementRef;
   @ViewChild('activityText') activityText: ElementRef;
+  @ViewChild('legalName') legalName: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
-  math = Math;
-  BPVendorOnBoarding: BPVendorOnBoarding;
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
   AllStates: string[] = [];
+  math = Math;
+  Status: string;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
     private _vendorRegistrationService: VendorRegistrationService,
     private _vendorMasterService: VendorMasterService,
     private _router: Router,
-    private _activatedRoute: ActivatedRoute,
     public snackBar: MatSnackBar,
     private dialog: MatDialog,
     private _formBuilder: FormBuilder
@@ -133,7 +136,7 @@ export class CompanyDetailsComponent implements OnInit {
     // };
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoardingView = new BPVendorOnBoardingView();
-    this.authenticationDetails = new AuthenticationDetails();
+    // this.authenticationDetails = new AuthenticationDetails();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
@@ -179,7 +182,9 @@ export class CompanyDetailsComponent implements OnInit {
       'UTTAR PRADESH',
       'WEST BENGAL'
     ];
+    this.Status = '';
   }
+
 
   ngOnInit(): void {
     const retrievedObject = localStorage.getItem('authorizationData');
@@ -223,6 +228,10 @@ export class CompanyDetailsComponent implements OnInit {
     );
   }
 
+  onArrowBackClick(): void {
+    this._router.navigate(['/auth/login']);
+  }
+
   InitializeVendorRegistrationFormGroup(): void {
     this.vendorRegistrationFormGroup = this._formBuilder.group({
       Name: ['', Validators.required],
@@ -242,7 +251,7 @@ export class CompanyDetailsComponent implements OnInit {
     });
     this.vendorRegistrationFormGroup.get('City').disable();
     this.vendorRegistrationFormGroup.get('State').disable();
-    this.vendorRegistrationFormGroup.get('Country').disable();
+    // this.vendorRegistrationFormGroup.get('Country').disable();
   }
 
   InitializeIdentificationFormGroup(): void {
@@ -294,7 +303,8 @@ export class CompanyDetailsComponent implements OnInit {
     });
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
-    // this.fileToUpload = null;
+    this.fileToUpload = null;
+    this.fileToUploadList = [];
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
@@ -334,14 +344,17 @@ export class CompanyDetailsComponent implements OnInit {
     this.IdentificationsByVOB = [];
     this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
   }
+
   ClearBankDetailsDataSource(): void {
     this.BanksByVOB = [];
     this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
   }
+
   ClearContactDataSource(): void {
     this.ContactsByVOB = [];
     this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
+
   // ClearActivityLogDataSource(): void {
   //   this.ActivityLogsByVOB = [];
   //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
@@ -371,61 +384,46 @@ export class CompanyDetailsComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Phone2').updateValueAndValidity();
     this.IsDisplayPhone2 = true;
   }
+
   DisplayEmail2(): void {
     this.vendorRegistrationFormGroup.get('Email2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
     this.vendorRegistrationFormGroup.get('Email2').updateValueAndValidity();
     this.IsDisplayEmail2 = true;
   }
 
-  GetRegisteredVendorOnBoardings(): void {
-    this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.GetRegisteredVendorOnBoardings().subscribe(
-      (data) => {
-        this.IsProgressBarVisibile = false;
-        this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
-        if (this.AllVendorOnBoardings && this.AllVendorOnBoardings.length) {
-          this.loadSelectedBPVendorOnBoarding(this.AllVendorOnBoardings[0]);
-        }
-      },
-      (err) => {
-        console.error(err);
-        this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-      }
-    );
-  }
-
   loadSelectedBPVendorOnBoarding(selectedBPVendorOnBoarding: BPVendorOnBoarding): void {
     this.ResetControl();
     this.SelectedBPVendorOnBoarding = selectedBPVendorOnBoarding;
     this.selectID = selectedBPVendorOnBoarding.TransID;
-    // this.EnableAllVendorOnBoardingTypes();
+    this.EnableAllVendorOnBoardingTypes();
     this.SetBPVendorOnBoardingValues();
     this.GetBPVendorOnBoardingSubItems();
   }
+
   typeSelected(event): void {
     const selectedType = event.value;
     if (event.value) {
       this.SelectedBPVendorOnBoarding.Type = event.value;
     }
   }
+
   applyFilter(filterValue: string): void {
     this.identificationDataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  // EnableAllVendorOnBoardingTypes(): void {
-  //   Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
-  //     this.vendorRegistrationFormGroup.get(key).enable();
-  //   });
-  // }
+  EnableAllVendorOnBoardingTypes(): void {
+    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
+      this.vendorRegistrationFormGroup.get(key).enable();
+    });
+  }
+
   SetBPVendorOnBoardingValues(): void {
     this.vendorRegistrationFormGroup.get('Name').patchValue(this.SelectedBPVendorOnBoarding.Name);
     this.vendorRegistrationFormGroup.get('Type').patchValue(this.SelectedBPVendorOnBoarding.Type);
     this.vendorRegistrationFormGroup.get('Role').patchValue(this.SelectedBPVendorOnBoarding.Role);
     this.vendorRegistrationFormGroup.get('LegalName').patchValue(this.SelectedBPVendorOnBoarding.LegalName);
     this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(this.SelectedBPVendorOnBoarding.AddressLine1);
-    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.SelectedBPVendorOnBoarding.AddressLine2);
-    this.vendorRegistrationFormGroup.get('PinCode').patchValue(this.SelectedBPVendorOnBoarding.PinCode);
+    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.SelectedBPVendorOnBoarding.AddressLine1);
     this.vendorRegistrationFormGroup.get('City').patchValue(this.SelectedBPVendorOnBoarding.City);
     this.vendorRegistrationFormGroup.get('State').patchValue(this.SelectedBPVendorOnBoarding.State);
     this.vendorRegistrationFormGroup.get('Country').patchValue(this.SelectedBPVendorOnBoarding.Country);
@@ -507,13 +505,17 @@ export class CompanyDetailsComponent implements OnInit {
   //   );
   // }
 
-
   AddIdentificationToTable(): void {
     if (this.identificationFormGroup.valid) {
       const bPIdentity = new BPIdentity();
       bPIdentity.Type = this.identificationFormGroup.get('Type').value;
       bPIdentity.IDNumber = this.identificationFormGroup.get('IDNumber').value;
       bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+      if (this.fileToUpload) {
+        bPIdentity.AttachmentName = this.fileToUpload.name;
+        this.fileToUploadList.push(this.fileToUpload);
+        this.fileToUpload = null;
+      }
       if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
         this.IdentificationsByVOB = [];
       }
@@ -534,6 +536,11 @@ export class CompanyDetailsComponent implements OnInit {
       bPBank.BankName = this.bankDetailsFormGroup.get('BankName').value;
       bPBank.Branch = this.bankDetailsFormGroup.get('Branch').value;
       bPBank.City = this.bankDetailsFormGroup.get('City').value;
+      if (this.fileToUpload) {
+        bPBank.AttachmentName = this.fileToUpload.name;
+        this.fileToUploadList.push(this.fileToUpload);
+        this.fileToUpload = null;
+      }
       if (!this.BanksByVOB || !this.BanksByVOB.length) {
         this.BanksByVOB = [];
       }
@@ -544,7 +551,6 @@ export class CompanyDetailsComponent implements OnInit {
       this.ShowValidationErrors(this.bankDetailsFormGroup);
     }
   }
-
 
   AddContactToTable(): void {
     if (this.contactFormGroup.valid) {
@@ -594,16 +600,18 @@ export class CompanyDetailsComponent implements OnInit {
     this.AddBankToTable();
     return true;
   }
+
   ContactEnterKeyDown(): boolean {
     this.email.nativeElement.blur();
     this.AddContactToTable();
     return true;
   }
-  ActivityLogEnterKeyDown(): boolean {
-    this.activityText.nativeElement.blur();
-    // this.AddActivityLogToTable();
-    return true;
-  }
+
+  // ActivityLogEnterKeyDown(): boolean {
+  //   this.activityText.nativeElement.blur();
+  //   this.AddActivityLogToTable();
+  //   return true;
+  // }
 
   keytab(elementName): void {
     switch (elementName) {
@@ -613,6 +621,10 @@ export class CompanyDetailsComponent implements OnInit {
       }
       case 'validUntil': {
         this.validUntil.nativeElement.focus();
+        break;
+      }
+      case 'accountNo': {
+        this.accountNo.nativeElement.focus();
         break;
       }
       case 'accHolderName': {
@@ -669,6 +681,25 @@ export class CompanyDetailsComponent implements OnInit {
     }
   }
 
+  onKey(event): void {
+    this.legalName.nativeElement.focus();
+    const Pincode = event.target.value;
+    if (Pincode) {
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
 
   RemoveIdentificationFromTable(bPIdentity: BPIdentity): void {
     const index: number = this.IdentificationsByVOB.indexOf(bPIdentity);
@@ -715,14 +746,12 @@ export class CompanyDetailsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       result => {
         if (result) {
-          if (Actiontype === 'Approve') {
-            this.ApproveVendor();
-          } else if (Actiontype === 'Reject') {
-            this.RejectVendor();
-          } else if (Actiontype === 'Delete') {
-            this.DeleteVendorOnBoarding();
+          if (Actiontype === 'Register') {
+            this.CreateVendorOnBoarding();
           } else if (Actiontype === 'Update') {
             this.UpdateVendorOnBoarding();
+          } else if (Actiontype === 'Delete') {
+            this.DeleteVendorOnBoarding();
           }
         }
       });
@@ -735,6 +764,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.SelectedBPVendorOnBoarding.LegalName = this.SelectedBPVendorOnBoardingView.LegalName = this.vendorRegistrationFormGroup.get('LegalName').value;
     this.SelectedBPVendorOnBoarding.AddressLine1 = this.SelectedBPVendorOnBoardingView.AddressLine1 = this.vendorRegistrationFormGroup.get('AddressLine1').value;
     this.SelectedBPVendorOnBoarding.AddressLine2 = this.SelectedBPVendorOnBoardingView.AddressLine2 = this.vendorRegistrationFormGroup.get('AddressLine2').value;
+    this.SelectedBPVendorOnBoarding.PinCode = this.SelectedBPVendorOnBoardingView.PinCode = this.vendorRegistrationFormGroup.get('PinCode').value;
     this.SelectedBPVendorOnBoarding.City = this.SelectedBPVendorOnBoardingView.City = this.vendorRegistrationFormGroup.get('City').value;
     this.SelectedBPVendorOnBoarding.State = this.SelectedBPVendorOnBoardingView.State = this.vendorRegistrationFormGroup.get('State').value;
     this.SelectedBPVendorOnBoarding.Country = this.SelectedBPVendorOnBoardingView.Country = this.vendorRegistrationFormGroup.get('Country').value;
@@ -792,36 +822,68 @@ export class CompanyDetailsComponent implements OnInit {
     // this.GetBPVendorOnBoardingValues();
     // this.GetBPVendorOnBoardingSubItemValues();
     // this.SelectedBPVendorOnBoardingView.CreatedBy = this.authenticationDetails.userID.toString();
+    const vendorUser: VendorUser = new VendorUser();
+    vendorUser.Email = this.SelectedBPVendorOnBoardingView.Email1;
+    vendorUser.Phone = this.SelectedBPVendorOnBoardingView.Phone1;
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.CreateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
-        this.SelectedBPVendorOnBoarding.TransID = +data;
-        this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-        this.IsProgressBarVisibile = false;
-        // this.GetRegisteredVendorOnBoardings();
+        this.SelectedBPVendorOnBoarding.TransID = +(data as BPVendorOnBoarding).TransID;
+        if (this.fileToUploadList && this.fileToUploadList.length) {
+          this._vendorRegistrationService.AddUserAttachment(this.SelectedBPVendorOnBoarding.TransID, this.SelectedBPVendorOnBoarding.Email1, this.fileToUploadList).subscribe(
+            (dat) => {
+              this._masterService.CreateVendorUser(vendorUser).subscribe(
+                (da) => {
+                  this.ResetControl();
+                  this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                  this.IsProgressBarVisibile = false;
+                  this._router.navigate(['/auth/login']);
+                },
+                (err) => {
+                  this.showErrorNotificationSnackBar(err);
+                });
+            },
+            (err) => {
+              this.showErrorNotificationSnackBar(err);
+            }
+          );
+        } else {
+          this._masterService.CreateVendorUser(vendorUser).subscribe(
+            (da) => {
+              this.ResetControl();
+              this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+              this.IsProgressBarVisibile = false;
+              this._router.navigate(['/auth/login']);
+            },
+            (err) => {
+              this.showErrorNotificationSnackBar(err);
+            });
+        }
       },
       (err) => {
-        console.error(err);
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-        this.IsProgressBarVisibile = false;
+        this.showErrorNotificationSnackBar(err);
       }
     );
+  }
 
+  showErrorNotificationSnackBar(err: any): void {
+    console.error(err);
+    this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+    this.IsProgressBarVisibile = false;
   }
 
   UpdateVendorOnBoarding(): void {
     // this.GetBPVendorOnBoardingValues();
     // this.GetBPVendorOnBoardingSubItemValues();
     this.SelectedBPVendorOnBoardingView.TransID = this.SelectedBPVendorOnBoarding.TransID;
-    // this.SelectedBPVendorOnBoardingView.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedBPVendorOnBoardingView.ModifiedBy = this.authenticationDetails.UserID.toString();
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.UpdateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
         this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor registration updated successfully', SnackBarStatus.success);
+        this.notificationSnackBarComponent.openSnackBar('Vendor updated successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        // this.GetRegisteredVendorOnBoardings();
+        this.GetVendorOnBoardingsByEmailID();
       },
       (err) => {
         console.error(err);
@@ -839,9 +901,9 @@ export class CompanyDetailsComponent implements OnInit {
       (data) => {
         // console.log(data);
         this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor deleted successfully', SnackBarStatus.success);
+        this.notificationSnackBarComponent.openSnackBar('BPVendorOnBoarding deleted successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        // this.GetRegisteredVendorOnBoardings();
+        // this.GetAllVendorOnBoardings();
       },
       (err) => {
         console.error(err);
@@ -849,67 +911,6 @@ export class CompanyDetailsComponent implements OnInit {
         this.IsProgressBarVisibile = false;
       }
     );
-  }
-
-  ApproveVendor(): void {
-    // this.GetBPVendorOnBoardingValues();
-    // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
-    this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.ApproveVendor(this.SelectedBPVendorOnBoarding).subscribe(
-      (data) => {
-        // console.log(data);
-        this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor approved successfully', SnackBarStatus.success);
-        this.IsProgressBarVisibile = false;
-        this.GetRegisteredVendorOnBoardings();
-      },
-      (err) => {
-        console.error(err);
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-        this.IsProgressBarVisibile = false;
-      }
-    );
-  }
-
-  RejectVendor(): void {
-    // this.GetBPVendorOnBoardingValues();
-    // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
-    this.IsProgressBarVisibile = true;
-    this._vendorRegistrationService.RejectVendor(this.SelectedBPVendorOnBoarding).subscribe(
-      (data) => {
-        // console.log(data);
-        this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor rejected successfully', SnackBarStatus.success);
-        this.IsProgressBarVisibile = false;
-        this.GetRegisteredVendorOnBoardings();
-      },
-      (err) => {
-        console.error(err);
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-        this.IsProgressBarVisibile = false;
-      }
-    );
-  }
-
-  SaveClicked(): void {
-    if (this.vendorRegistrationFormGroup.valid) {
-      // const file: File = this.fileToUpload;
-      this.GetBPVendorOnBoardingValues();
-      this.GetBPVendorOnBoardingSubItemValues();
-      // if (this.SelectedBPVendorOnBoarding.Type.toLocaleLowerCase() === 'ui') {
-      //   if (this.SelectedBPVendorOnBoardingView.bPIdentities && this.SelectedBPVendorOnBoardingView.bPIdentities.length &&
-      //     this.SelectedBPVendorOnBoardingView.bPIdentities.length > 0) {
-      //     this.SetActionToOpenConfirmation();
-      //   } else {
-      //     this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity table', SnackBarStatus.danger);
-      //   }
-      // } else {
-      //   this.SetActionToOpenConfirmation();
-      // }
-      this.SetActionToOpenConfirmation('Update');
-    } else {
-      this.ShowValidationErrors(this.vendorRegistrationFormGroup);
-    }
   }
 
   ShowValidationErrors(formGroup: FormGroup): void {
@@ -941,28 +942,45 @@ export class CompanyDetailsComponent implements OnInit {
 
   }
 
-  ApproveClicked(): void {
+  SaveClicked(): void {
     if (this.vendorRegistrationFormGroup.valid) {
+      // const file: File = this.fileToUpload;
       this.GetBPVendorOnBoardingValues();
       this.GetBPVendorOnBoardingSubItemValues();
-      this.SetActionToOpenConfirmation('Approve');
-    } else {
-      this.ShowValidationErrors(this.vendorRegistrationFormGroup);
-    }
-  }
-  RejectClicked(): void {
-    if (this.vendorRegistrationFormGroup.valid) {
-      this.GetBPVendorOnBoardingValues();
-      this.GetBPVendorOnBoardingSubItemValues();
-      this.SetActionToOpenConfirmation('Reject');
+      // if (choice.toLowerCase() === 'sumbit') {
+      //   if (this.IdentificationsByVOB.length > 0 && this.BanksByVOB.length > 0 && this.ContactsByVOB.length > 0) {
+      //     this.SetActionToOpenConfirmation();
+      //   }
+      //   else {
+      //     this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity,BPBank,BPContact table', SnackBarStatus.danger);
+      //   }
+      // }
+      // else {
+      //   this.SetActionToOpenConfirmation();
+      // }
+      this.SetActionToOpenConfirmation();
+      // if (this.SelectedBPVendorOnBoarding.Type.toLocaleLowerCase() === 'ui') {
+      //   if (this.SelectedBPVendorOnBoardingView.bPIdentities && this.SelectedBPVendorOnBoardingView.bPIdentities.length &&
+      //     this.SelectedBPVendorOnBoardingView.bPIdentities.length > 0) {
+      //     this.SetActionToOpenConfirmation();
+      //   } else {
+      //     this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity table', SnackBarStatus.danger);
+      //   }
+      // } else {
+      //   this.SetActionToOpenConfirmation();
+      // }
     } else {
       this.ShowValidationErrors(this.vendorRegistrationFormGroup);
     }
   }
 
-  SetActionToOpenConfirmation(actiontype: string): void {
+  SetActionToOpenConfirmation(): void {
     if (this.SelectedBPVendorOnBoarding.TransID) {
-      const Actiontype = actiontype;
+      const Actiontype = 'Update';
+      const Catagory = 'Vendor';
+      this.OpenConfirmationDialog(Actiontype, Catagory);
+    } else {
+      const Actiontype = 'Register';
       const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     }
@@ -980,10 +998,10 @@ export class CompanyDetailsComponent implements OnInit {
     // }
   }
 
-  handleFileBPIdentity(evt): void {
+  handleFileInput(evt): void {
     if (evt.target.files && evt.target.files.length > 0) {
       this.fileToUpload = evt.target.files[0];
-      this.fileToUploadList.push(this.fileToUpload);
+      // this.fileToUploadList.push(this.fileToUpload);
     }
   }
 
@@ -998,6 +1016,36 @@ export class CompanyDetailsComponent implements OnInit {
     }
     return true;
   }
+
+  getStatusColor(StatusFor: string): string {
+    switch (StatusFor) {
+      case 'Start Here':
+        return this.Status === 'Open' ? 'gray' : this.Status === 'Approved' ? '#efb577' : '#34ad65';
+      case 'Submitted':
+        return this.Status === 'Open' ? 'gray' : this.Status === 'Approved' ? 'gray' : this.Status === 'ASN' ? '#efb577' : '#34ad65';
+      case 'Completed':
+        return this.Status === 'Open' ? 'gray' : this.Status === 'Approved' ? 'gray' : this.Status === 'ASN' ? 'gray' :
+          this.Status === 'Gate' ? '#efb577' : '#34ad65';
+      default:
+        return '';
+    }
+  }
+
+  getTimeline(StatusFor: string): string {
+    switch (StatusFor) {
+      case 'Start Here':
+        return this.Status === 'Open' ? 'white-timeline' : this.Status === 'Approved' ? 'orange-timeline' : 'green-timeline';
+      case 'Submitted':
+        return this.Status === 'Open' ? 'white-timeline' : this.Status === 'Approved' ? 'white-timeline' : this.Status === 'ASN' ? 'orange-timeline' : 'green-timeline';
+      case 'Completed':
+        return this.Status === 'Open' ? 'white-timeline' : this.Status === 'Approved' ? 'white-timeline' : this.Status === 'ASN' ? 'white-timeline' :
+          this.Status === 'Gate' ? 'orange-timeline' : 'green-timeline';
+      default:
+        return '';
+    }
+  }
+
+
   // GetAttachment(fileName: string, file?: File): void {
   //   if (file && file.size) {
   //     const blob = new Blob([file], { type: file.type });
