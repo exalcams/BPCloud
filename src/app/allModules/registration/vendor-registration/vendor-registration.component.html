@@ -249,7 +249,7 @@
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Pin Code" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)" (keyup.enter)="onKey($event)">
+                          (blur)="GetLocationByPincode($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           Pin Code is required
@@ -316,7 +316,10 @@
                   [formGroup]="identificationFormGroup">
                   <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
-                      <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
+                      <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
+                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
+                        <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
+                      </mat-select>
                       <mat-error
                         *ngIf="identificationFormGroup.get('Type').touched && identificationFormGroup.get('Type').hasError('required')">
                         Type is required
@@ -324,14 +327,18 @@
                     </mat-form-field>
                   </div>
                   <div fxFlex="25">
+                    <!-- (keyup.enter)="keytab('validUntil')" -->
                     <mat-form-field class="px-40" style="width: 100%;">
-                      <input matInput placeholder="ID" formControlName="IDNumber" (keyup.enter)="keytab('validUntil')"
-                        #iDNumber>
+                      <input matInput placeholder="ID" formControlName="IDNumber"
+                        (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
                       <mat-error
                         *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
                         ID is required
                       </mat-error>
                     </mat-form-field>
+                    <div class="ValidityError" *ngIf="IdentityValidity">
+                      Invalid ID
+                    </div>
                   </div>
                   <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
@@ -393,8 +400,7 @@
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="identificationDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;" matRipple
-                    style=" cursor: pointer;">
+                  <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;" style=" cursor: pointer;">
                   </tr>
                 </table>
                 <div flex *ngIf="IdentificationsByVOB?.length">
@@ -414,8 +420,8 @@
                   <div fxFlex fxLayout="row">
                     <div fxFlex="10">
                       <mat-form-field class="pl-20 pr-16" style="width: 100%;">
-                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc
-                          (keyup.enter)="keytab('accountNo')">
+                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc (blur)="GetBankByIFSC($event)"
+                          (keyup.enter)="OnIFSCKeyEnter($event)">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
                           IFSC is required
@@ -542,8 +548,7 @@
                     </ng-container>
 
                     <tr mat-header-row *matHeaderRowDef="bankDetailsDisplayedColumns;sticky: true"></tr>
-                    <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;" matRipple
-                      style=" cursor: pointer;">
+                    <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;" style=" cursor: pointer;">
                     </tr>
                   </table>
                 </div>
@@ -664,8 +669,7 @@
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="contactDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;" matRipple
-                    style=" cursor: pointer;">
+                  <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;" style=" cursor: pointer;">
                   </tr>
                 </table>
                 <div flex *ngIf="ContactsByVOB?.length">
@@ -769,7 +773,7 @@
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="activityLogDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: activityLogDisplayedColumns;" matRipple
+                  <tr mat-row *matRowDef="let row; columns: activityLogDisplayedColumns;"
                     style=" cursor: pointer;">
                   </tr>
                 </table>

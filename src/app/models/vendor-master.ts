@@ -24,6 +24,7 @@ export class CBPBank extends CommonClass {
     BankName: string;
     BankCity: string;
     BankCountry: string;
+    BankBranch: string;
 }
 export class CBPTitle extends CommonClass {
     Title: string;
@@ -52,3 +53,13 @@ export class CBPLocation {
     State: string;
     Country: string;
 }
+export class CBPIdentity {
+    ID: number;
+    Text: string;
+    Format: string;
+    DocReq: string;
+    ExpDateReq: Date;
+    Country: string;
+}
+
+

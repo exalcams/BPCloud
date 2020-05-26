@@ -15,7 +15,7 @@ import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPConta
 import { AttachmentDetails } from 'app/models/task';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
-import { CBPLocation } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank } from 'app/models/vendor-master';
 
 @Component({
   selector: 'vendor-registration',
@@ -39,6 +39,8 @@ export class VendorRegistrationComponent implements OnInit {
   contactFormGroup: FormGroup;
   // activityLogFormGroup: FormGroup;
   searchText = '';
+  IdentityValidity: boolean;
+  IdentityType: string;
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   selectID: number;
   SelectedBPVendorOnBoarding: BPVendorOnBoarding;
@@ -103,6 +105,7 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('legalName') legalName: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
+  AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
@@ -142,8 +145,10 @@ export class VendorRegistrationComponent implements OnInit {
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
+    this.IdentityValidity = false;
     this.AllRoles = ['Vendor', 'Customer'];
     this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
+    this.AllIdentityTypes = ['Pancard', 'GSTIN', 'Adhaar'];
     this.AllCountries = ['India'];
     this.AllStates = [
       'ANDAMAN AND NICOBAR ISLANDS',
@@ -288,18 +293,21 @@ export class VendorRegistrationComponent implements OnInit {
       this.identificationFormGroup.get(key).markAsUntouched();
     });
   }
+
   ClearBankDetailsFormGroup(): void {
     this.bankDetailsFormGroup.reset();
     Object.keys(this.bankDetailsFormGroup.controls).forEach(key => {
       this.bankDetailsFormGroup.get(key).markAsUntouched();
     });
   }
+
   ClearContactFormGroup(): void {
     this.contactFormGroup.reset();
     Object.keys(this.contactFormGroup.controls).forEach(key => {
       this.contactFormGroup.get(key).markAsUntouched();
     });
   }
+
   // ClearActivityLogFormGroup(): void {
   //   this.activityLogFormGroup.reset();
   //   Object.keys(this.activityLogFormGroup.controls).forEach(key => {
@@ -343,6 +351,180 @@ export class VendorRegistrationComponent implements OnInit {
           console.error(err);
         }
       );
+    }
+  }
+
+  ValidateIdentityByType(IdentityType: any, ID: any): void {
+    if (IdentityType) {
+      this._vendorMasterService.ValidateIdentityByType(IdentityType, ID).subscribe(
+        (data) => {
+          const identity = data as CBPIdentity;
+          if (identity) {
+            this.IdentityValidity = false;
+            // if (status === 'Matched') {
+            //   this.IdentityValidity = false;
+            // }
+            // else {
+            //   this.IdentityValidity = true;
+            // }
+          } else {
+            this.IdentityValidity = true;
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  GetBankByIFSC(event): void {
+    const IFSC = event.target.value;
+    if (IFSC) {
+      this._vendorMasterService.GetBankByIFSC(IFSC).subscribe(
+        (data) => {
+          const bank = data as CBPBank;
+          if (bank) {
+            this.bankDetailsFormGroup.get('BankName').patchValue(bank.BankName);
+            this.bankDetailsFormGroup.get('Branch').patchValue(bank.BankBranch);
+            this.bankDetailsFormGroup.get('City').patchValue(bank.BankCity);
+          }
+          else {
+            this.bankDetailsFormGroup.get('BankName').patchValue('');
+            this.bankDetailsFormGroup.get('Branch').patchValue('');
+            this.bankDetailsFormGroup.get('City').patchValue('');
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  OnPincodeKeyEnter(event): void {
+    this.legalName.nativeElement.focus();
+    const Pincode = event.target.value;
+    if (Pincode) {
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  OnIFSCKeyEnter(event): void {
+    this.ifsc.nativeElement.focus();
+    const IFSC = event.target.value;
+    if (IFSC) {
+      this._vendorMasterService.GetBankByIFSC(IFSC).subscribe(
+        (data) => {
+          const bank = data as CBPBank;
+          if (bank) {
+            this.bankDetailsFormGroup.get('BankName').patchValue(bank.BankName);
+            this.bankDetailsFormGroup.get('Branch').patchValue(bank.BankBranch);
+            this.bankDetailsFormGroup.get('City').patchValue(bank.BankCity);
+          }
+          else {
+            this.bankDetailsFormGroup.get('BankName').patchValue('');
+            this.bankDetailsFormGroup.get('Branch').patchValue('');
+            this.bankDetailsFormGroup.get('City').patchValue('');
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  OnIdentityClick(IdentityType: any): void {
+    this.IdentityType = IdentityType;
+  }
+
+  OnIdentityKeyEnter(event): void {
+    this.IdentityType = this.identificationFormGroup.get('Type').value;
+    this.validUntil.nativeElement.focus();
+    const ID = event.target.value;
+    if (ID) {
+      this.ValidateIdentityByType(this.IdentityType, ID);
+    }
+  }
+
+  keytab(elementName): void {
+    switch (elementName) {
+      case 'iDNumber': {
+        this.iDNumber.nativeElement.focus();
+        break;
+      }
+      case 'validUntil': {
+        this.validUntil.nativeElement.focus();
+        break;
+      }
+      case 'accountNo': {
+        this.accountNo.nativeElement.focus();
+        break;
+      }
+      case 'accHolderName': {
+        this.accHolderName.nativeElement.focus();
+        break;
+      }
+      case 'ifsc': {
+        this.ifsc.nativeElement.focus();
+        break;
+      }
+      case 'bankName': {
+        this.bankName.nativeElement.focus();
+        break;
+      }
+      case 'branch': {
+        this.branch.nativeElement.focus();
+        break;
+      }
+      case 'bankCity': {
+        this.bankCity.nativeElement.focus();
+        break;
+      }
+      case 'department': {
+        this.department.nativeElement.focus();
+        break;
+      }
+      case 'title': {
+        this.title.nativeElement.focus();
+        break;
+      }
+      case 'mobile': {
+        this.mobile.nativeElement.focus();
+        break;
+      }
+      case 'email': {
+        this.email.nativeElement.focus();
+        break;
+      }
+      case 'activityDate': {
+        this.activityDate.nativeElement.focus();
+        break;
+      }
+      case 'activityTime': {
+        this.activityTime.nativeElement.focus();
+        break;
+      }
+      case 'activityText': {
+        this.activityText.nativeElement.focus();
+        break;
+      }
+      default: {
+        break;
+      }
     }
   }
 
@@ -580,94 +762,6 @@ export class VendorRegistrationComponent implements OnInit {
   //   return true;
   // }
 
-  keytab(elementName): void {
-    switch (elementName) {
-      case 'iDNumber': {
-        this.iDNumber.nativeElement.focus();
-        break;
-      }
-      case 'validUntil': {
-        this.validUntil.nativeElement.focus();
-        break;
-      }
-      case 'accountNo': {
-        this.accountNo.nativeElement.focus();
-        break;
-      }
-      case 'accHolderName': {
-        this.accHolderName.nativeElement.focus();
-        break;
-      }
-      case 'ifsc': {
-        this.ifsc.nativeElement.focus();
-        break;
-      }
-      case 'bankName': {
-        this.bankName.nativeElement.focus();
-        break;
-      }
-      case 'branch': {
-        this.branch.nativeElement.focus();
-        break;
-      }
-      case 'bankCity': {
-        this.bankCity.nativeElement.focus();
-        break;
-      }
-      case 'department': {
-        this.department.nativeElement.focus();
-        break;
-      }
-      case 'title': {
-        this.title.nativeElement.focus();
-        break;
-      }
-      case 'mobile': {
-        this.mobile.nativeElement.focus();
-        break;
-      }
-      case 'email': {
-        this.email.nativeElement.focus();
-        break;
-      }
-      case 'activityDate': {
-        this.activityDate.nativeElement.focus();
-        break;
-      }
-      case 'activityTime': {
-        this.activityTime.nativeElement.focus();
-        break;
-      }
-      case 'activityText': {
-        this.activityText.nativeElement.focus();
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-  
-  onKey(event): void {
-    this.legalName.nativeElement.focus();
-    const Pincode = event.target.value;
-    if (Pincode) {
-      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
-        (data) => {
-          const loc = data as CBPLocation;
-          if (loc) {
-            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
-            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
-            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
-          }
-        },
-        (err) => {
-          console.error(err);
-        }
-      );
-    }
-  }
-
   RemoveIdentificationFromTable(bPIdentity: BPIdentity): void {
     const index: number = this.IdentificationsByVOB.indexOf(bPIdentity);
     if (index > -1) {
@@ -683,7 +777,6 @@ export class VendorRegistrationComponent implements OnInit {
     }
     this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
   }
-
 
   RemoveContactFromTable(bPContact: BPContact): void {
     const index: number = this.ContactsByVOB.indexOf(bPContact);
@@ -783,7 +876,6 @@ export class VendorRegistrationComponent implements OnInit {
   //     this.SelectedBPVendorOnBoardingView.bPActivityLogs.push(x);
   //   });
   // }
-
 
   CreateVendorOnBoarding(): void {
     // this.GetBPVendorOnBoardingValues();
