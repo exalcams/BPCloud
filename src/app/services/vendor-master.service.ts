@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { CBPLocation } from 'app/models/vendor-master';
+import { CBPLocation, CBPBank, CBPIdentity } from 'app/models/vendor-master';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -26,4 +26,20 @@ export class VendorMasterService {
     return this._httpClient.get<CBPLocation>(`${this.baseAddress}vendormasterapi/Master/GetLocationByPincode?Pincode=${Pincode}`)
       .pipe(catchError(this.errorHandler));
   }
+
+  GetBankByIFSC(IFSC: string): Observable<CBPBank | string> {
+    return this._httpClient.get<CBPBank>(`${this.baseAddress}vendormasterapi/Master/GetBankByIFSC?IFSC=${IFSC}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetIdentityByType(IdentityType: string): Observable<CBPIdentity | string> {
+    return this._httpClient.get<CBPIdentity>(`${this.baseAddress}vendormasterapi/Master/GetIdentityByType?IdentityType=${IdentityType}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  ValidateIdentityByType(IdentityType: string, ID: string): Observable<CBPIdentity | string> {
+    return this._httpClient.get<CBPIdentity>(`${this.baseAddress}vendormasterapi/Master/ValidateIdentityByType?IdentityType=${IdentityType}&ID=${ID}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
 }

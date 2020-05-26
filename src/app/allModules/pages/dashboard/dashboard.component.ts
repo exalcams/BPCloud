@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit {
     MenuItems: string[];
     notificationSnackBarComponent: NotificationSnackBarComponent;
     IsProgressBarVisibile: boolean;
-    AllUserWithRoles: UserWithRole[] = [];
+    // AllUserWithRoles: UserWithRole[] = [];
     VendorOnBoardingsDisplayedColumns: string[] = [
         'Name',
         'LegalName',
@@ -85,7 +85,7 @@ export class DashboardComponent implements OnInit {
             this.GetAllOpenVendorOnBoardings();
             this.GetAllApprovedVendorOnBoardingsCount();
             this.GetAllRejectedVendorOnBoardingsCount();
-            this.GetAllUserWithRoles();
+            // this.GetAllUserWithRoles();
 
         } else {
             this._router.navigate(['/auth/login']);
@@ -147,7 +147,10 @@ export class DashboardComponent implements OnInit {
                     this.VendorOnBoardingsDataSource.sort = this.sort;
                 }
                 else {
+                    this.OpenCount = 0;
                     this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                    this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                    this.VendorOnBoardingsDataSource.sort = this.sort;
                 }
             },
             (err) => {
@@ -164,10 +167,18 @@ export class DashboardComponent implements OnInit {
             (data) => {
                 this.IsProgressBarVisibile = false;
                 this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
-                this.ApprovedCount = this.AllVendorOnBoardings.length;
-                this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
-                this.VendorOnBoardingsDataSource.paginator = this.paginator;
-                this.VendorOnBoardingsDataSource.sort = this.sort;
+                if (this.AllVendorOnBoardings && this.AllVendorOnBoardings.length > 0) {
+                    this.ApprovedCount = this.AllVendorOnBoardings.length;
+                    this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                    this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                    this.VendorOnBoardingsDataSource.sort = this.sort;
+                }
+                else {
+                    this.ApprovedCount = 0;
+                    this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                    this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                    this.VendorOnBoardingsDataSource.sort = this.sort;
+                }
             },
             (err) => {
                 console.error(err);
@@ -183,10 +194,18 @@ export class DashboardComponent implements OnInit {
             (data) => {
                 this.IsProgressBarVisibile = false;
                 this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
-                this.RejectedCount = this.AllVendorOnBoardings.length;
-                this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
-                this.VendorOnBoardingsDataSource.paginator = this.paginator;
-                this.VendorOnBoardingsDataSource.sort = this.sort;
+                if (this.AllVendorOnBoardings && this.AllVendorOnBoardings.length > 0) {
+                    this.RejectedCount = this.AllVendorOnBoardings.length;
+                    this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                    this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                    this.VendorOnBoardingsDataSource.sort = this.sort;
+                }
+                else {
+                    this.RejectedCount = 0;
+                    this.VendorOnBoardingsDataSource = new MatTableDataSource(this.AllVendorOnBoardings);
+                    this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                    this.VendorOnBoardingsDataSource.sort = this.sort;
+                }
             },
             (err) => {
                 console.error(err);
@@ -241,16 +260,16 @@ export class DashboardComponent implements OnInit {
         );
     }
 
-    GetAllUserWithRoles(): void {
-        this._masterService.GetAllUsers().subscribe(
-            (data) => {
-                this.AllUserWithRoles = <UserWithRole[]>data;
-            },
-            (err) => {
-                console.log(err);
-            }
-        );
-    }
+    // GetAllUserWithRoles(): void {
+    //     this._masterService.GetAllUsers().subscribe(
+    //         (data) => {
+    //             this.AllUserWithRoles = <UserWithRole[]>data;
+    //         },
+    //         (err) => {
+    //             console.log(err);
+    //         }
+    //     );
+    // }
 
     ReviewAndApproveVendor(bPVendorOnBoarding: BPVendorOnBoarding): void {
         this._router.navigate([
@@ -258,53 +277,5 @@ export class DashboardComponent implements OnInit {
             bPVendorOnBoarding.TransID
         ]);
     }
-
-
-
-    // formatSubtitle = (): string => {
-    //     return 'Effiency';
-    // }
-    // getStatusColor(element: BPVendorOnBoarding, StatusFor: string): string {
-    //     switch (StatusFor) {
-    //         case 'ASN':
-    //             return element.Status === 'Open' ? 'gray' : element.Status === 'BPVendorOnBoarding' ? '#efb577' : '#34ad65';
-    //         case 'Gate':
-    //             return element.Status === 'Open' ? 'gray' : element.Status === 'BPVendorOnBoarding' ? 'gray' : element.Status === 'ASN' ? '#efb577' : '#34ad65';
-    //         case 'GRN':
-    //             return element.Status === 'Open' ? 'gray' : element.Status === 'BPVendorOnBoarding' ? 'gray' : element.Status === 'ASN' ? 'gray' :
-    //                 element.Status === 'Gate' ? '#efb577' : '#34ad65';
-    //         default:
-    //             return '';
-    //     }
-    // }
-    // getTimeline(element: BPVendorOnBoarding, StatusFor: string): string {
-    //     switch (StatusFor) {
-    //         case 'ASN':
-    //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'orange-timeline' : 'green-timeline';
-    //         case 'Gate':
-    // tslint:disable-next-line:max-line-length
-    //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'orange-timeline' : 'green-timeline';
-    //         case 'GRN':
-    //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :
-    //                 element.Status === 'Gate' ? 'orange-timeline' : 'green-timeline';
-    //         default:
-    //             return '';
-    //     }
-    // }
-    // getRestTimeline(element: BPVendorOnBoarding, StatusFor: string): string {
-    //     switch (StatusFor) {
-    //         case 'ASN':
-    //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : 'green-timeline';
-    //         case 'Gate':
-    // tslint:disable-next-line:max-line-length
-    //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' : 'green-timeline';
-    //         case 'GRN':
-    //             return element.Status === 'Open' ? 'white-timeline' : element.Status === 'BPVendorOnBoarding' ? 'white-timeline' : element.Status === 'ASN' ? 'white-timeline' :
-    //                 element.Status === 'Gate' ? 'white-timeline' : 'green-timeline';
-    //         default:
-    //             return '';
-    //     }
-    // }
-
 
 }

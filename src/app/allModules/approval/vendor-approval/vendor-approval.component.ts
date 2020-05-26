@@ -900,7 +900,7 @@ export class VendorApprovalComponent implements OnInit {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor approved successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        this.GetRegisteredVendorOnBoardings();
+        this.GetVendorOnBoardingsByID();
       },
       (err) => {
         console.error(err);
@@ -920,7 +920,7 @@ export class VendorApprovalComponent implements OnInit {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor rejected successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        this.GetRegisteredVendorOnBoardings();
+        this.GetVendorOnBoardingsByID();
       },
       (err) => {
         console.error(err);
