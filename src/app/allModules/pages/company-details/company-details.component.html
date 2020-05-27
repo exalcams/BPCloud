@@ -1,18 +1,7 @@
-<div id="companydetails" class="page-layout carded fullwidth">
+<div id="chat" class="page-layout carded fullwidth">
   <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
     <div class="content-card1">
       <div fxFlex class="side-bar">
-        <!-- <mat-card class="cardHeader p-8" style="background-color: #fffdf9;">
-          <div fxLayout fxFlex fxLayoutAlign="center">
-            <span class="sectionHeader pt-8">{{SelectedBPVendorOnBoarding?.Name}}</span>
-          </div>
-          <div fxLayout fxFlex class="h2" fxLayoutAlign="end">
-            <button (click)="RejectClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
-              Reject</button>
-            <button (click)="ApproveClicked()" class="SaveBtn" mat-raised-button>
-              Approve</button>
-          </div>
-        </mat-card> -->
         <div class="sidenav-content" fxFlex fxLayout="column">
           <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
 
@@ -35,7 +24,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="33">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <!-- <input matInput placeholder="Role" formControlName="Role"> -->
@@ -48,7 +36,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
@@ -58,7 +45,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <!-- <input matInput placeholder="Type" formControlName="Type"> -->
@@ -71,13 +57,11 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <div class="SectionTitle mb-8">
                         <strong>Contact Info.</strong>
                       </div>
                     </div>
-
                     <div fxFlex="50" fxLayout>
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-40" style="width: 100%;">
@@ -94,7 +78,6 @@
                         </mat-form-field>
                       </div>
                     </div>
-
                     <div fxFlex="50" fxLayout *ngIf="SelectedBPVendorOnBoarding.Phone2">
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-80" style="width: 100%;">
@@ -111,7 +94,6 @@
                         </mat-form-field>
                       </div>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <input matInput placeholder="Email1" formControlName="Email1">
@@ -125,7 +107,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100" *ngIf="SelectedBPVendorOnBoarding.Email2">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <input matInput placeholder="Email2" formControlName="Email2">
@@ -163,7 +144,7 @@
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Pin Code" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)" (keyup.enter)="onKey($event)">
+                          (blur)="GetLocationByPincode($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           Pin Code is required
@@ -179,7 +160,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <!-- <input matInput placeholder="State" formControlName="State"> -->
@@ -201,7 +181,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Address Line2" formControlName="AddressLine2">
@@ -218,9 +197,9 @@
 
               </div>
             </form>
+
             <div fxFlex fxLayout="column" class="mt-24">
               <div style="margin-left: 7px">
-                <!-- <span class="SectionTitle"><strong>Identification Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Identification Table</strong>
                 </div>
@@ -230,7 +209,10 @@
                   [formGroup]="identificationFormGroup">
                   <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
-                      <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
+                      <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
+                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
+                        <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
+                      </mat-select>
                       <mat-error
                         *ngIf="identificationFormGroup.get('Type').touched && identificationFormGroup.get('Type').hasError('required')">
                         Type is required
@@ -239,13 +221,16 @@
                   </div>
                   <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
-                      <input matInput placeholder="ID" formControlName="IDNumber" (keyup.enter)="keytab('validUntil')"
-                        #iDNumber>
+                      <input matInput placeholder="ID" formControlName="IDNumber"
+                        (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
                       <mat-error
                         *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
                         ID is required
                       </mat-error>
                     </mat-form-field>
+                    <div class="ValidityError" *ngIf="IdentityValidity">
+                      Invalid ID
+                    </div>
                   </div>
                   <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
@@ -316,6 +301,7 @@
                 </div>
               </div>
             </div>
+
             <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
@@ -327,8 +313,8 @@
                   <div fxFlex fxLayout="row">
                     <div fxFlex="10">
                       <mat-form-field class="pl-20 pr-16" style="width: 100%;">
-                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc
-                          (keyup.enter)="keytab('accountNo')">
+                        <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc (blur)="GetBankByIFSC($event)"
+                          (keyup.enter)="OnIFSCKeyEnter($event)">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
                           IFSC is required
@@ -466,9 +452,9 @@
                 <!-- </div> -->
               </div>
             </div>
+
             <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
-                <!-- <span><strong>Contact Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Contact Table</strong>
                 </div>
@@ -585,6 +571,7 @@
                 </div>
               </div>
             </div>
+
             <!-- <div fxFlex fxLayout="column" *ngIf="ActivityLogsByVOB?.length">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">

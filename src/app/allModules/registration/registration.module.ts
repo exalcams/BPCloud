@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FuseSidebarModule } from '@fuse/components';
-import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 
 import {
@@ -55,6 +55,7 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { VendorRegistrationComponent } from './vendor-registration/vendor-registration.component';
+import { SelectGstinDialogComponent } from './select-gstin-dialog/select-gstin-dialog.component';
 
 const routes = [
     {
@@ -122,10 +123,10 @@ const routes = [
 
         FormsModule
     ],
-    declarations: [VendorRegistrationComponent],
+    declarations: [VendorRegistrationComponent, SelectGstinDialogComponent],
     providers: [
         DecimalPipe
     ],
-    entryComponents: []
+    entryComponents: [SelectGstinDialogComponent]
 })
 export class RegistrationModule { }

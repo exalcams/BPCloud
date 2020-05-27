@@ -61,5 +61,17 @@ export class CBPIdentity {
     ExpDateReq: Date;
     Country: string;
 }
+export class TaxPayerDetails {
+    gstin: string;
+    tradeName: string;
+    legalName: string;
+    address1: string;
+    address2: Date;
+    stateCode: string;
+    pinCode: Date;
+    txpType: string;
+    status: Date;
+    blkStatus: string;
+}
 
 
