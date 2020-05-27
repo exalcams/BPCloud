@@ -10,7 +10,7 @@ import { MasterService } from 'app/services/master.service';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CBPLocation } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank } from 'app/models/vendor-master';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { Guid } from 'guid-typescript';
@@ -63,7 +63,6 @@ export class CompanyDetailsComponent implements OnInit {
     'Attachment',
     'Action'
   ];
-
   contactDisplayedColumns: string[] = [
     'Name',
     'Department',
@@ -102,12 +101,15 @@ export class CompanyDetailsComponent implements OnInit {
   @ViewChild('legalName') legalName: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
+  Status: string;
+  IdentityType: string;
+  IdentityValidity: boolean;
+  AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
   AllStates: string[] = [];
   math = Math;
-  Status: string;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -141,6 +143,8 @@ export class CompanyDetailsComponent implements OnInit {
     this.IsProgressBarVisibile = false;
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
+    this.IdentityValidity = false;
+    this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
     this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
     this.AllCountries = ['India'];
@@ -180,11 +184,11 @@ export class CompanyDetailsComponent implements OnInit {
       'TRIPURA',
       'UTTARANCHAL',
       'UTTAR PRADESH',
-      'WEST BENGAL'
+      'WEST BENGAL',
+      'UTTARAKHAND'
     ];
     this.Status = '';
   }
-
 
   ngOnInit(): void {
     const retrievedObject = localStorage.getItem('authorizationData');
@@ -199,6 +203,7 @@ export class CompanyDetailsComponent implements OnInit {
         this._router.navigate(['/auth/login']);
       }
       this.GetVendorOnBoardingsByEmailID();
+      this.GetAllIdentityTypes();
       this.InitializeVendorRegistrationFormGroup();
       this.InitializeIdentificationFormGroup();
       this.InitializeBankDetailsFormGroup();
@@ -210,6 +215,7 @@ export class CompanyDetailsComponent implements OnInit {
       this._router.navigate(['/auth/login']);
     }
   }
+
   GetVendorOnBoardingsByEmailID(): void {
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.GetVendorOnBoardingsByEmailID(this.authenticationDetails.EmailAddress).subscribe(
@@ -258,7 +264,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.identificationFormGroup = this._formBuilder.group({
       Type: ['', Validators.required],
       IDNumber: ['', Validators.required],
-      ValidUntil: ['', Validators.required],
+      ValidUntil: [''],
     });
   }
 
@@ -321,18 +327,21 @@ export class CompanyDetailsComponent implements OnInit {
       this.identificationFormGroup.get(key).markAsUntouched();
     });
   }
+
   ClearBankDetailsFormGroup(): void {
     this.bankDetailsFormGroup.reset();
     Object.keys(this.bankDetailsFormGroup.controls).forEach(key => {
       this.bankDetailsFormGroup.get(key).markAsUntouched();
     });
   }
+
   ClearContactFormGroup(): void {
     this.contactFormGroup.reset();
     Object.keys(this.contactFormGroup.controls).forEach(key => {
       this.contactFormGroup.get(key).markAsUntouched();
     });
   }
+
   // ClearActivityLogFormGroup(): void {
   //   this.activityLogFormGroup.reset();
   //   Object.keys(this.activityLogFormGroup.controls).forEach(key => {
@@ -360,6 +369,35 @@ export class CompanyDetailsComponent implements OnInit {
   //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
   // }
 
+  GetAllIdentityTypes(): void {
+    this._vendorMasterService.GetAllIdentityTypes().subscribe(
+      (data) => {
+        this.AllIdentityTypes = data as string[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+
+  GetLocationDetailsByPincode(PinCode: any): void {
+    if (PinCode) {
+      this._vendorMasterService.GetLocationByPincode(PinCode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
   GetLocationByPincode(event): void {
     const Pincode = event.target.value;
     if (Pincode) {
@@ -376,6 +414,112 @@ export class CompanyDetailsComponent implements OnInit {
           console.error(err);
         }
       );
+    }
+  }
+
+  ValidateIdentityByType(IdentityType: any, ID: any): void {
+    if (IdentityType) {
+      this._vendorMasterService.ValidateIdentityByType(IdentityType, ID).subscribe(
+        (data) => {
+          const identity = data as CBPIdentity;
+          if (identity) {
+            this.IdentityValidity = false;
+            // if (status === 'Matched') {
+            //   this.IdentityValidity = false;
+            // }
+            // else {
+            //   this.IdentityValidity = true;
+            // }
+          } else {
+            this.IdentityValidity = true;
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  GetBankByIFSC(event): void {
+    const IFSC = event.target.value;
+    if (IFSC) {
+      this._vendorMasterService.GetBankByIFSC(IFSC).subscribe(
+        (data) => {
+          const bank = data as CBPBank;
+          if (bank) {
+            this.bankDetailsFormGroup.get('BankName').patchValue(bank.BankName);
+            this.bankDetailsFormGroup.get('Branch').patchValue(bank.BankBranch);
+            this.bankDetailsFormGroup.get('City').patchValue(bank.BankCity);
+          }
+          else {
+            this.bankDetailsFormGroup.get('BankName').patchValue('');
+            this.bankDetailsFormGroup.get('Branch').patchValue('');
+            this.bankDetailsFormGroup.get('City').patchValue('');
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  OnPincodeKeyEnter(event): void {
+    this.legalName.nativeElement.focus();
+    const Pincode = event.target.value;
+    if (Pincode) {
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  OnIFSCKeyEnter(event): void {
+    this.ifsc.nativeElement.focus();
+    const IFSC = event.target.value;
+    if (IFSC) {
+      this._vendorMasterService.GetBankByIFSC(IFSC).subscribe(
+        (data) => {
+          const bank = data as CBPBank;
+          if (bank) {
+            this.bankDetailsFormGroup.get('BankName').patchValue(bank.BankName);
+            this.bankDetailsFormGroup.get('Branch').patchValue(bank.BankBranch);
+            this.bankDetailsFormGroup.get('City').patchValue(bank.BankCity);
+          }
+          else {
+            this.bankDetailsFormGroup.get('BankName').patchValue('');
+            this.bankDetailsFormGroup.get('Branch').patchValue('');
+            this.bankDetailsFormGroup.get('City').patchValue('');
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
+
+  OnIdentityClick(IdentityType: any): void {
+    this.IdentityType = IdentityType;
+  }
+
+  OnIdentityKeyEnter(event): void {
+    this.IdentityType = this.identificationFormGroup.get('Type').value;
+    this.validUntil.nativeElement.focus();
+    const ID = event.target.value;
+    if (ID) {
+      this.ValidateIdentityByType(this.IdentityType, ID);
     }
   }
 
@@ -423,7 +567,8 @@ export class CompanyDetailsComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Role').patchValue(this.SelectedBPVendorOnBoarding.Role);
     this.vendorRegistrationFormGroup.get('LegalName').patchValue(this.SelectedBPVendorOnBoarding.LegalName);
     this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(this.SelectedBPVendorOnBoarding.AddressLine1);
-    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.SelectedBPVendorOnBoarding.AddressLine1);
+    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.SelectedBPVendorOnBoarding.AddressLine2);
+    this.vendorRegistrationFormGroup.get('PinCode').patchValue(this.SelectedBPVendorOnBoarding.PinCode);
     this.vendorRegistrationFormGroup.get('City').patchValue(this.SelectedBPVendorOnBoarding.City);
     this.vendorRegistrationFormGroup.get('State').patchValue(this.SelectedBPVendorOnBoarding.State);
     this.vendorRegistrationFormGroup.get('Country').patchValue(this.SelectedBPVendorOnBoarding.Country);
@@ -681,26 +826,6 @@ export class CompanyDetailsComponent implements OnInit {
     }
   }
 
-  onKey(event): void {
-    this.legalName.nativeElement.focus();
-    const Pincode = event.target.value;
-    if (Pincode) {
-      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
-        (data) => {
-          const loc = data as CBPLocation;
-          if (loc) {
-            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
-            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
-            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
-          }
-        },
-        (err) => {
-          console.error(err);
-        }
-      );
-    }
-  }
-
   RemoveIdentificationFromTable(bPIdentity: BPIdentity): void {
     const index: number = this.IdentificationsByVOB.indexOf(bPIdentity);
     if (index > -1) {
@@ -716,7 +841,6 @@ export class CompanyDetailsComponent implements OnInit {
     }
     this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
   }
-
 
   RemoveContactFromTable(bPContact: BPContact): void {
     const index: number = this.ContactsByVOB.indexOf(bPContact);

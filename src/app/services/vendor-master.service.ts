@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { CBPLocation, CBPBank, CBPIdentity } from 'app/models/vendor-master';
+import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails } from 'app/models/vendor-master';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -37,8 +37,18 @@ export class VendorMasterService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetAllIdentityTypes(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendormasterapi/Master/GetAllIdentityTypes`)
+      .pipe(catchError(this.errorHandler));
+  }
+
   ValidateIdentityByType(IdentityType: string, ID: string): Observable<CBPIdentity | string> {
     return this._httpClient.get<CBPIdentity>(`${this.baseAddress}vendormasterapi/Master/ValidateIdentityByType?IdentityType=${IdentityType}&ID=${ID}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetTaxPayerDetails(Gstin: string): Observable<TaxPayerDetails | string> {
+    return this._httpClient.get<TaxPayerDetails>(`${this.baseAddress}vendormasterapi/Master/GetTaxPayerDetails?Gstin=${Gstin}`)
       .pipe(catchError(this.errorHandler));
   }
 

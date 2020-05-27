@@ -91,14 +91,12 @@ export class AppComponent implements OnInit, OnDestroy {
         mdIconRegistry.addSvgIcon('reportIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/report.svg'));
         mdIconRegistry.addSvgIcon('powerIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/power.svg'));
         mdIconRegistry.addSvgIcon('powerOffIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/powerOff.svg'));
-
         mdIconRegistry.addSvgIcon('taskIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/task.svg'));
         mdIconRegistry.addSvgIcon('taskGroupIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/taskGroup.svg'));
         mdIconRegistry.addSvgIcon('projectIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/project.svg'));
         mdIconRegistry.addSvgIcon('addBlueIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/addBlue.svg'));
-
         mdIconRegistry.addSvgIcon('detailsIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/details.svg'));
-
+        mdIconRegistry.addSvgIcon('mydetailsIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/mydetails.svg'));
         /**
          * ------------------------------------------------------------------
          * ngxTranslate Fix Start

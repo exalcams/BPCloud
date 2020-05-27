@@ -101,6 +101,7 @@ export class VendorApprovalComponent implements OnInit {
   fileToUploadList: File[] = [];
   math = Math;
   BPVendorOnBoarding: BPVendorOnBoarding;
+  AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
@@ -178,7 +179,8 @@ export class VendorApprovalComponent implements OnInit {
       'TRIPURA',
       'UTTARANCHAL',
       'UTTAR PRADESH',
-      'WEST BENGAL'
+      'WEST BENGAL',
+      'UTTARAKHAND'
     ];
   }
 
@@ -200,10 +202,11 @@ export class VendorApprovalComponent implements OnInit {
       }
     });
     if (this.SelectedID) {
-      console.log(this.SelectedID);
+      // console.log(this.SelectedID);
       this.GetVendorOnBoardingsByID();
     }
 
+    this.GetAllIdentityTypes();
     this.InitializeVendorRegistrationFormGroup();
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
@@ -233,6 +236,17 @@ export class VendorApprovalComponent implements OnInit {
         console.error(err);
         this.IsProgressBarVisibile = false;
         this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+  }
+
+  GetAllIdentityTypes(): void {
+    this._vendorMasterService.GetAllIdentityTypes().subscribe(
+      (data) => {
+        this.AllIdentityTypes = data as string[];
+      },
+      (err) => {
+        console.error(err);
       }
     );
   }
@@ -900,7 +914,8 @@ export class VendorApprovalComponent implements OnInit {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor approved successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        this.GetVendorOnBoardingsByID();
+        // this.GetVendorOnBoardingsByID();
+        this._router.navigate(['/pages/dashboard']);
       },
       (err) => {
         console.error(err);
@@ -920,7 +935,8 @@ export class VendorApprovalComponent implements OnInit {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor rejected successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
-        this.GetVendorOnBoardingsByID();
+        // this.GetVendorOnBoardingsByID();
+        this._router.navigate(['/pages/dashboard']);
       },
       (err) => {
         console.error(err);

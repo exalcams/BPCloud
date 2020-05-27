@@ -2,20 +2,9 @@
   <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
     <div fxLayout class="content-card1">
       <div fxFlex class="side-bar">
-        <!-- <mat-card class="cardHeader p-8" style="background-color: #fffdf9;">
-          <div fxLayout fxFlex fxLayoutAlign="center">
-            <span class="sectionHeader pt-8">{{SelectedBPVendorOnBoarding?.Name}}</span>
-          </div>
-          <div fxLayout fxFlex class="h2" fxLayoutAlign="end">
-            <button (click)="RejectClicked()" class="SaveAsDraftBtn mr-8" mat-stroked-button>
-              Reject</button>
-            <button (click)="ApproveClicked()" class="SaveBtn" mat-raised-button>
-              Approve</button>
-          </div>
-        </mat-card> -->
         <div class="sidenav-content" fxFlex fxLayout="column">
           <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
-            
+
             <div fxFlex fxLayoutAlign="end end" style="margin-top: -15px; margin-bottom: 10px;">
               <button mat-fab style="padding: 7px 0;display: inline-block;line-height: 24px; background-color: #efb577;"
                 (click)="onArrowBackClick()">
@@ -42,7 +31,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="33">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <!-- <input matInput placeholder="Role" formControlName="Role"> -->
@@ -55,7 +43,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
@@ -65,7 +52,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <!-- <input matInput placeholder="Type" formControlName="Type"> -->
@@ -78,13 +64,11 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <div class="SectionTitle mb-8">
                         <strong>Contact Info.</strong>
                       </div>
                     </div>
-
                     <div fxFlex="50" fxLayout>
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-40" style="width: 100%;">
@@ -101,7 +85,6 @@
                         </mat-form-field>
                       </div>
                     </div>
-
                     <div fxFlex="50" fxLayout *ngIf="SelectedBPVendorOnBoarding.Phone2">
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-80" style="width: 100%;">
@@ -118,7 +101,6 @@
                         </mat-form-field>
                       </div>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <input matInput placeholder="Email1" formControlName="Email1">
@@ -132,7 +114,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100" *ngIf="SelectedBPVendorOnBoarding.Email2">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <input matInput placeholder="Email2" formControlName="Email2">
@@ -186,7 +167,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <!-- <input matInput placeholder="State" formControlName="State"> -->
@@ -208,7 +188,6 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput placeholder="Address Line2" formControlName="AddressLine2">
@@ -228,7 +207,6 @@
 
             <div fxFlex fxLayout="column" class="mt-24" *ngIf="IdentificationsByVOB?.length">
               <div style="margin-left: 7px">
-                <!-- <span class="SectionTitle"><strong>Identification Table</strong></span> -->
                 <div class="SectionTitle">
                   <strong>Identification Table</strong>
                 </div>
@@ -301,8 +279,7 @@
                   </ng-container> -->
 
                   <tr mat-header-row *matHeaderRowDef="identificationDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;"
-                    style=" cursor: pointer;">
+                  <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;" style=" cursor: pointer;">
                   </tr>
                 </table>
                 <div flex *ngIf="IdentificationsByVOB?.length">
@@ -437,8 +414,7 @@
                     </ng-container> -->
 
                     <tr mat-header-row *matHeaderRowDef="bankDetailsDisplayedColumns;sticky: true"></tr>
-                    <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;"
-                      style=" cursor: pointer;">
+                    <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;" style=" cursor: pointer;">
                     </tr>
                   </table>
                 </div>
@@ -449,6 +425,7 @@
                 <!-- </div> -->
               </div>
             </div>
+
             <div fxFlex fxLayout="column" *ngIf="ContactsByVOB?.length">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
@@ -558,8 +535,7 @@
                   </ng-container> -->
 
                   <tr mat-header-row *matHeaderRowDef="contactDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;"
-                    style=" cursor: pointer;">
+                  <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;" style=" cursor: pointer;">
                   </tr>
                 </table>
                 <div flex *ngIf="ContactsByVOB?.length">
@@ -568,6 +544,7 @@
                 </div>
               </div>
             </div>
+
             <!-- 
             <div fxFlex fxLayout="column" *ngIf="ActivityLogsByVOB?.length">
               <div style="margin-left: 7px">

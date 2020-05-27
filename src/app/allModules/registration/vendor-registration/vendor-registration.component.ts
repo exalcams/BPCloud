@@ -15,7 +15,8 @@ import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPConta
 import { AttachmentDetails } from 'app/models/task';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
-import { CBPLocation, CBPIdentity, CBPBank } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';
+import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
 
 @Component({
   selector: 'vendor-registration',
@@ -39,8 +40,6 @@ export class VendorRegistrationComponent implements OnInit {
   contactFormGroup: FormGroup;
   // activityLogFormGroup: FormGroup;
   searchText = '';
-  IdentityValidity: boolean;
-  IdentityType: string;
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   selectID: number;
   SelectedBPVendorOnBoarding: BPVendorOnBoarding;
@@ -66,7 +65,6 @@ export class VendorRegistrationComponent implements OnInit {
     'Attachment',
     'Action'
   ];
-
   contactDisplayedColumns: string[] = [
     'Name',
     'Department',
@@ -105,13 +103,15 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('legalName') legalName: ElementRef;
   fileToUpload: File;
   fileToUploadList: File[] = [];
+  Status: string;
+  IdentityType: string;
+  IdentityValidity: boolean;
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
   AllStates: string[] = [];
   math = Math;
-  Status: string;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -146,9 +146,10 @@ export class VendorRegistrationComponent implements OnInit {
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
     this.IdentityValidity = false;
+    this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
     this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
-    this.AllIdentityTypes = ['Pancard', 'GSTIN', 'Adhaar'];
+    // this.AllIdentityTypes = ['Pancard', 'GSTIN', 'Adhaar'];
     this.AllCountries = ['India'];
     this.AllStates = [
       'ANDAMAN AND NICOBAR ISLANDS',
@@ -186,9 +187,9 @@ export class VendorRegistrationComponent implements OnInit {
       'TRIPURA',
       'UTTARANCHAL',
       'UTTAR PRADESH',
-      'WEST BENGAL'
+      'WEST BENGAL',
+      'UTTARAKHAND'
     ];
-    this.Status = '';
   }
 
 
@@ -197,6 +198,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
+    this.GetAllIdentityTypes();
     // this.InitializeActivityLogFormGroup();
   }
 
@@ -230,7 +232,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.identificationFormGroup = this._formBuilder.group({
       Type: ['', Validators.required],
       IDNumber: ['', Validators.required],
-      ValidUntil: ['', Validators.required],
+      ValidUntil: [''],
     });
   }
 
@@ -334,6 +336,77 @@ export class VendorRegistrationComponent implements OnInit {
   //   this.ActivityLogsByVOB = [];
   //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
   // }
+
+  OpenSelectGstinDialog(): void {
+    const dialogConfig: MatDialogConfig = {
+      data: 'SelectGstin',
+      panelClass: 'select-gstin-dialog'
+    };
+    const dialogRef = this.dialog.open(SelectGstinDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.GetTaxPayerDetails(result);
+      }
+    });
+  }
+
+  GetTaxPayerDetails(Gstin: any): void {
+    // 05AAACG2115R1ZN
+    this.IsProgressBarVisibile = true;
+    if (Gstin) {
+      this._vendorMasterService.GetTaxPayerDetails(Gstin).subscribe(
+        (data) => {
+          const taxPayerDetails = data as TaxPayerDetails;
+          if (taxPayerDetails) {
+            this.IsProgressBarVisibile = false;
+            this.GetLocationDetailsByPincode(taxPayerDetails.pinCode);
+            this.vendorRegistrationFormGroup.get('PinCode').patchValue(taxPayerDetails.pinCode);
+            this.vendorRegistrationFormGroup.get('LegalName').patchValue(taxPayerDetails.legalName);
+            this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(taxPayerDetails.address1);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(taxPayerDetails.address2);
+          }
+          else {
+            this.IsProgressBarVisibile = false;
+            this.notificationSnackBarComponent.openSnackBar('Something went wrong while getting gstin details try after some time', SnackBarStatus.danger);
+          }
+        },
+        (err) => {
+          this.IsProgressBarVisibile = false;
+          console.error(err);
+          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+        }
+      );
+    }
+  }
+
+  GetAllIdentityTypes(): void {
+    this._vendorMasterService.GetAllIdentityTypes().subscribe(
+      (data) => {
+        this.AllIdentityTypes = data as string[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+
+  GetLocationDetailsByPincode(PinCode: any): void {
+    if (PinCode) {
+      this._vendorMasterService.GetLocationByPincode(PinCode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
+    }
+  }
 
   GetLocationByPincode(event): void {
     const Pincode = event.target.value;
