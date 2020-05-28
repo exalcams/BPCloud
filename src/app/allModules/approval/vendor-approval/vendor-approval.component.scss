@@ -52,7 +52,6 @@
       //   }
     }
   }
-
   .borderRight1 {
     border-left: 1px solid black;
     border-radius: 1px;
@@ -194,13 +193,11 @@
   @mixin TableBorderRight($color) {
     border-right: 1px solid $color;
   }
-
   .TablePadFont {
     padding: 5px;
     font-size: 12px;
     // min-width: 100px !important;
   }
-
   table {
     width: 100%;
 
@@ -312,6 +309,10 @@
     height: 20px;
     cursor: pointer !important;
   }
+  .addAttachmentClass {
+    color: #4784f7;
+    cursor: pointer !important;
+  }
   .Rectangle {
     // width: 152px;
     min-height: 50px;
@@ -327,10 +328,6 @@
     border-radius: 2px;
     background-color: #f9d2a8;
   }
-  .addAttachmentClass {
-    color: #4784f7;
-    cursor: pointer !important;
-  }
   .sectionHeader {
     font-weight: bold;
     font-size: 18px;
@@ -339,7 +336,6 @@
     display: inline-block;
     position: relative;
   }
-
   .SectionTitle strong:after {
     content: "";
     height: 3px;
@@ -359,20 +355,26 @@
   .mat-icon {
     @include md-icon-size(12px);
   }
-   .mat-input-element:disabled {
-      color: gray !important;
-      background: whitesmoke !important;
-      cursor: not-allowed !important;
-    }
-    #footerCard {
-      position: fixed;
-      height: 50px;
-      box-shadow: 0 -5px 10px 0 rgba(0, 0, 0, 0.16);
-      background-color: #ffffff;
-      bottom: 0px;
-      left: 0px;
-      right: 0px;
-      margin-bottom: 40px;
-      z-index: 100;
-    }
+  .mat-input-element:disabled {
+    color: gray !important;
+    background: whitesmoke !important;
+    cursor: not-allowed !important;
+  }
+  #footerCard {
+    position: fixed;
+    height: 50px;
+    box-shadow: 0 -5px 10px 0 rgba(0, 0, 0, 0.16);
+    background-color: #ffffff;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin-bottom: 40px;
+    z-index: 100;
+  }
+  .ValidityError {
+    color: #f44336;
+    font-size: 12px;
+    margin-top: -16px;
+    margin-left: 40px;
+  }
 }
