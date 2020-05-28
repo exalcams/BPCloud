@@ -193,13 +193,11 @@
   @mixin TableBorderRight($color) {
     border-right: 1px solid $color;
   }
-
   .TablePadFont {
     padding: 5px;
     font-size: 12px;
     // min-width: 100px !important;
   }
-
   table {
     width: 100%;
 
@@ -297,26 +295,11 @@
   .mat-toolbar-multiple-rows {
     min-height: 58px !important;
   }
-  .addAttachmentClass {
-    color: #4784f7;
-    cursor: pointer !important;
-  }
   .addIcon {
     height: 20px;
     margin-top: 25px;
     padding-left: 4px;
     cursor: pointer !important;
-  }
-  .addBlueIcon {
-    @extend .addIcon;
-    margin-top: 0px;
-    height: 15px;
-  }
-  .attachClass {
-    // margin-top: 25px;
-    padding-left: 8px;
-    cursor: pointer !important;
-    color: #4784f7;
   }
   .removeIcon {
     height: 20px;
@@ -365,12 +348,6 @@
     width: $size;
     line-height: $size;
   }
-  .attachClass {
-    // margin-top: 25px;
-    padding-left: 8px;
-    cursor: pointer !important;
-    color: #4784f7;
-  }
   .mat-icon {
     @include md-icon-size(12px);
   }
@@ -389,6 +366,21 @@
     right: 0px;
     margin-bottom: 40px;
     z-index: 100;
+  }
+  .addBlueIcon {
+    @extend .addIcon;
+    margin-top: 0px;
+    height: 15px;
+  }
+  .attachClass {
+    // margin-top: 25px;
+    padding-left: 8px;
+    cursor: pointer !important;
+    color: #4784f7;
+  }
+  .addAttachmentClass {
+    color: #4784f7;
+    cursor: pointer !important;
   }
   .ValidityError {
     color: #f44336;
