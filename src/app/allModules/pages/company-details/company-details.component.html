@@ -205,10 +205,10 @@
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
-                  [formGroup]="identificationFormGroup">
+                <form autocomplete="off" fxLayout="row" fxLayoutGap="60px" fxLayoutAlign="start" fxFlex="1 0 auto"
+                  name="form" novalidate [formGroup]="identificationFormGroup">
                   <div fxFlex="25">
-                    <mat-form-field class="px-40" style="width: 100%;">
+                    <mat-form-field class="ml-12" style="width: 100%;">
                       <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
                       <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
                         <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
@@ -220,7 +220,7 @@
                     </mat-form-field>
                   </div>
                   <div fxFlex="25">
-                    <mat-form-field class="px-40" style="width: 100%;">
+                    <mat-form-field style="width: 100%;">
                       <input matInput placeholder="ID" formControlName="IDNumber"
                         (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
                       <mat-error
@@ -233,7 +233,7 @@
                     </div>
                   </div>
                   <div fxFlex="25">
-                    <mat-form-field class="px-40" style="width: 100%;">
+                    <mat-form-field style="width: 100%;">
                       <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
                         #validUntil (keydown.enter)="IdentificationEnterKeyDown()">
                       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -251,7 +251,7 @@
                     </span>
                     <input hidden type="file" #fileInput1 id="file" (change)="handleFileInput($event)" />
                   </div>
-                  <div fxFlex="5" fxLayoutAlign="center">
+                  <div fxFlex="5" fxLayoutAlign="end">
                     <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddIdentificationToTable()">
                   </div>
                 </form>
@@ -310,8 +310,8 @@
               </div>
               <div class="mt-8">
                 <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup">
-                  <div fxFlex fxLayout="row" fxLayoutGap="8px">
-                    <div fxFlex="10" class="ml-8">
+                  <div fxFlex fxLayout="row" fxLayoutGap="30px">
+                    <div fxFlex="25" class="ml-12">
                       <mat-form-field style="width: 100%;">
                         <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc (blur)="GetBankByIFSC($event)"
                           (keyup.enter)="OnIFSCKeyEnter($event)">
@@ -321,7 +321,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="15">
+                    <div fxFlex="25">
                       <mat-form-field style="width: 100%;">
                         <input matInput placeholder="Acc No" formControlName="AccountNo" #accountNo
                           (keyup.enter)="keytab('accHolderName')">
@@ -331,7 +331,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="20">
+                    <div fxFlex="25">
                       <mat-form-field style="width: 100%;">
                         <input matInput placeholder="Acc Holders name" formControlName="Name" #accHolderName
                           (keyup.enter)="keytab('bankName')">
@@ -341,7 +341,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="15">
+                    <div fxFlex="25">
                       <mat-form-field style="width: 100%;">
                         <input matInput placeholder="Bank Name" formControlName="BankName" #bankName
                           (keyup.enter)="keytab('bankCity')">
@@ -351,7 +351,9 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="10">
+                  </div>
+                  <div fxFlex fxLayout="row" fxLayoutGap="30px">
+                    <div fxFlex="25" class="ml-12">
                       <mat-form-field style="width: 100%;">
                         <input matInput placeholder="City" formControlName="City" #bankCity
                           (keyup.enter)="keytab('branch')">
@@ -361,7 +363,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="14">
+                    <div fxFlex="25">
                       <mat-form-field style="width: 100%;">
                         <input matInput placeholder="Branch" formControlName="Branch" #branch
                           (keydown.enter)="BankEnterKeyDown()">
@@ -371,14 +373,14 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="11" fxLayoutAlign="start center">
+                    <div fxFlex="25" fxLayoutAlign="start center">
                       <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput2.click()">
                       <span class="attachClass" (click)="fileInput2.click()">
                         Add Attachment
                       </span>
                       <input hidden type="file" #fileInput2 id="file1" (change)="handleFileInput($event)" />
                     </div>
-                    <div fxFlex="5" fxLayoutAlign="center">
+                    <div fxFlex="25" fxLayoutAlign="end">
                       <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddBankToTable()">
                     </div>
                   </div>
@@ -460,67 +462,72 @@
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
-                  [formGroup]="contactFormGroup">
-                  <div fxFlex="20">
-                    <mat-form-field class="px-28" style="width: 100%;">
-                      <input matInput placeholder="Name" formControlName="Name" (keyup.enter)="keytab('department')">
-                      <mat-error
-                        *ngIf="contactFormGroup.get('Name').touched && contactFormGroup.get('Name').hasError('required')">
-                        Name is required
-                      </mat-error>
-                    </mat-form-field>
+                <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form"
+                  novalidate [formGroup]="contactFormGroup">
+
+                  <div fxFlex fxLayout="row" fxLayoutGap="50px">
+                    <div fxFlex="33" class="ml-12">
+                      <mat-form-field style="width: 100%;">
+                        <input matInput placeholder="Name" formControlName="Name" (keyup.enter)="keytab('department')">
+                        <mat-error
+                          *ngIf="contactFormGroup.get('Name').touched && contactFormGroup.get('Name').hasError('required')">
+                          Name is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="33">
+                      <mat-form-field style="width: 100%;">
+                        <input matInput placeholder="Department" formControlName="Department"
+                          (keyup.enter)="keytab('title')" #department>
+                        <mat-error
+                          *ngIf="contactFormGroup.get('Department').touched && contactFormGroup.get('Department').hasError('required')">
+                          Department is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="33">
+                      <mat-form-field style="width: 100%;">
+                        <input matInput placeholder="Title" formControlName="Title" (keyup.enter)="keytab('mobile')"
+                          #title>
+                        <mat-error
+                          *ngIf="contactFormGroup.get('Title').touched && contactFormGroup.get('Title').hasError('required')">
+                          Title is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
                   </div>
-                  <div fxFlex="20">
-                    <mat-form-field class="px-28" style="width: 100%;">
-                      <input matInput placeholder="Department" formControlName="Department"
-                        (keyup.enter)="keytab('title')" #department>
-                      <mat-error
-                        *ngIf="contactFormGroup.get('Department').touched && contactFormGroup.get('Department').hasError('required')">
-                        Department is required
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div fxFlex="20">
-                    <mat-form-field class="px-28" style="width: 100%;">
-                      <input matInput placeholder="Title" formControlName="Title" (keyup.enter)="keytab('mobile')"
-                        #title>
-                      <mat-error
-                        *ngIf="contactFormGroup.get('Title').touched && contactFormGroup.get('Title').hasError('required')">
-                        Title is required
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div fxFlex="15">
-                    <mat-form-field class="px-28" style="width: 100%;">
-                      <input matInput placeholder="Mobile" formControlName="Mobile" (keyup.enter)="keytab('email')"
-                        #mobile>
-                      <mat-error
-                        *ngIf="contactFormGroup.get('Mobile').touched && contactFormGroup.get('Mobile').hasError('required')">
-                        Mobile is required
-                      </mat-error>
-                      <mat-error *ngIf="contactFormGroup.get('Mobile').touched && !contactFormGroup.get('Mobile').hasError('required') &&
-                      contactFormGroup.get('Mobile').hasError('pattern')">
-                        Please enter a valid Mobile Number
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div fxFlex="20">
-                    <mat-form-field class="px-28" style="width: 100%;">
-                      <input matInput placeholder="Email" formControlName="Email"
-                        (keydown.enter)="ContactEnterKeyDown()" #email>
-                      <mat-error
-                        *ngIf="contactFormGroup.get('Email').touched && contactFormGroup.get('Email').hasError('required')">
-                        Email is required
-                      </mat-error>
-                      <mat-error *ngIf="contactFormGroup.get('Email').touched && !contactFormGroup.get('Email').hasError('required') &&
-                      contactFormGroup.get('Email').hasError('email')">
-                        Please enter a valid email address
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div fxFlex="5" fxLayoutAlign="center">
-                    <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddContactToTable()">
+                  <div fxFlex fxLayout="row" fxLayoutGap="50px">
+                    <div fxFlex="33" class="ml-12">
+                      <mat-form-field style="width: 100%;">
+                        <input matInput placeholder="Mobile" formControlName="Mobile" (keyup.enter)="keytab('email')"
+                          #mobile>
+                        <mat-error
+                          *ngIf="contactFormGroup.get('Mobile').touched && contactFormGroup.get('Mobile').hasError('required')">
+                          Mobile is required
+                        </mat-error>
+                        <mat-error *ngIf="contactFormGroup.get('Mobile').touched && !contactFormGroup.get('Mobile').hasError('required') &&
+                        contactFormGroup.get('Mobile').hasError('pattern')">
+                          Please enter a valid Mobile Number
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="33">
+                      <mat-form-field style="width: 100%;">
+                        <input matInput placeholder="Email" formControlName="Email"
+                          (keydown.enter)="ContactEnterKeyDown()" #email>
+                        <mat-error
+                          *ngIf="contactFormGroup.get('Email').touched && contactFormGroup.get('Email').hasError('required')">
+                          Email is required
+                        </mat-error>
+                        <mat-error *ngIf="contactFormGroup.get('Email').touched && !contactFormGroup.get('Email').hasError('required') &&
+                        contactFormGroup.get('Email').hasError('email')">
+                          Please enter a valid email address
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxFlex="33" fxLayoutAlign="end">
+                      <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddContactToTable()">
+                    </div>
                   </div>
                 </form>
               </div>
