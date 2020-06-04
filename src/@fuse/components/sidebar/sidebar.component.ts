@@ -669,7 +669,7 @@ export class FuseSidebarComponent implements OnInit, OnDestroy
             return;
         }
 
-        this.unfoldTemporarily();
+        // this.unfoldTemporarily();
     }
 
     /**
@@ -684,7 +684,7 @@ export class FuseSidebarComponent implements OnInit, OnDestroy
             return;
         }
 
-        this.foldTemporarily();
+        // this.foldTemporarily();
     }
 
     /**

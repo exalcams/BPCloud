@@ -1,9 +1,18 @@
 <div id="chat" class="page-layout carded fullwidth">
-  <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
-    <div fxLayout class="content-card1">
+  <div class="center">
+    <div class="outer" fxLayout>
+      <div class="bg"></div>
+      <div>
+        <h3 style="margin: 0px;padding-left: 10px;"><b>My Details</b></h3>
+      </div>
+      <div fxFlex align="end">
+        <span><img src="assets/images/logo.svg" style="height: 40px;padding: 4px 15px 2px 0px;"></span>
+      </div>
+    </div>
+    <div fxLayout class="content-card1" style="margin-bottom: 30px;">
       <div fxFlex class="side-bar">
         <div class="sidenav-content" fxFlex fxLayout="column">
-          <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
+          <mat-card style="padding: 0px 20px 20px 20px;" fxFlex fxLayout="column">
 
             <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
               [formGroup]="vendorRegistrationFormGroup">

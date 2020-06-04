@@ -1,14 +1,36 @@
 @import "src/@fuse/scss/fuse";
 
 #chat {
+  background-color: white;
   .progressBarPostion {
     position: absolute !important;
     bottom: 50%;
     z-index: 1;
     left: 55%;
   }
+  .outer {
+    border-bottom: 1px solid rgba(255, 85, 0, 0.1);
+    position: relative;
+    z-index: 1;
+    .bg {
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-image: url("assets/images/header_2.png");
+      opacity: 0.1;
+      background-repeat: no-repeat;
+    }
+    width: 100%;
+    object-fit: contain;
+    line-height: 50px;
+    display: inline-block;
+    vertical-align: middle;
+  }
   .center {
-    padding: 32px !important;
+    padding: 0px !important;
     max-width: 2000px;
     margin: 0 auto;
 
@@ -368,7 +390,6 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
-    margin-bottom: 40px;
     z-index: 100;
   }
   .ValidityError {

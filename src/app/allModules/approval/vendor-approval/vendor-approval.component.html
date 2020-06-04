@@ -1,11 +1,20 @@
 <div id="chat" class="page-layout carded fullwidth">
-  <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
-    <div fxLayout class="content-card1">
+  <div class="center">
+    <div class="outer" fxLayout>
+      <div class="bg"></div>
+      <div>
+        <h3 style="margin: 0px;padding-left: 10px;"><b>Approval</b></h3>
+      </div>
+      <div fxFlex align="end">
+        <span><img src="assets/images/logo.svg" style="height: 40px;padding: 4px 15px 2px 0px;"></span>
+      </div>
+    </div>
+    <div fxLayout class="content-card1" style="margin-bottom: 30px;">
       <div fxFlex class="side-bar">
         <div class="sidenav-content" fxFlex fxLayout="column">
-          <mat-card style="margin-top: 5px;" fxFlex fxLayout="column">
+          <mat-card style="padding: 5px 20px 20px 20px;" fxFlex fxLayout="column">
 
-            <div fxFlex fxLayoutAlign="end end" style="margin-top: -15px; margin-bottom: 10px;">
+            <div fxFlex fxLayoutAlign="end end" style="margin-bottom: -15px;">
               <button mat-fab style="padding: 7px 0;display: inline-block;line-height: 24px; background-color: #efb577;"
                 (click)="onArrowBackClick()">
                 <mat-icon>arrow_back</mat-icon>
