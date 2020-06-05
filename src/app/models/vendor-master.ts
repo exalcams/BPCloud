@@ -66,11 +66,11 @@ export class TaxPayerDetails {
     tradeName: string;
     legalName: string;
     address1: string;
-    address2: Date;
+    address2: string;
     stateCode: string;
-    pinCode: Date;
+    pinCode: string;
     txpType: string;
-    status: Date;
+    status: string;
     blkStatus: string;
 }
 

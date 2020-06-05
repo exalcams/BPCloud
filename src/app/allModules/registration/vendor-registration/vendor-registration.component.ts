@@ -112,6 +112,7 @@ export class VendorRegistrationComponent implements OnInit {
   AllCountries: string[] = [];
   AllStates: string[] = [];
   math = Math;
+  CBPIdentity: CBPIdentity;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -234,6 +235,12 @@ export class VendorRegistrationComponent implements OnInit {
       IDNumber: ['', Validators.required],
       ValidUntil: [''],
     });
+  }
+
+  AddDynamicValidatorsIdentificationFormGroup(): void {
+    // console.log(this.CBPIdentity.Format);
+    // ^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$
+    this.identificationFormGroup.get('IDNumber').setValidators([Validators.pattern(this.CBPIdentity.Format)]);
   }
 
   InitializeBankDetailsFormGroup(): void {
@@ -362,6 +369,22 @@ export class VendorRegistrationComponent implements OnInit {
             this.GetLocationDetailsByPincode(taxPayerDetails.pinCode);
             this.vendorRegistrationFormGroup.get('PinCode').patchValue(taxPayerDetails.pinCode);
             this.vendorRegistrationFormGroup.get('LegalName').patchValue(taxPayerDetails.legalName);
+            // Address Line 2 value is Pincode or city or state, clear the field 
+            // if (taxPayerDetails.address2) {
+            //   if (taxPayerDetails.address2.toLowerCase() === taxPayerDetails.pinCode.toLowerCase()) {
+            //     this.vendorRegistrationFormGroup.get('AddressLine2').patchValue('');
+            //   }
+            //   else if (taxPayerDetails.address2.toLowerCase().includes(this.vendorRegistrationFormGroup.get('City').value.toLowerCase())) {
+            //     this.vendorRegistrationFormGroup.get('AddressLine2').patchValue('');
+            //   }
+            //   else {
+            //     this.AllStates.forEach(element => {
+            //       if (taxPayerDetails.address2.toLowerCase().includes(element.toLowerCase())) {
+            //         this.vendorRegistrationFormGroup.get('AddressLine2').patchValue('');
+            //       }
+            //     });
+            //   }
+            // }
             this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(taxPayerDetails.address1);
             this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(taxPayerDetails.address2);
           }
@@ -431,8 +454,9 @@ export class VendorRegistrationComponent implements OnInit {
     if (IdentityType) {
       this._vendorMasterService.ValidateIdentityByType(IdentityType, ID).subscribe(
         (data) => {
-          const identity = data as CBPIdentity;
-          if (identity) {
+          this.CBPIdentity = data as CBPIdentity;
+          if (this.CBPIdentity) {
+            // this.AddDynamicValidatorsIdentificationFormGroup();
             this.IdentityValidity = false;
             // if (status === 'Matched') {
             //   this.IdentityValidity = false;

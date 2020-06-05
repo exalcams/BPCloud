@@ -335,8 +335,13 @@
                         *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
                         ID is required
                       </mat-error>
+                      <!-- <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                     && identificationFormGroup.get('IDNumber').hasError('pattern')">
+                        Invalid ID
+                      </mat-error> -->
                     </mat-form-field>
-                    <div class="ValidityError" *ngIf="IdentityValidity">
+                    <div class="ValidityError"
+                      *ngIf="IdentityValidity && identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')">
                       Invalid ID
                     </div>
                   </div>
