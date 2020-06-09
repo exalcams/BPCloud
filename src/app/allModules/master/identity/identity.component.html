@@ -1,0 +1,142 @@
+<div id="chat" class="page-layout carded fullwidth">
+  <div class="center">
+    <div class="outer" fxLayout>
+      <div class="bg"></div>
+      <div>
+        <h3 style="margin: 0px;padding-left: 10px;"><b>Identity</b></h3>
+      </div>
+      <div fxFlex align="end">
+        <span><img src="assets/images/logo.svg" style="height: 40px;padding: 4px 15px 2px 0px;"></span>
+      </div>
+    </div>
+    <div fxLayout class="content-card1">
+      <div fxFlex="23" class="side-bar" style="background-color: #f5f5f5">
+        <div class="sidenav-header">
+          <mat-toolbar>
+            <mat-toolbar-row fxLayout="row" class="px-8" fxLayoutAlign="space-between center">
+              <div class="search-wrapper" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                  <input [(ngModel)]="searchText" type="text" placeholder="Search" fxFlex>
+                  <mat-icon class="s-16">search</mat-icon>
+                </div>
+              </div>
+            </mat-toolbar-row>
+          </mat-toolbar>
+        </div>
+        <div class="sidenav-content" fusePerfectScrollbar fxFlex>
+          <div *ngFor="let identity of AllIdentitities | filter: searchText">
+            <div>
+              <div class="mx-8 mb-8 mt-0 p-8 leftCard" (click)="LoadSelectedIdentity(identity)"
+                [style.border-left-color]="SelectedIdentityID==identity.ID?'#efb577':'#cccccc'">
+                <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
+                  <div fxFlex><strong>{{identity.Text}}</strong></div>
+                  <div fxFlex align="end">{{identity.CreatedOn | date :'dd/MM/yyyy'}}</div>
+                </div>
+                <!-- <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
+                  <div fxFlex><strong>Exp Date : </strong>{{identity.Text}}</div>
+                </div> -->
+                <!-- <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
+                  <div fxFlex><strong>AWB : </strong>{{identity.Format}}</div>
+                </div>
+                <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
+                  <div fxFlex>{{identity.Text}}</div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+          <div *ngIf="(AllIdentitities | filter: searchText)?.length === 0" class="no-results-message">
+            <span class="pl-12"> No results..</span>
+          </div>
+        </div>
+        <div class="borderRight1"></div>
+      </div>
+      <mat-card fxFlex="77" class="side-bar p-0">
+        <div class="sidenav-content" fxFlex fxLayout="column">
+          <div fxFlex fxLayout="column" class="p-0 pt-8">
+            <div fxFlex class="px-12 mt-4">
+              <form autocomplete="off" class="normal" fxLayout="column" fxLayoutGap="20px" fxLayoutAlign="start"
+                name="form" novalidate [formGroup]="IdentityFormGroup">
+
+                <div fxFlex fxLayout="row" fxLayoutGap="20px">
+                  <div fxFlex="50">
+                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
+                      <input matInput placeholder="Text" formControlName="Text">
+                      <mat-error
+                        *ngIf="IdentityFormGroup.get('Text').touched && IdentityFormGroup.get('Text').hasError('required')">
+                        Text is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxFlex="50">
+                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
+                      <input matInput placeholder="Format" formControlName="Format">
+                      <mat-error
+                        *ngIf="IdentityFormGroup.get('Format').touched && IdentityFormGroup.get('Format').hasError('required')">
+                        Format is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div fxFlex fxLayout="row" fxLayoutGap="20px">
+                  <div fxFlex="33">
+                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
+                      <mat-select (selectionChange)="CountrySelected($event)" placeholder="Country"
+                        formControlName="Country">
+                        <mat-option *ngFor="let country of AllCountries" [value]="country.CountryCode">
+                          {{country.CountryName}}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error
+                        *ngIf="IdentityFormGroup.get('Country').touched && IdentityFormGroup.get('Country').hasError('required')">
+                        Country is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxFlex="33">
+                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
+                      <input matInput placeholder="Doc Req" formControlName="DocReq">
+                      <mat-error
+                        *ngIf="IdentityFormGroup.get('DocReq').touched && IdentityFormGroup.get('DocReq').hasError('required')">
+                        Doc Req is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxFlex="33">
+                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
+                      <input matInput placeholder="Exp Date" [matDatepicker]="picker0" formControlName="ExpDateReq"
+                        [max]="maxDate">
+                      <mat-datepicker-toggle matSuffix [for]="picker0">
+                        <mat-icon matDatepickerToggleIcon svgIcon="calendarIcon" class="mb-12"></mat-icon>
+                      </mat-datepicker-toggle>
+                      <mat-datepicker #picker0></mat-datepicker>
+                      <mat-error
+                        *ngIf="IdentityFormGroup.get('ExpDateReq').touched && IdentityFormGroup.get('ExpDateReq').hasError('required')">
+                        Exp Date is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+        <mat-card-actions class="m-0 pl-12 pr-16 cardActions">
+          <div fxLayout fxFlex fxLayoutAlign="end">
+            <button *ngIf="SelectedIdentity?.ID" mat-stroked-button class="DeleteBtn mr-4 mb-8"
+              (click)="DeleteClicked()">Delete</button>
+            <button *ngIf="!SelectedIdentity?.ID" mat-raised-button class="SaveBtn"
+              (click)="SaveClicked()">Save</button>
+            <button *ngIf="SelectedIdentity?.ID" mat-raised-button class="SaveBtn"
+              (click)="UpdateClicked()">Update</button>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="progressBarPostion" color="accent" mode="indeterminate">
+    </mat-progress-spinner>
+    <div id="overlay" *ngIf="IsProgressBarVisibile">
+    </div>
+  </div>
+</div>

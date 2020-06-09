@@ -12,7 +12,7 @@ import { NotificationDialogComponent } from 'app/notifications/notification-dial
 import { AttachmentDialogComponent } from 'app/allModules/pages/attachment-dialog/attachment-dialog.component';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact, BPActivityLog } from 'app/models/vendor-registration';
-import { AttachmentDetails } from 'app/models/task';
+import { AttachmentDetails } from 'app/models/attachment';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';

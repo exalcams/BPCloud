@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails } from 'app/models/vendor-master';
+import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView } from 'app/models/vendor-master';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -49,6 +49,46 @@ export class VendorMasterService {
 
   GetTaxPayerDetails(Gstin: string): Observable<TaxPayerDetails | string> {
     return this._httpClient.get<TaxPayerDetails>(`${this.baseAddress}vendormasterapi/Master/GetTaxPayerDetails?Gstin=${Gstin}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  // Identity 
+
+  GetAllIdentities(): Observable<CBPIdentityView[] | string> {
+    return this._httpClient.get<CBPIdentityView[]>(`${this.baseAddress}vendormasterapi/Master/GetAllIdentities`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  CreateIdentity(identity: CBPIdentityView): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/CreateIdentity`,
+      identity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      }
+    ).pipe(catchError(this.errorHandler));
+  }
+
+  UpdateIdentity(identity: CBPIdentityView): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/UpdateIdentity`,
+      identity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      }
+    ).pipe(catchError(this.errorHandler));
+  }
+
+  DeleteIdentity(identity: CBPIdentityView): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/DeleteIdentity`,
+      identity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
       .pipe(catchError(this.errorHandler));
   }
 

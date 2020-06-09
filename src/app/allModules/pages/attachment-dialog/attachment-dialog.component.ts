@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
-import { AttachmentDetails } from 'app/models/task';
+import { AttachmentDetails } from 'app/models/attachment';
 import { saveAs } from 'file-saver';
 
 @Component({

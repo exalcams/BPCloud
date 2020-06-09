@@ -5,7 +5,7 @@ import {
     // tslint:disable-next-line:max-line-length
     MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule,
     MatStepperModule, MatListModule, MatMenuModule, MatRadioModule, MatSidenavModule, MatToolbarModule,
-    MatProgressSpinnerModule, MatTooltipModule
+    MatProgressSpinnerModule, MatTooltipModule, MatDatepickerModule
 } from '@angular/material';
 
 import { FuseSharedModule } from '@fuse/shared.module';
@@ -14,6 +14,7 @@ import { MenuAppComponent } from './menu-app/menu-app.component';
 import { RoleComponent } from './role/role.component';
 import { UserComponent } from './user/user.component';
 import { ReasonComponent } from './reason/reason.component';
+import { IdentityComponent } from './identity/identity.component';
 
 const menuRoutes: Routes = [
     {
@@ -32,6 +33,10 @@ const menuRoutes: Routes = [
         path: 'reason',
         component: ReasonComponent,
     },
+    {
+        path: 'identity',
+        component: IdentityComponent,
+    },
 ];
 @NgModule({
     declarations: [
@@ -39,6 +44,7 @@ const menuRoutes: Routes = [
         RoleComponent,
         MenuAppComponent,
         ReasonComponent,
+        IdentityComponent
     ],
     imports: [
         MatButtonModule,
@@ -57,6 +63,7 @@ const menuRoutes: Routes = [
         MatTooltipModule,
         FuseSharedModule,
         FileUploadModule,
+        MatDatepickerModule,
         RouterModule.forChild(menuRoutes)
     ],
     providers: [

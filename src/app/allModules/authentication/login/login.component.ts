@@ -220,6 +220,17 @@ export class LoginComponent implements OnInit {
       );
     }
 
+    if (true || this.MenuItems.indexOf('Identity') >= 0) {
+      this.subChildren.push(
+        {
+          id: 'identity',
+          title: 'Identity',
+          type: 'item',
+          url: '/master/identity'
+        },
+      );
+    }
+
     // if (true || this.MenuItems.indexOf('App') >= 0) {
     //   this.subChildren.push(
     //     {
@@ -251,20 +262,20 @@ export class LoginComponent implements OnInit {
     //   );
     // }
 
-    // if (true || this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
-    //   this.MenuItems.indexOf('User') >= 0) {
-    //   this.children.push({
-    //     id: 'master',
-    //     title: 'Master',
-    //     // translate: 'NAV.DASHBOARDS',
-    //     type: 'collapsable',
-    //     icon: 'viewListIcon',
-    //     isSvgIcon: true,
-    //     // icon: 'view_list',
-    //     children: this.subChildren
-    //   }
-    //   );
-    // }
+    if (true || this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
+      this.MenuItems.indexOf('User') >= 0 || this.MenuItems.indexOf('Identity') >= 0) {
+      this.children.push({
+        id: 'master',
+        title: 'Master',
+        // translate: 'NAV.DASHBOARDS',
+        type: 'collapsable',
+        icon: 'viewListIcon',
+        isSvgIcon: true,
+        // icon: 'view_list',
+        children: this.subChildren
+      }
+      );
+    }
     this.navigation.push({
       id: 'applications',
       title: '',

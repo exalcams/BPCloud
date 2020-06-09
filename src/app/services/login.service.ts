@@ -16,7 +16,6 @@ export class LoginService {
 
   constructor(private _httpClient: HttpClient, private _authService: AuthService) {
     this.baseAddress = _authService.baseAddress;
-    // this.baseAddress = 'http://localhost:5171/';
     this.clientId = _authService.clientId;
   }
 
