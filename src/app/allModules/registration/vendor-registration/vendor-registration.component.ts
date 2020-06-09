@@ -17,6 +17,7 @@ import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'vendor-registration',
@@ -113,6 +114,7 @@ export class VendorRegistrationComponent implements OnInit {
   AllStates: string[] = [];
   math = Math;
   CBPIdentity: CBPIdentity;
+  TaxPayerDetails: TaxPayerDetails;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -363,12 +365,12 @@ export class VendorRegistrationComponent implements OnInit {
     if (Gstin) {
       this._vendorMasterService.GetTaxPayerDetails(Gstin).subscribe(
         (data) => {
-          const taxPayerDetails = data as TaxPayerDetails;
-          if (taxPayerDetails) {
+          this.TaxPayerDetails = data as TaxPayerDetails;
+          if (this.TaxPayerDetails) {
             this.IsProgressBarVisibile = false;
-            this.GetLocationDetailsByPincode(taxPayerDetails.pinCode);
-            this.vendorRegistrationFormGroup.get('PinCode').patchValue(taxPayerDetails.pinCode);
-            this.vendorRegistrationFormGroup.get('LegalName').patchValue(taxPayerDetails.legalName);
+            this.GetLocationDetailsByPincode(this.TaxPayerDetails.pinCode);
+            this.vendorRegistrationFormGroup.get('PinCode').patchValue(this.TaxPayerDetails.pinCode);
+            this.vendorRegistrationFormGroup.get('LegalName').patchValue(this.TaxPayerDetails.legalName);
             // Address Line 2 value is Pincode or city or state, clear the field 
             // if (taxPayerDetails.address2) {
             //   if (taxPayerDetails.address2.toLowerCase() === taxPayerDetails.pinCode.toLowerCase()) {
@@ -385,8 +387,24 @@ export class VendorRegistrationComponent implements OnInit {
             //     });
             //   }
             // }
-            this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(taxPayerDetails.address1);
-            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(taxPayerDetails.address2);
+            this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(this.TaxPayerDetails.address1);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(this.TaxPayerDetails.address2);
+            let panCard = '';
+            if (this.TaxPayerDetails.gstin) {
+              panCard = this.TaxPayerDetails.gstin.substr(2, 10);
+              // if (this.AllIdentityTypes) {
+              //   this.AllIdentityTypes.forEach(x => {
+              //     if (x.toLowerCase() === 'GSTIN') {
+              //       this.AddIdentificationToTableFromTaxPayerDetails(this.TaxPayerDetails.gstin, x);
+              //     }
+              //     else if (x.toLowerCase() === 'Pancard') {
+              //       this.AddIdentificationToTableFromTaxPayerDetails(panCard, x);
+              //     }
+              //   });
+              // }
+              this.AddIdentificationToTableFromTaxPayerDetails(this.TaxPayerDetails.gstin, 'GSTIN');
+              this.AddIdentificationToTableFromTaxPayerDetails(panCard, 'Pancard');
+            }
           }
           else {
             this.IsProgressBarVisibile = false;
@@ -399,6 +417,26 @@ export class VendorRegistrationComponent implements OnInit {
           this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
         }
       );
+    }
+  }
+
+  AddIdentificationToTableFromTaxPayerDetails(id: string, idType: string): void {
+    if (id != null && id !== '') {
+      const bPIdentity = new BPIdentity();
+      bPIdentity.Type = idType;
+      bPIdentity.IDNumber = id;
+      // bPIdentity.ValidUntil = 'this.identificationFormGroup.get('ValidUntil').value';
+      // if (this.fileToUpload) {
+      //   bPIdentity.AttachmentName = this.fileToUpload.name;
+      //   this.fileToUploadList.push(this.fileToUpload);
+      //   this.fileToUpload = null;
+      // }
+      if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+        this.IdentificationsByVOB = [];
+      }
+      this.IdentificationsByVOB.push(bPIdentity);
+      this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+    } else {
     }
   }
 
