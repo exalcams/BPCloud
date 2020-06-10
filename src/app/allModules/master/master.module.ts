@@ -15,6 +15,7 @@ import { RoleComponent } from './role/role.component';
 import { UserComponent } from './user/user.component';
 import { ReasonComponent } from './reason/reason.component';
 import { IdentityComponent } from './identity/identity.component';
+import { BankComponent } from './bank/bank.component';
 
 const menuRoutes: Routes = [
     {
@@ -37,6 +38,10 @@ const menuRoutes: Routes = [
         path: 'identity',
         component: IdentityComponent,
     },
+    {
+        path: 'bank',
+        component: BankComponent,
+    },
 ];
 @NgModule({
     declarations: [
@@ -44,7 +49,8 @@ const menuRoutes: Routes = [
         RoleComponent,
         MenuAppComponent,
         ReasonComponent,
-        IdentityComponent
+        IdentityComponent,
+        BankComponent
     ],
     imports: [
         MatButtonModule,

@@ -82,6 +82,7 @@ export class AppComponent implements OnInit, OnDestroy {
         mdIconRegistry.addSvgIcon('receiptIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/receipt.svg'));
         mdIconRegistry.addSvgIcon('assignmentIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/assignment.svg'));
         mdIconRegistry.addSvgIcon('viewListIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/viewList.svg'));
+        mdIconRegistry.addSvgIcon('newViewListIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/newViewList.svg'));
         mdIconRegistry.addSvgIcon('accountCircleIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/accountCircle.svg'));
         mdIconRegistry.addSvgIcon('exitToAppIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/exitToApp.svg'));
         mdIconRegistry.addSvgIcon('closeIcon', sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/custom/close.svg'));

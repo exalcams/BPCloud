@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView } from 'app/models/vendor-master';
+import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView, CBPBankView } from 'app/models/vendor-master';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -84,6 +84,46 @@ export class VendorMasterService {
   DeleteIdentity(identity: CBPIdentityView): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/DeleteIdentity`,
       identity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  // Bank 
+
+  GetAllBanks(): Observable<CBPBankView[] | string> {
+    return this._httpClient.get<CBPBankView[]>(`${this.baseAddress}vendormasterapi/Master/GetAllBanks`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  CreateBank(bank: CBPBankView): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/CreateBank`,
+      bank,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      }
+    ).pipe(catchError(this.errorHandler));
+  }
+
+  UpdateBank(bank: CBPBankView): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/UpdateBank`,
+      bank,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      }
+    ).pipe(catchError(this.errorHandler));
+  }
+
+  DeleteBank(bank: CBPBankView): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/DeleteBank`,
+      bank,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

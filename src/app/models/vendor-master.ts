@@ -45,7 +45,7 @@ export class CBPApp extends CommonClass {
     StartDate?: Date;
     EndDate?: Date;
 }
-export class CBPLocation {
+export class CBPLocation extends CommonClass {
     Pincode: string;
     Location: string;
     Taluk: string;
@@ -53,7 +53,7 @@ export class CBPLocation {
     State: string;
     Country: string;
 }
-export class CBPIdentity {
+export class CBPIdentity extends CommonClass {
     ID: number;
     Text: string;
     Format: string;
@@ -61,13 +61,20 @@ export class CBPIdentity {
     ExpDateReq: Date;
     Country: string;
 }
-export class CBPIdentityView {
+export class CBPIdentityView extends CommonClass {
     ID: number;
     Text: string;
     Format: string;
     DocReq: string;
     ExpDateReq: Date;
     Country: string;
+}
+export class CBPBankView extends CommonClass {
+    BankCode: string;
+    BankName: string;
+    BankCity: string;
+    BankCountry: string;
+    BankBranch: string;
 }
 export class TaxPayerDetails {
     gstin: string;

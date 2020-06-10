@@ -3,7 +3,7 @@
     <div class="outer" fxLayout>
       <div class="bg"></div>
       <div>
-        <h3 style="margin: 0px;padding-left: 10px;"><b>Identity</b></h3>
+        <h3 style="margin: 0px;padding-left: 10px;"><b>Bank</b></h3>
       </div>
       <div fxFlex align="end">
         <span><img src="assets/images/logo.svg" style="height: 40px;padding: 4px 15px 2px 0px;"></span>
@@ -24,27 +24,27 @@
           </mat-toolbar>
         </div>
         <div class="sidenav-content" fusePerfectScrollbar fxFlex>
-          <div *ngFor="let identity of AllIdentitities | filter: searchText">
+          <div *ngFor="let bank of AllBanks | filter: searchText">
             <div>
-              <div class="mx-8 mb-8 mt-0 p-8 leftCard" (click)="LoadSelectedIdentity(identity)"
-                [style.border-left-color]="SelectedIdentityID==identity.ID?'#efb577':'#cccccc'">
+              <div class="mx-8 mb-8 mt-0 p-8 leftCard" (click)="LoadSelectedBank(bank)"
+                [style.border-left-color]="SelectedBankCode==bank.BankCode?'#efb577':'#cccccc'">
                 <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
-                  <div fxFlex><strong>{{identity.ID}}</strong></div>
-                  <div fxFlex align="end">{{identity.CreatedOn | date :'dd/MM/yyyy'}}</div>
+                  <div fxFlex><strong>{{bank.BankCode}}</strong></div>
+                  <div fxFlex align="end">{{bank.CreatedOn | date :'dd/MM/yyyy'}}</div>
                 </div>
                 <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
-                  <div fxFlex><strong>Identity Name : </strong>{{identity.Text}}</div>
+                  <div fxFlex><strong>Bank Name : </strong>{{bank.BankName}}</div>
                 </div>
                 <!-- <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
-                  <div fxFlex><strong>AWB : </strong>{{identity.Format}}</div>
+                  <div fxFlex><strong>AWB : </strong>{{bank.BankCity}}</div>
                 </div>
                 <div fxLayout class="pb-4" fxLayoutAlign="space-between center">
-                  <div fxFlex>{{identity.Text}}</div>
+                  <div fxFlex>{{bank.BankName}}</div>
                 </div> -->
               </div>
             </div>
           </div>
-          <div *ngIf="(AllIdentitities | filter: searchText)?.length === 0" class="no-results-message">
+          <div *ngIf="(AllBanks | filter: searchText)?.length === 0" class="no-results-message">
             <span class="pl-12"> No results..</span>
           </div>
         </div>
@@ -55,24 +55,26 @@
           <div fxFlex fxLayout="column" class="p-0 pt-8">
             <div fxFlex class="px-12 mt-4">
               <form autocomplete="off" class="normal" fxLayout="column" fxLayoutGap="20px" fxLayoutAlign="start"
-                name="form" novalidate [formGroup]="IdentityFormGroup">
+                name="form" novalidate [formGroup]="BankFormGroup">
 
                 <div fxFlex fxLayout="row" fxLayoutGap="40px">
+                  
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <input matInput placeholder="Identity Name" formControlName="Text">
+                      <input matInput placeholder="IFSC" formControlName="BankCode">
                       <mat-error
-                        *ngIf="IdentityFormGroup.get('Text').touched && IdentityFormGroup.get('Text').hasError('required')">
-                        Identity Name is required
+                        *ngIf="BankFormGroup.get('BankCode').touched && BankFormGroup.get('BankCode').hasError('required')">
+                        IFSC is required
                       </mat-error>
                     </mat-form-field>
                   </div>
+
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <input matInput placeholder="Format" formControlName="Format">
+                      <input matInput placeholder="Bank Name" formControlName="BankName">
                       <mat-error
-                        *ngIf="IdentityFormGroup.get('Format').touched && IdentityFormGroup.get('Format').hasError('required')">
-                        Format is required
+                        *ngIf="BankFormGroup.get('BankName').touched && BankFormGroup.get('BankName').hasError('required')">
+                        Bank Name is required
                       </mat-error>
                     </mat-form-field>
                   </div>
@@ -81,41 +83,37 @@
                 <div fxFlex fxLayout="row" fxLayoutGap="40px">
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <mat-select (selectionChange)="CountrySelected($event)" placeholder="Country"
-                        formControlName="Country">
+                      <input matInput placeholder="Bank City" formControlName="BankCity">
+                      <mat-error
+                        *ngIf="BankFormGroup.get('BankCity').touched && BankFormGroup.get('BankCity').hasError('required')">
+                        Bank City is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="50">
+                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
+                      <mat-select (selectionChange)="CountrySelected($event)" placeholder="Bank Country"
+                        formControlName="BankCountry">
                         <mat-option *ngFor="let country of AllCountries" [value]="country.CountryCode">
                           {{country.CountryName}}
                         </mat-option>
                       </mat-select>
                       <mat-error
-                        *ngIf="IdentityFormGroup.get('Country').touched && IdentityFormGroup.get('Country').hasError('required')">
-                        Country is required
+                        *ngIf="BankFormGroup.get('BankCountry').touched && BankFormGroup.get('BankCountry').hasError('required')">
+                        Bank Country is required
                       </mat-error>
                     </mat-form-field>
                   </div>
-                  <div fxFlex="50">
-                    <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <input matInput placeholder="Doc Req" formControlName="DocReq">
-                      <mat-error
-                        *ngIf="IdentityFormGroup.get('DocReq').touched && IdentityFormGroup.get('DocReq').hasError('required')">
-                        Doc Req is required
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
-                </div>
 
+                </div>
                 <div fxFlex fxLayout="row" fxLayoutGap="40px">
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-32" style="width: 100%;">
-                      <input matInput placeholder="Exp Date" [matDatepicker]="picker0" formControlName="ExpDateReq"
-                        [max]="maxDate">
-                      <mat-datepicker-toggle matSuffix [for]="picker0">
-                        <!-- <mat-icon matDatepickerToggleIcon svgIcon="calendarIcon" class="mb-12"></mat-icon> -->
-                      </mat-datepicker-toggle>
-                      <mat-datepicker #picker0></mat-datepicker>
+                      <input matInput placeholder="Bank Branch" formControlName="BankBranch">
                       <mat-error
-                        *ngIf="IdentityFormGroup.get('ExpDateReq').touched && IdentityFormGroup.get('ExpDateReq').hasError('required')">
-                        Exp Date is required
+                        *ngIf="BankFormGroup.get('BankBranch').touched && BankFormGroup.get('BankBranch').hasError('required')">
+                        Bank Branch is required
                       </mat-error>
                     </mat-form-field>
                   </div>
@@ -134,11 +132,11 @@
         </div>
         <mat-card-actions class="m-0 pl-12 pr-16 cardActions">
           <div fxLayout fxFlex fxLayoutAlign="end">
-            <button *ngIf="SelectedIdentity?.ID" mat-stroked-button class="DeleteBtn mr-4 mb-8"
+            <button *ngIf="SelectedBank?.BankCode" mat-stroked-button class="DeleteBtn mr-4 mb-8"
               (click)="DeleteClicked()">Delete</button>
-            <button *ngIf="!SelectedIdentity?.ID" mat-raised-button class="SaveBtn"
+            <button *ngIf="!SelectedBank?.BankCode" mat-raised-button class="SaveBtn"
               (click)="SaveClicked()">Save</button>
-            <button *ngIf="SelectedIdentity?.ID" mat-raised-button class="SaveBtn"
+            <button *ngIf="SelectedBank?.BankCode" mat-raised-button class="SaveBtn"
               (click)="UpdateClicked()">Update</button>
           </div>
         </mat-card-actions>
