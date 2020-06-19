@@ -52,6 +52,15 @@
       //   }
     }
   }
+  .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+    width: 100% !important;
+  }
+  .mat-form-field-wrapper {
+    width: 100% !important;
+  }
+  .mat-form-field {
+    width: 100% !important;
+  }
   .borderRight1 {
     border-left: 1px solid black;
     border-radius: 1px;

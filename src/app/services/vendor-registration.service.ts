@@ -3,7 +3,7 @@ import { Subject, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView } from 'app/models/vendor-registration';
+import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView, QuestionnaireResultSet, Answers } from 'app/models/vendor-registration';
 import { Guid } from 'guid-typescript';
 
 @Injectable({
@@ -165,6 +165,19 @@ export class VendorRegistrationService {
     ).pipe(catchError(this.errorHandler));
 
   }
-
+  GetQuestionnaireResultSetByQRID(): Observable<QuestionnaireResultSet | string> {
+    return this._httpClient.get<QuestionnaireResultSet>(`${this.baseAddress}vendorregisterapi/Registration/GetQuestionnaireResultSetByQRID`)
+      .pipe(catchError(this.errorHandler));
+  }
+  // SaveAnswers(AnswerList: Answers[]): Observable<any> {
+  //   return this._httpClient.post<any>(`${this.baseAddress}questionnaireapi/Questionnaire/SaveAnswers`,
+  //     AnswerList,
+  //     {
+  //       headers: new HttpHeaders({
+  //         'Content-Type': 'application/json'
+  //       })
+  //     })
+  //     .pipe(catchError(this.errorHandler));
+  // }
 
 }

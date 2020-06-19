@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { MenuApp, AuthenticationDetails, UserView, VendorUser } from 'app/models/master';
 import { Guid } from 'guid-typescript';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
@@ -11,18 +11,21 @@ import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notific
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { AttachmentDialogComponent } from 'app/allModules/pages/attachment-dialog/attachment-dialog.component';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
-import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact, BPActivityLog } from 'app/models/vendor-registration';
+import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact, BPActivityLog, QuestionnaireResultSet, Question, QAnswerChoice, Answers } from 'app/models/vendor-registration';
 import { AttachmentDetails } from 'app/models/attachment';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
 import { stringify } from 'querystring';
+import { fuseAnimations } from '@fuse/animations';
 
 @Component({
   selector: 'vendor-registration',
   templateUrl: './vendor-registration.component.html',
-  styleUrls: ['./vendor-registration.component.scss']
+  styleUrls: ['./vendor-registration.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  animations: fuseAnimations
 })
 export class VendorRegistrationComponent implements OnInit {
   MenuItems: string[];
@@ -39,15 +42,22 @@ export class VendorRegistrationComponent implements OnInit {
   identificationFormGroup: FormGroup;
   bankDetailsFormGroup: FormGroup;
   contactFormGroup: FormGroup;
+  questionFormGroup: FormGroup;
   // activityLogFormGroup: FormGroup;
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   selectID: number;
   SelectedBPVendorOnBoarding: BPVendorOnBoarding;
   SelectedBPVendorOnBoardingView: BPVendorOnBoardingView;
+  AllQuestionnaireResultSet: QuestionnaireResultSet = new QuestionnaireResultSet();
+  AllQuestions: Question[] = [];
+  AllQuestionAnswerChoices: QAnswerChoice[] = [];
+  AllQuestionAnswers: Answers[] = [];
+  QuestionID: any;
   IdentificationsByVOB: BPIdentity[] = [];
   BanksByVOB: BPBank[] = [];
   ContactsByVOB: BPContact[] = [];
+  
   // ActivityLogsByVOB: BPActivityLog[] = [];
   identificationDisplayedColumns: string[] = [
     'Type',
@@ -202,7 +212,22 @@ export class VendorRegistrationComponent implements OnInit {
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
     this.GetAllIdentityTypes();
+    this.GetQuestionnaireResultSet();
     // this.InitializeActivityLogFormGroup();
+  }
+
+  GetQuestionnaireResultSet(): void {
+    this._vendorRegistrationService.GetQuestionnaireResultSetByQRID().subscribe(
+      (data) => {
+        this.AllQuestionnaireResultSet = <QuestionnaireResultSet>data;
+        this.AllQuestions = this.AllQuestionnaireResultSet.Questions;
+        this.AllQuestionAnswerChoices = this.AllQuestionnaireResultSet.QuestionAnswerChoices;
+        console.log(this.AllQuestionnaireResultSet);
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
   }
 
   onArrowBackClick(): void {
@@ -289,6 +314,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.fileToUpload = null;
     this.fileToUploadList = [];
     this.ClearIdentificationFormGroup();
+    this.ClearQuestionFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
     // this.ClearActivityLogFormGroup();
@@ -302,6 +328,12 @@ export class VendorRegistrationComponent implements OnInit {
     this.identificationFormGroup.reset();
     Object.keys(this.identificationFormGroup.controls).forEach(key => {
       this.identificationFormGroup.get(key).markAsUntouched();
+    });
+  }
+  ClearQuestionFormGroup(): void {
+    this.questionFormGroup.reset();
+    Object.keys(this.questionFormGroup.controls).forEach(key => {
+      this.questionFormGroup.get(key).markAsUntouched();
     });
   }
 
@@ -878,7 +910,11 @@ export class VendorRegistrationComponent implements OnInit {
     this.AddIdentificationToTable();
     return true;
   }
-
+  QuestionEnterKeyDown(event: any): boolean {
+    // this.validUntil.nativeElement.blur();
+    this.GetQuestionsAndAnswers(event);
+    return true;
+  }
   BankEnterKeyDown(): boolean {
     this.bankCity.nativeElement.blur();
     this.AddBankToTable();
@@ -977,9 +1013,49 @@ export class VendorRegistrationComponent implements OnInit {
     this.GetBPIdentityValues();
     this.GetBPBankValues();
     this.GetBPContactValues();
+    this.GetQuestionsAnswers();
     // this.GetBPActivityLogValues();
   }
-
+  ChangeQuestionID(qid: any): void {
+    alert(qid);
+    this.QuestionID = qid;
+  }
+  ChangeQuestioncheckBoxID(qid: any, value: any): void {
+    const bPIdentity = new Answers();
+    bPIdentity.QID = qid;
+    bPIdentity.Answer = value;
+    bPIdentity.QRID = 1;
+    // bPIdentity.QID = this.questionFormGroup.get('QID').value;
+    // bPIdentity.Answer = this.questionFormGroup.get('Answer').value;
+    console.log(bPIdentity);
+    this.AllQuestionAnswers.push(bPIdentity);
+    console.log(this.AllQuestionAnswers);
+  }
+  GetQuestionsAndAnswers(event): void {
+    // if (this.questionFormGroup.valid) {
+    console.log(event.target.value);
+    const bPIdentity = new Answers();
+    bPIdentity.QID = this.QuestionID;
+    bPIdentity.Answer = event.target.value;
+    bPIdentity.QRID = 1;
+    // bPIdentity.QID = this.questionFormGroup.get('QID').value;
+    // bPIdentity.Answer = this.questionFormGroup.get('Answer').value;
+    console.log(bPIdentity);
+    this.AllQuestionAnswers.push(bPIdentity);
+    console.log(this.AllQuestionAnswers);
+    // this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+    // this.ClearQuestionFormGroup();
+    // } else {
+    //   this.ShowValidationErrors(this.questionFormGroup);
+    // }
+  }
+  GetQuestionsAnswers(): void {
+    this.SelectedBPVendorOnBoardingView.QuestionAnswers = [];
+    // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
+    this.AllQuestionAnswers.forEach(x => {
+      this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(x);
+    });
+  }
   GetBPIdentityValues(): void {
     this.SelectedBPVendorOnBoardingView.bPIdentities = [];
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
