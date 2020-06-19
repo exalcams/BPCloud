@@ -683,7 +683,117 @@
                 </div>
               </div>
             </div>
-
+            <div fxFlex fxLayout="column">
+              <div style="margin-left: 7px">
+                <!-- <span><strong>Contact Table</strong></span> -->
+                <div class="SectionTitle">
+                  <strong>Questions</strong>
+                </div>
+              </div>
+              <div class="mt-8">
+                <form autocomplete="off" name="form" novalidate [formGroup]="questionFormGroup">
+                  <div *ngFor="let question of AllQuestions;let i = index" style="margin-top: 2%;margin-left: 2%;margin-right: 2%;">
+                    <div>
+                      <div fxFlex fxLayout="row">
+                        <div fxFlex="100">
+                          <!-- <input matInput formControlName="QID" disabled> -->
+                          <span>{{i+1}}.</span> <span style="font-size: 13px;" >{{question.QText}}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'Text'">
+                      <div fxFlex fxLayout="row">
+                        <div fxFlex="100">
+                          <mat-form-field style="margin-right: 5%;width: 100% !important;">
+                            <input matInput (click)="ChangeQuestionID(question.QID)" (keydown.enter)="QuestionEnterKeyDown($event)">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'Radio'">
+                      <div *ngFor="let choice of AllQuestionAnswerChoices">
+                        <div *ngIf="question.QID == choice.QID">
+                          <mat-radio-group class="example-radio-group">
+                            <mat-radio-button [value]="choice.ChoiceText" (click)="ChangeQuestioncheckBoxID(question.QID,choice.ChoiceText)">
+                              {{choice.ChoiceText}}</mat-radio-button>
+                          </mat-radio-group>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'DropDown'">
+                      <div fxFlex *ngFor="let choice of AllQuestionAnswerChoices">
+                        <div *ngIf="question.QID == choice.QID">
+                          <mat-form-field style="width: 100%;">
+                            <mat-select matInput formControlName="Answer">
+                              <mat-option [value]="choice.ChoiceText" (click)="ChangeQuestioncheckBoxID(question.QID,choice.ChoiceText)"  (keydown.enter)="QuestionEnterKeyDown()">
+                                {{choice.ChoiceText}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'CheckBox'">
+                      <div *ngFor="let choice of AllQuestionAnswerChoices">
+                        <div *ngIf="question.QID == choice.QID" >
+                          <mat-checkbox #checkBox [value]="choice.ChoiceText"  (click)="ChangeQuestioncheckBoxID(question.QID,choice.ChoiceText)">
+                            {{choice.ChoiceText}}
+                          </mat-checkbox>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'Email'">
+                      <div fxFlex fxLayout="row">
+                        <div fxFlex="100">
+                          <mat-form-field style="margin-right: 5%;width: 100% !important;">
+                            <input matInput (click)="ChangeQuestionID(question.QID)" (keydown.enter)="QuestionEnterKeyDown()">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'Date'">
+                      <div fxFlex fxLayout="row">
+                        <div fxFlex="100">
+                          <mat-form-field style="width: 65%;">
+                            <input matInput  [matDatepicker]="questionpicker1" 
+                              #validUntil (click)="ChangeQuestionID(question.QID)" (keydown.enter)="QuestionEnterKeyDown()">
+                            <mat-datepicker-toggle matSuffix [for]="questionpicker1"></mat-datepicker-toggle>
+                            <mat-datepicker #questionpicker1></mat-datepicker>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.QAnsType === 'Number'">
+                      <div fxFlex fxLayout="row">
+                        <div fxFlex="100">
+                          <mat-form-field style="margin-right: 5%;width: 100% !important;">
+                            <input matInput (click)="ChangeQuestionID(question.QID)" (keydown.enter)="QuestionEnterKeyDown()" formControlName="Answer">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+                <!-- <div
+                  *ngIf="selectQuestionType === 'Radio' || selectQuestionType === 'DropDown' || selectQuestionType === 'CheckBox'">
+                  <div fxFlex fxLayout="row">
+                    <div fxFlex="10" class="pr-8" style="padding-top: 25px !important;" fxLayoutAlign="end start">
+                      <span style="font-size: 13px;">Enter Options:</span>
+                    </div>
+                    <div fxFlex="80">
+                      <mat-form-field class="pl-8 pr-12" fxLayoutAlign="end start">
+                        <input matInput #txtVal (keydown.enter)="OptionEnter(txtVal.value)">
+                      </mat-form-field>
+                      <div>
+                        <button class="OptionButton" *ngFor="let options of QuestionOptions"><span
+                            class="Option">{{options}}</span>
+                          <mat-icon style="margin-top: -10px;" (click)="RemoveOption(options)">cancel</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+            </div>
             <!-- <div fxFlex fxLayout="column">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">

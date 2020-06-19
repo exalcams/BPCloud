@@ -59,8 +59,8 @@ import { AttachmentDialogComponent } from './attachment-dialog/attachment-dialog
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ChartsModule } from 'ng2-charts';
-import 'chartjs-plugin-labels';
-import 'chartjs-plugin-annotation';
+// import 'chartjs-plugin-labels';
+// import 'chartjs-plugin-annotation';
 import { CompanyDetailsComponent } from './company-details/company-details.component';
 // import 'chart.piecelabel.js';
 

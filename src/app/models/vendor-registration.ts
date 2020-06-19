@@ -1,3 +1,5 @@
+import { Guid } from 'guid-typescript';
+
 export class CommonClass {
     IsActive: boolean;
     CreatedOn: Date;
@@ -96,4 +98,58 @@ export class BPVendorOnBoardingView extends CommonClass {
     bPBanks: BPBank[];
     bPContacts: BPContact[];
     bPActivityLogs: BPActivityLog[];
+    QuestionAnswers: Answers[];
+}
+export class Questionnaires {
+    QRID: number;
+    QRText: string;
+    IsInActive: string;
+}
+export class QuestionnaireGroup {
+    QRGID: number;
+    QRID: number;
+    Language: string;
+    QRGText: string;
+    QRGLText: string;
+    QRGSortPriority: string;
+    DefaultExpanded: string;
+}
+export class QuestionnaireGroupQuestion {
+    QRID: number;
+    QRGID: number;
+    QID: number;
+    IsMandatory: boolean;
+    SortPriority: number;
+}
+export class Question {
+    QID: number;
+    Language: string;
+    QText: string;
+    QLText: string;
+    QAnsType: string;
+}
+export class QAnswerChoice {
+    ChoiceID: number;
+    QID: number;
+    Language: string;
+    ChoiceText: string;
+    IsDefault: boolean;
+}
+
+export class Answers {
+    AppID: number;
+    AppUID: number;
+    QRID: number;
+    QID: number;
+    Answer: string;
+    AnsweredBy: Guid;
+    AnswredOn: Date;
+}
+export class QuestionnaireResultSet {
+    Questionnaire: Questionnaires[];
+    QuestionnaireGroup: QuestionnaireGroup[];
+    QuestionnaireGroupQuestion: QuestionnaireGroupQuestion[];
+    Questions: Question[];
+    QuestionAnswerChoices: QAnswerChoice[];
+    Answers: Answers[];
 }
