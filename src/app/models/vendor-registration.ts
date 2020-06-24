@@ -146,6 +146,7 @@ export class Answers {
     AnswredOn: Date;
 }
 export class QuestionnaireResultSet {
+    QRID: number;
     Questionnaire: Questionnaires[];
     QuestionnaireGroup: QuestionnaireGroup[];
     QuestionnaireGroupQuestion: QuestionnaireGroupQuestion[];

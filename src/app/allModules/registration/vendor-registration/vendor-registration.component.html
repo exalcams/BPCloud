@@ -692,11 +692,108 @@
               </div>
               <div class="mt-8">
                 <form autocomplete="off" name="form" novalidate [formGroup]="questionFormGroup">
-                  <div *ngFor="let question of AllQuestions;let i = index" style="margin-top: 2%;margin-left: 2%;margin-right: 2%;">
+                  <div formArrayName="questions">
+                    <div *ngFor="let skill of questionFormGroup.get('questions').controls;let i=index">
+                      <div [formGroupName]="i">
+                        <div fxLayout="row">
+                          <div fxFlex="100">
+                            <span>{{i+1}}.</span> <span style="font-size: 13px;">{{this.AllQuestions[i].QText}}</span>
+                          </div>
+                        </div>
+                        <div fxLayout="row">
+                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Text'">
+                            <mat-form-field style="margin-right: 5%;width: 100% !important;">
+                              <input formControlName="quest" matInput (click)="ChangeQuestionID(question.QID)"
+                                (keydown.enter)="QuestionEnterKeyDown($event)">
+                            </mat-form-field>
+                          </div>
+                          <div class="mb-8" fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Radio'">
+                            <!-- <div *ngFor="let choice of AllQuestionAnswerChoices">
+                              <div *ngIf="this.AllQuestions[i].QID == choice.QID"> -->
+                            <mat-radio-group class="example-radio-group" formControlName="quest">
+                              <span *ngFor="let choice of AllQuestionAnswerChoices">
+                                <mat-radio-button [value]="choice.ChoiceText" class="mx-4"
+                                  *ngIf="this.AllQuestions[i].QID == choice.QID">
+                                  {{choice.ChoiceText}}</mat-radio-button>
+                              </span>
+
+                            </mat-radio-group>
+                            <!-- <mat-radio-group aria-label="Select an option"  formControlName="quest">
+                                  <mat-radio-button value="1">Option 1</mat-radio-button>
+                                  <mat-radio-button value="2">Option 2</mat-radio-button>
+                                </mat-radio-group> -->
+                            <!-- </div>
+                            </div> -->
+                          </div>
+                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'DropDown'">
+                            <div fxFlex *ngFor="let choice of AllQuestionAnswerChoices">
+                              <div *ngIf="this.AllQuestions[i].QID == choice.QID">
+                                <mat-form-field style="width: 100%;">
+                                  <mat-select matInput formControlName="quest">
+                                    <mat-option [value]="choice.ChoiceText" (keydown.enter)="QuestionEnterKeyDown()">
+                                      {{choice.ChoiceText}}</mat-option>
+                                  </mat-select>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'CheckBox'">
+                            <div *ngFor="let choice of AllQuestionAnswerChoices">
+                              <div *ngIf="this.AllQuestions[i].QID == choice.QID">
+                                <mat-checkbox formControlName="quest" [value]="choice.ChoiceText">
+                                  {{choice.ChoiceText}}
+                                </mat-checkbox>
+                              </div>
+                            </div>
+                          </div>
+                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Email'">
+                            <div fxFlex fxLayout="row">
+                              <div fxFlex="100">
+                                <mat-form-field style="margin-right: 5%;width: 100% !important;">
+                                  <input matInput formControlName="quest" (click)="ChangeQuestionID(question.QID)"
+                                    (keydown.enter)="QuestionEnterKeyDown()">
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Date'">
+                            <div fxFlex fxLayout="row">
+                              <div fxFlex="100">
+                                <mat-form-field style="width: 65%;">
+                                  <input matInput formControlName="quest" [matDatepicker]="questionpicker1" #validUntil
+                                    (click)="ChangeQuestionID(question.QID)" (keydown.enter)="QuestionEnterKeyDown()">
+                                  <mat-datepicker-toggle matSuffix [for]="questionpicker1"></mat-datepicker-toggle>
+                                  <mat-datepicker #questionpicker1></mat-datepicker>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Number'">
+                            <div fxFlex fxLayout="row">
+                              <div fxFlex="100">
+                                <mat-form-field style="margin-right: 5%;width: 100% !important;">
+                                  <input formControlName="quest" matInput (click)="ChangeQuestionID(question.QID)"
+                                    (keydown.enter)="QuestionEnterKeyDown()" formControlName="Answer">
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- <mat-form-field fxFlex="100" class="mx-12">
+                          <input matInput [placeholder]="this.AllQuestions[i].QText" formControlName="quest">
+                          <mat-error
+                            *ngIf="HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').touched &&
+                              HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').hasError('required')">
+                            {{AllTemplateParaMappings[i].Variable}} is required
+                          </mat-error>
+                        </mat-form-field> -->
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div *ngFor="let question of AllQuestions;let i = index" style="margin-top: 2%;margin-left: 2%;margin-right: 2%;">
                     <div>
                       <div fxFlex fxLayout="row">
                         <div fxFlex="100">
-                          <!-- <input matInput formControlName="QID" disabled> -->
                           <span>{{i+1}}.</span> <span style="font-size: 13px;" >{{question.QText}}</span>
                         </div>
                       </div>
@@ -771,7 +868,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </form>
                 <!-- <div
                   *ngIf="selectQuestionType === 'Radio' || selectQuestionType === 'DropDown' || selectQuestionType === 'CheckBox'">

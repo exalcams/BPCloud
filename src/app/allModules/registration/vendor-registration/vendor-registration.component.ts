@@ -1,23 +1,22 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import { MenuApp, AuthenticationDetails, UserView, VendorUser } from 'app/models/master';
-import { Guid } from 'guid-typescript';
+import { MenuApp, VendorUser } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
-import { MatTableDataSource, MatPaginator, MatSort, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MasterService } from 'app/services/master.service';
 import { Router } from '@angular/router';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
-import { AttachmentDialogComponent } from 'app/allModules/pages/attachment-dialog/attachment-dialog.component';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
-import { BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact, BPActivityLog, QuestionnaireResultSet, Question, QAnswerChoice, Answers } from 'app/models/vendor-registration';
-import { AttachmentDetails } from 'app/models/attachment';
+import {
+  BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact,
+  QuestionnaireResultSet, Question, QAnswerChoice, Answers
+} from 'app/models/vendor-registration';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
-import { stringify } from 'querystring';
 import { fuseAnimations } from '@fuse/animations';
 
 @Component({
@@ -43,6 +42,7 @@ export class VendorRegistrationComponent implements OnInit {
   bankDetailsFormGroup: FormGroup;
   contactFormGroup: FormGroup;
   questionFormGroup: FormGroup;
+  questionsFormArray = this._formBuilder.array([]);
   // activityLogFormGroup: FormGroup;
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
@@ -51,13 +51,14 @@ export class VendorRegistrationComponent implements OnInit {
   SelectedBPVendorOnBoardingView: BPVendorOnBoardingView;
   AllQuestionnaireResultSet: QuestionnaireResultSet = new QuestionnaireResultSet();
   AllQuestions: Question[] = [];
+  SelectedQRID: number;
   AllQuestionAnswerChoices: QAnswerChoice[] = [];
   AllQuestionAnswers: Answers[] = [];
   QuestionID: any;
   IdentificationsByVOB: BPIdentity[] = [];
   BanksByVOB: BPBank[] = [];
   ContactsByVOB: BPContact[] = [];
-  
+
   // ActivityLogsByVOB: BPActivityLog[] = [];
   identificationDisplayedColumns: string[] = [
     'Type',
@@ -203,8 +204,8 @@ export class VendorRegistrationComponent implements OnInit {
       'WEST BENGAL',
       'UTTARAKHAND'
     ];
+    this.SelectedQRID = 0;
   }
-
 
   ngOnInit(): void {
     this.InitializeVendorRegistrationFormGroup();
@@ -213,14 +214,18 @@ export class VendorRegistrationComponent implements OnInit {
     this.InitializeContactFormGroup();
     this.GetAllIdentityTypes();
     this.GetQuestionnaireResultSet();
-    // this.InitializeActivityLogFormGroup();
+    this.InitializeQuestionsFormGroup();
   }
 
   GetQuestionnaireResultSet(): void {
     this._vendorRegistrationService.GetQuestionnaireResultSetByQRID().subscribe(
       (data) => {
         this.AllQuestionnaireResultSet = <QuestionnaireResultSet>data;
+        this.SelectedQRID = this.AllQuestionnaireResultSet.QRID;
         this.AllQuestions = this.AllQuestionnaireResultSet.Questions;
+        this.AllQuestions.forEach(x => {
+          this.AddToQuestionsFormGroup(x);
+        });
         this.AllQuestionAnswerChoices = this.AllQuestionnaireResultSet.QuestionAnswerChoices;
         console.log(this.AllQuestionnaireResultSet);
       },
@@ -228,6 +233,13 @@ export class VendorRegistrationComponent implements OnInit {
         console.error(err);
       }
     );
+  }
+
+  AddToQuestionsFormGroup(question: Question): void {
+    const row = this._formBuilder.group({
+      quest: ['', Validators.required],
+    });
+    this.questionsFormArray.push(row);
   }
 
   onArrowBackClick(): void {
@@ -290,7 +302,11 @@ export class VendorRegistrationComponent implements OnInit {
       Email: ['', [Validators.required, Validators.email]],
     });
   }
-
+  InitializeQuestionsFormGroup(): void {
+    this.questionFormGroup = this._formBuilder.group({
+      questions: this.questionsFormArray
+    });
+  }
   // InitializeActivityLogFormGroup(): void {
   //   this.activityLogFormGroup = this._formBuilder.group({
   //     Activity: ['', Validators.required],
@@ -335,6 +351,12 @@ export class VendorRegistrationComponent implements OnInit {
     Object.keys(this.questionFormGroup.controls).forEach(key => {
       this.questionFormGroup.get(key).markAsUntouched();
     });
+    this.ClearFormArray(this.questionsFormArray);
+  }
+  ClearFormArray = (formArray: FormArray) => {
+    while (formArray.length !== 0) {
+      formArray.removeAt(0);
+    }
   }
 
   ClearBankDetailsFormGroup(): void {
@@ -351,12 +373,6 @@ export class VendorRegistrationComponent implements OnInit {
     });
   }
 
-  // ClearActivityLogFormGroup(): void {
-  //   this.activityLogFormGroup.reset();
-  //   Object.keys(this.activityLogFormGroup.controls).forEach(key => {
-  //     this.activityLogFormGroup.get(key).markAsUntouched();
-  //   });
-  // }
 
   ClearIdentificationDataSource(): void {
     this.IdentificationsByVOB = [];
@@ -717,7 +733,6 @@ export class VendorRegistrationComponent implements OnInit {
   }
 
   typeSelected(event): void {
-    const selectedType = event.value;
     if (event.value) {
       this.SelectedBPVendorOnBoarding.Type = event.value;
     }
@@ -1052,8 +1067,15 @@ export class VendorRegistrationComponent implements OnInit {
   GetQuestionsAnswers(): void {
     this.SelectedBPVendorOnBoardingView.QuestionAnswers = [];
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
-    this.AllQuestionAnswers.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(x);
+    // this.AllQuestionAnswers.forEach(x => {
+    //   this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(x);
+    // });
+    this.questionsFormArray.controls.forEach((x, i) => {
+      const ans: Answers = new Answers();
+      ans.QRID = this.SelectedQRID;
+      ans.QID = this.AllQuestionnaireResultSet.Questions[i].QID;
+      ans.Answer = x.get('quest').value;
+      this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(ans);
     });
   }
   GetBPIdentityValues(): void {
@@ -1101,9 +1123,9 @@ export class VendorRegistrationComponent implements OnInit {
         this.SelectedBPVendorOnBoarding.TransID = +(data as BPVendorOnBoarding).TransID;
         if (this.fileToUploadList && this.fileToUploadList.length) {
           this._vendorRegistrationService.AddUserAttachment(this.SelectedBPVendorOnBoarding.TransID, this.SelectedBPVendorOnBoarding.Email1, this.fileToUploadList).subscribe(
-            (dat) => {
+            () => {
               this._masterService.CreateVendorUser(vendorUser).subscribe(
-                (da) => {
+                () => {
                   this.ResetControl();
                   this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
                   this.IsProgressBarVisibile = false;
@@ -1119,7 +1141,7 @@ export class VendorRegistrationComponent implements OnInit {
           );
         } else {
           this._masterService.CreateVendorUser(vendorUser).subscribe(
-            (da) => {
+            () => {
               this.ResetControl();
               this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
               this.IsProgressBarVisibile = false;
@@ -1149,7 +1171,7 @@ export class VendorRegistrationComponent implements OnInit {
     // this.SelectedBPVendorOnBoardingView.ModifiedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.UpdateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
-      (data) => {
+      () => {
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('Vendor registration updated successfully', SnackBarStatus.success);
         this.IsProgressBarVisibile = false;
@@ -1168,7 +1190,7 @@ export class VendorRegistrationComponent implements OnInit {
     // this.SelectedBPVendorOnBoarding.ModifiedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.DeleteVendorOnBoarding(this.SelectedBPVendorOnBoarding).subscribe(
-      (data) => {
+      () => {
         // console.log(data);
         this.ResetControl();
         this.notificationSnackBarComponent.openSnackBar('BPVendorOnBoarding deleted successfully', SnackBarStatus.success);
