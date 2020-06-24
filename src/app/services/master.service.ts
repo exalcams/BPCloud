@@ -179,9 +179,9 @@ export class MasterService {
     ).pipe(catchError(this.errorHandler));
 
   }
-  CreateVendorUser(vendorUser: VendorUser): Observable<any> {
+  CreateVendorUser(vendorUser: VendorUser): Observable<UserWithRole | string> {
 
-    return this._httpClient.post<any>(`${this.baseAddress}authenticationapi/Master/CreateVendorUser`,
+    return this._httpClient.post<UserWithRole>(`${this.baseAddress}authenticationapi/Master/CreateVendorUser`,
       vendorUser,
       // {
       //   headers: new HttpHeaders({

@@ -697,25 +697,26 @@
                       <div [formGroupName]="i">
                         <div fxLayout="row">
                           <div fxFlex="100">
-                            <span>{{i+1}}.</span> <span style="font-size: 13px;">{{this.AllQuestions[i].QText}}</span>
+                            <span>{{i+1}}.</span> <span
+                              style="font-size: 13px;">{{AllQuestionAnswersView[i].QText}}</span>
                           </div>
                         </div>
                         <div fxLayout="row">
-                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Text'">
+                          <div fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'Text'">
                             <mat-form-field style="margin-right: 5%;width: 100% !important;">
                               <input formControlName="quest" matInput (click)="ChangeQuestionID(question.QID)"
                                 (keydown.enter)="QuestionEnterKeyDown($event)">
                             </mat-form-field>
                           </div>
-                          <div class="mb-8" fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Radio'">
+                          <div class="mb-8" fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'Radio'">
                             <!-- <div *ngFor="let choice of AllQuestionAnswerChoices">
-                              <div *ngIf="this.AllQuestions[i].QID == choice.QID"> -->
+                              <div *ngIf="AllQuestionAnswersView[i].QID == choice.QID"> -->
                             <mat-radio-group class="example-radio-group" formControlName="quest">
-                              <span *ngFor="let choice of AllQuestionAnswerChoices">
-                                <mat-radio-button [value]="choice.ChoiceText" class="mx-4"
-                                  *ngIf="this.AllQuestions[i].QID == choice.QID">
-                                  {{choice.ChoiceText}}</mat-radio-button>
-                              </span>
+                              <!-- <span> -->
+                              <mat-radio-button [value]="choice.ChoiceText" class="mx-4"
+                                *ngFor="let choice of this.AllQuestionAnswersView[i]?.AnswerChoice">
+                                {{choice.ChoiceText}}</mat-radio-button>
+                              <!-- </span> -->
 
                             </mat-radio-group>
                             <!-- <mat-radio-group aria-label="Select an option"  formControlName="quest">
@@ -725,9 +726,9 @@
                             <!-- </div>
                             </div> -->
                           </div>
-                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'DropDown'">
+                          <div fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'DropDown'">
                             <div fxFlex *ngFor="let choice of AllQuestionAnswerChoices">
-                              <div *ngIf="this.AllQuestions[i].QID == choice.QID">
+                              <div *ngIf="AllQuestionAnswersView[i].QID == choice.QID">
                                 <mat-form-field style="width: 100%;">
                                   <mat-select matInput formControlName="quest">
                                     <mat-option [value]="choice.ChoiceText" (keydown.enter)="QuestionEnterKeyDown()">
@@ -737,16 +738,16 @@
                               </div>
                             </div>
                           </div>
-                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'CheckBox'">
+                          <div fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'CheckBox'">
                             <div *ngFor="let choice of AllQuestionAnswerChoices">
-                              <div *ngIf="this.AllQuestions[i].QID == choice.QID">
+                              <div *ngIf="AllQuestionAnswersView[i].QID == choice.QID">
                                 <mat-checkbox formControlName="quest" [value]="choice.ChoiceText">
                                   {{choice.ChoiceText}}
                                 </mat-checkbox>
                               </div>
                             </div>
                           </div>
-                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Email'">
+                          <div fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'Email'">
                             <div fxFlex fxLayout="row">
                               <div fxFlex="100">
                                 <mat-form-field style="margin-right: 5%;width: 100% !important;">
@@ -756,7 +757,7 @@
                               </div>
                             </div>
                           </div>
-                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Date'">
+                          <div fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'Date'">
                             <div fxFlex fxLayout="row">
                               <div fxFlex="100">
                                 <mat-form-field style="width: 65%;">
@@ -768,7 +769,7 @@
                               </div>
                             </div>
                           </div>
-                          <div fxFlex *ngIf="this.AllQuestions[i].QAnsType === 'Number'">
+                          <div fxFlex *ngIf="AllQuestionAnswersView[i].QAnsType === 'Number'">
                             <div fxFlex fxLayout="row">
                               <div fxFlex="100">
                                 <mat-form-field style="margin-right: 5%;width: 100% !important;">
@@ -780,7 +781,7 @@
                           </div>
                         </div>
                         <!-- <mat-form-field fxFlex="100" class="mx-12">
-                          <input matInput [placeholder]="this.AllQuestions[i].QText" formControlName="quest">
+                          <input matInput [placeholder]="AllQuestionAnswersView[i].QText" formControlName="quest">
                           <mat-error
                             *ngIf="HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').touched &&
                               HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').hasError('required')">

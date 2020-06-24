@@ -12,9 +12,11 @@ import { environment } from 'environments/environment';
 })
 export class AuthService {
   baseAddress: string;
+  questionnaireBaseAddress: string;
   clientId: string;
   constructor(private _httpClient: HttpClient) {
     this.baseAddress = environment.baseAddress;
+    this.questionnaireBaseAddress = environment.questionnaireBaseAddress;
     this.clientId = environment.clientId;
   }
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import { MenuApp, VendorUser } from 'app/models/master';
+import { MenuApp, VendorUser, UserWithRole } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
@@ -11,13 +11,14 @@ import { NotificationDialogComponent } from 'app/notifications/notification-dial
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import {
   BPVendorOnBoarding, BPIdentity, BPBank, BPVendorOnBoardingView, BPContact,
-  QuestionnaireResultSet, Question, QAnswerChoice, Answers
+  QuestionnaireResultSet, Question, QAnswerChoice, Answers, QuestionAnswersView, AnswerList
 } from 'app/models/vendor-registration';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
 import { fuseAnimations } from '@fuse/animations';
+import { Guid } from 'guid-typescript';
 
 @Component({
   selector: 'vendor-registration',
@@ -50,10 +51,12 @@ export class VendorRegistrationComponent implements OnInit {
   SelectedBPVendorOnBoarding: BPVendorOnBoarding;
   SelectedBPVendorOnBoardingView: BPVendorOnBoardingView;
   AllQuestionnaireResultSet: QuestionnaireResultSet = new QuestionnaireResultSet();
+  AllQuestionAnswersView: QuestionAnswersView[] = [];
   AllQuestions: Question[] = [];
   SelectedQRID: number;
   AllQuestionAnswerChoices: QAnswerChoice[] = [];
   AllQuestionAnswers: Answers[] = [];
+  answerList: AnswerList;
   QuestionID: any;
   IdentificationsByVOB: BPIdentity[] = [];
   BanksByVOB: BPBank[] = [];
@@ -205,6 +208,7 @@ export class VendorRegistrationComponent implements OnInit {
       'UTTARAKHAND'
     ];
     this.SelectedQRID = 0;
+    this.answerList = new AnswerList();
   }
 
   ngOnInit(): void {
@@ -213,8 +217,10 @@ export class VendorRegistrationComponent implements OnInit {
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
     this.GetAllIdentityTypes();
-    this.GetQuestionnaireResultSet();
+    // this.GetQuestionnaireResultSet();
     this.InitializeQuestionsFormGroup();
+    this.GetQuestionAnswers();
+  
   }
 
   GetQuestionnaireResultSet(): void {
@@ -223,9 +229,9 @@ export class VendorRegistrationComponent implements OnInit {
         this.AllQuestionnaireResultSet = <QuestionnaireResultSet>data;
         this.SelectedQRID = this.AllQuestionnaireResultSet.QRID;
         this.AllQuestions = this.AllQuestionnaireResultSet.Questions;
-        this.AllQuestions.forEach(x => {
-          this.AddToQuestionsFormGroup(x);
-        });
+        // this.AllQuestions.forEach(x => {
+        //   this.AddToQuestionsFormGroup(x);
+        // });
         this.AllQuestionAnswerChoices = this.AllQuestionnaireResultSet.QuestionAnswerChoices;
         console.log(this.AllQuestionnaireResultSet);
       },
@@ -234,10 +240,29 @@ export class VendorRegistrationComponent implements OnInit {
       }
     );
   }
+  GetQuestionAnswers(): void {
+    this._vendorRegistrationService.GetQuestionAnswers('BPCloud', 'Vendor').subscribe(
+      (data) => {
+        this.AllQuestionAnswersView = data as QuestionAnswersView[];
+        this.AllQuestionAnswersView.forEach(x => {
+          this.AddToQuestionsFormGroup(x);
+        });
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
 
-  AddToQuestionsFormGroup(question: Question): void {
+  // AddToQuestionsFormGroup(question: Question): void {
+  //   const row = this._formBuilder.group({
+  //     quest: ['', Validators.required],
+  //   });
+  //   this.questionsFormArray.push(row);
+  // }
+  AddToQuestionsFormGroup(question: QuestionAnswersView): void {
     const row = this._formBuilder.group({
-      quest: ['', Validators.required],
+      quest: [question.Answer, Validators.required],
     });
     this.questionsFormArray.push(row);
   }
@@ -334,10 +359,11 @@ export class VendorRegistrationComponent implements OnInit {
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
     // this.ClearActivityLogFormGroup();
+    this.ClearQuestionFormGroup();
     this.ClearIdentificationDataSource();
     this.ClearBankDetailsDataSource();
     this.ClearContactDataSource();
-    // this.ClearActivityLogDataSource();
+    
   }
 
   ClearIdentificationFormGroup(): void {
@@ -1028,7 +1054,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.GetBPIdentityValues();
     this.GetBPBankValues();
     this.GetBPContactValues();
-    this.GetQuestionsAnswers();
+    // this.GetQuestionsAnswers();
     // this.GetBPActivityLogValues();
   }
   ChangeQuestionID(qid: any): void {
@@ -1064,18 +1090,21 @@ export class VendorRegistrationComponent implements OnInit {
     //   this.ShowValidationErrors(this.questionFormGroup);
     // }
   }
-  GetQuestionsAnswers(): void {
-    this.SelectedBPVendorOnBoardingView.QuestionAnswers = [];
+  GetQuestionsAnswers(userID: Guid): void {
+    this.answerList = new AnswerList();
+    // this.AllQuestionAnswers = [];
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
     // this.AllQuestionAnswers.forEach(x => {
     //   this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(x);
     // });
     this.questionsFormArray.controls.forEach((x, i) => {
       const ans: Answers = new Answers();
-      ans.QRID = this.SelectedQRID;
-      ans.QID = this.AllQuestionnaireResultSet.Questions[i].QID;
+      ans.QRID = this.AllQuestionAnswersView[i].QRID;
+      // ans.QRGID = this.AllQuestionAnswersView[i].QRGID;
+      ans.QID = this.AllQuestionAnswersView[i].QID;
       ans.Answer = x.get('quest').value;
-      this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(ans);
+      ans.AnsweredBy = userID;
+      this.answerList.Answerss.push(ans);
     });
   }
   GetBPIdentityValues(): void {
@@ -1125,11 +1154,24 @@ export class VendorRegistrationComponent implements OnInit {
           this._vendorRegistrationService.AddUserAttachment(this.SelectedBPVendorOnBoarding.TransID, this.SelectedBPVendorOnBoarding.Email1, this.fileToUploadList).subscribe(
             () => {
               this._masterService.CreateVendorUser(vendorUser).subscribe(
-                () => {
-                  this.ResetControl();
-                  this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-                  this.IsProgressBarVisibile = false;
-                  this._router.navigate(['/auth/login']);
+                (data1) => {
+                  const ResultedVendorUser = data1 as UserWithRole;
+                  this.GetQuestionsAnswers(ResultedVendorUser.UserID);
+                  this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
+                    () => {
+                      this.ResetControl();
+                      this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                      this.IsProgressBarVisibile = false;
+                      this._router.navigate(['/auth/login']);
+                    },
+                    (err) => {
+                      this.showErrorNotificationSnackBar(err);
+                    });
+
+                  // this.ResetControl();
+                  // this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                  // this.IsProgressBarVisibile = false;
+                  // this._router.navigate(['/auth/login']);
                 },
                 (err) => {
                   this.showErrorNotificationSnackBar(err);
@@ -1141,11 +1183,19 @@ export class VendorRegistrationComponent implements OnInit {
           );
         } else {
           this._masterService.CreateVendorUser(vendorUser).subscribe(
-            () => {
-              this.ResetControl();
-              this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-              this.IsProgressBarVisibile = false;
-              this._router.navigate(['/auth/login']);
+            (data1) => {
+              const ResultedVendorUser = data1 as UserWithRole;
+              this.GetQuestionsAnswers(ResultedVendorUser.UserID);
+              this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
+                () => {
+                  this.ResetControl();
+                  this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                  this.IsProgressBarVisibile = false;
+                  this._router.navigate(['/auth/login']);
+                },
+                (err) => {
+                  this.showErrorNotificationSnackBar(err);
+                });
             },
             (err) => {
               this.showErrorNotificationSnackBar(err);
