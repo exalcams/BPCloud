@@ -3,7 +3,7 @@ import { Subject, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView, QuestionnaireResultSet, Answers } from 'app/models/vendor-registration';
+import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView, QuestionnaireResultSet, Answers, QuestionAnswersView, AnswerList } from 'app/models/vendor-registration';
 import { Guid } from 'guid-typescript';
 
 @Injectable({
@@ -12,9 +12,10 @@ import { Guid } from 'guid-typescript';
 export class VendorRegistrationService {
 
   baseAddress: string;
-
+  questionnaireBaseAddress: string;
   constructor(private _httpClient: HttpClient, private _authService: AuthService) {
     this.baseAddress = _authService.baseAddress;
+    this.questionnaireBaseAddress = _authService.questionnaireBaseAddress;
   }
 
   // Error Handler
@@ -169,15 +170,25 @@ export class VendorRegistrationService {
     return this._httpClient.get<QuestionnaireResultSet>(`${this.baseAddress}vendorregisterapi/Registration/GetQuestionnaireResultSetByQRID`)
       .pipe(catchError(this.errorHandler));
   }
-  // SaveAnswers(AnswerList: Answers[]): Observable<any> {
-  //   return this._httpClient.post<any>(`${this.baseAddress}questionnaireapi/Questionnaire/SaveAnswers`,
-  //     AnswerList,
-  //     {
-  //       headers: new HttpHeaders({
-  //         'Content-Type': 'application/json'
-  //       })
-  //     })
-  //     .pipe(catchError(this.errorHandler));
-  // }
+  GetQuestionAnswers(QRText: string, QRGText: string): Observable<QuestionAnswersView[] | string> {
+    return this._httpClient.get<QuestionAnswersView[]>
+      (`${this.questionnaireBaseAddress}api/Questionnaire/GetQuestionAnswers?QRText=${QRText}&QRGText=${QRGText}`)
+      .pipe(catchError(this.errorHandler));
+  }
+  GetQuestionAnswersByUser(QRText: string, QRGText: string, UserID: Guid): Observable<QuestionAnswersView[] | string> {
+    return this._httpClient.get<QuestionAnswersView[]>
+      (`${this.questionnaireBaseAddress}api/Questionnaire/GetQuestionAnswersByUser?QRText=${QRText}&QRGText=${QRGText}&UserID=${UserID}`)
+      .pipe(catchError(this.errorHandler));
+  }
+  SaveAnswers(answerList: AnswerList): Observable<any> {
+    return this._httpClient.post<any>(`${this.questionnaireBaseAddress}api/Questionnaire/SaveAnswers`,
+      answerList,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
 
 }

@@ -98,7 +98,7 @@ export class BPVendorOnBoardingView extends CommonClass {
     bPBanks: BPBank[];
     bPContacts: BPContact[];
     bPActivityLogs: BPActivityLog[];
-    QuestionAnswers: Answers[];
+    // QuestionAnswers: Answers[];
 }
 export class Questionnaires {
     QRID: number;
@@ -153,4 +153,37 @@ export class QuestionnaireResultSet {
     Questions: Question[];
     QuestionAnswerChoices: QAnswerChoice[];
     Answers: Answers[];
+}
+
+export class QuestionAnswersView {
+    QRID: number;
+    QRText: string;
+    QRGID: number;
+    QRGText: string;
+    QID: number;
+    Language: string;
+    QText: string;
+    QLText: string;
+    QAnsType: string;
+    AppID: number;
+    AppUID: number;
+    Answer: string;
+    AnsweredBy: string;
+    AnswredOn: Date | string;
+    AnswerChoice: QAnswerChoiceView[];
+}
+
+export class QAnswerChoiceView {
+    ChoiceID: number;
+    QID: number;
+    Language: string;
+    ChoiceText: string;
+    IsDefault: boolean;
+}
+
+export class AnswerList {
+    constructor() {
+        this.Answerss = [];
+    }
+    Answerss: Answers[];
 }

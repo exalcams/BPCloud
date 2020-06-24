@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MenuApp, AuthenticationDetails, VendorUser } from 'app/models/master';
+import { MenuApp, AuthenticationDetails, VendorUser, UserWithRole } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { BPVendorOnBoarding, BPVendorOnBoardingView, BPIdentity, BPBank, BPContact, BPActivityLog } from 'app/models/vendor-registration';
+import { BPVendorOnBoarding, BPVendorOnBoardingView, BPIdentity, BPBank, BPContact, BPActivityLog, QuestionnaireResultSet, Question, QAnswerChoice, Answers, QuestionAnswersView, AnswerList } from 'app/models/vendor-registration';
 import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FuseConfigService } from '@fuse/services/config.service';
@@ -36,6 +36,8 @@ export class CompanyDetailsComponent implements OnInit {
   bankDetailsFormGroup: FormGroup;
   contactFormGroup: FormGroup;
   // activityLogFormGroup: FormGroup;
+  questionFormGroup: FormGroup;
+  questionsFormArray = this._formBuilder.array([]);
   searchText = '';
   AllVendorOnBoardings: BPVendorOnBoarding[] = [];
   BPVendorOnBoarding: BPVendorOnBoarding;
@@ -110,6 +112,14 @@ export class CompanyDetailsComponent implements OnInit {
   AllCountries: string[] = [];
   AllStates: string[] = [];
   math = Math;
+  AllQuestionnaireResultSet: QuestionnaireResultSet = new QuestionnaireResultSet();
+  AllQuestionAnswersView: QuestionAnswersView[] = [];
+  AllQuestions: Question[] = [];
+  answerList: AnswerList;
+  SelectedQRID: number;
+  AllQuestionAnswerChoices: QAnswerChoice[] = [];
+  AllQuestionAnswers: Answers[] = [];
+  QuestionID: any;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -188,6 +198,7 @@ export class CompanyDetailsComponent implements OnInit {
       'UTTARAKHAND'
     ];
     this.Status = '';
+    this.answerList = new AnswerList();
   }
 
   ngOnInit(): void {
@@ -208,6 +219,8 @@ export class CompanyDetailsComponent implements OnInit {
       this.InitializeIdentificationFormGroup();
       this.InitializeBankDetailsFormGroup();
       this.InitializeContactFormGroup();
+      this.InitializeQuestionsFormGroup();
+      this.GetQuestionAnswers();
       // this.InitializeActivityLogFormGroup();
       // this.GetRegisteredVendorOnBoardings();
     }
@@ -297,7 +310,11 @@ export class CompanyDetailsComponent implements OnInit {
   //     Text: ['', Validators.required],
   //   });
   // }
-
+  InitializeQuestionsFormGroup(): void {
+    this.questionFormGroup = this._formBuilder.group({
+      questions: this.questionsFormArray
+    });
+  }
   ResetControl(): void {
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoardingView = new BPVendorOnBoardingView();
@@ -314,6 +331,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.ClearIdentificationFormGroup();
     this.ClearBankDetailsFormGroup();
     this.ClearContactFormGroup();
+    this.ClearQuestionFormGroup();
     // this.ClearActivityLogFormGroup();
     this.ClearIdentificationDataSource();
     this.ClearBankDetailsDataSource();
@@ -348,6 +366,19 @@ export class CompanyDetailsComponent implements OnInit {
   //     this.activityLogFormGroup.get(key).markAsUntouched();
   //   });
   // }
+  ClearQuestionFormGroup(): void {
+    this.questionFormGroup.reset();
+    Object.keys(this.questionFormGroup.controls).forEach(key => {
+      this.questionFormGroup.get(key).markAsUntouched();
+    });
+    // this.ClearFormArray(this.questionsFormArray);
+    this.questionsFormArray = this._formBuilder.array([]);
+  }
+  ClearFormArray = (formArray: FormArray) => {
+    while (formArray.length !== 0) {
+      formArray.removeAt(0);
+    }
+  }
 
   ClearIdentificationDataSource(): void {
     this.IdentificationsByVOB = [];
@@ -368,7 +399,25 @@ export class CompanyDetailsComponent implements OnInit {
   //   this.ActivityLogsByVOB = [];
   //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
   // }
-
+  GetQuestionAnswers(): void {
+    this._vendorRegistrationService.GetQuestionAnswersByUser('BPCloud', 'Vendor', this.CurrentUserID).subscribe(
+      (data) => {
+        this.AllQuestionAnswersView = data as QuestionAnswersView[];
+        this.AllQuestionAnswersView.forEach(x => {
+          this.AddToQuestionsFormGroup(x);
+        });
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+  AddToQuestionsFormGroup(question: QuestionAnswersView): void {
+    const row = this._formBuilder.group({
+      quest: [question.Answer, Validators.required],
+    });
+    this.questionsFormArray.push(row);
+  }
   GetAllIdentityTypes(): void {
     this._vendorMasterService.GetAllIdentityTypes().subscribe(
       (data) => {
@@ -909,6 +958,26 @@ export class CompanyDetailsComponent implements OnInit {
     // this.GetBPActivityLogValues();
   }
 
+  GetQuestionsAnswers(userID: Guid): void {
+    this.answerList = new AnswerList();
+    // this.AllQuestionAnswers = [];
+    // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
+    // this.AllQuestionAnswers.forEach(x => {
+    //   this.SelectedBPVendorOnBoardingView.QuestionAnswers.push(x);
+    // });
+    this.questionsFormArray.controls.forEach((x, i) => {
+      const ans: Answers = new Answers();
+      ans.QRID = this.AllQuestionAnswersView[i].QRID;
+      // ans.QRGID = this.AllQuestionAnswersView[i].QRGID;
+      ans.QID = this.AllQuestionAnswersView[i].QID;
+      ans.AppID = this.AllQuestionAnswersView[i].AppID;
+      ans.AppUID = this.AllQuestionAnswersView[i].AppUID;
+      ans.Answer = x.get('quest').value;
+      ans.AnsweredBy = userID;
+      this.answerList.Answerss.push(ans);
+    });
+  }
+
   GetBPIdentityValues(): void {
     this.SelectedBPVendorOnBoardingView.bPIdentities = [];
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
@@ -955,13 +1024,26 @@ export class CompanyDetailsComponent implements OnInit {
         this.SelectedBPVendorOnBoarding.TransID = +(data as BPVendorOnBoarding).TransID;
         if (this.fileToUploadList && this.fileToUploadList.length) {
           this._vendorRegistrationService.AddUserAttachment(this.SelectedBPVendorOnBoarding.TransID, this.SelectedBPVendorOnBoarding.Email1, this.fileToUploadList).subscribe(
-            (dat) => {
+            () => {
               this._masterService.CreateVendorUser(vendorUser).subscribe(
-                (da) => {
-                  this.ResetControl();
-                  this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-                  this.IsProgressBarVisibile = false;
-                  this._router.navigate(['/auth/login']);
+                (data1) => {
+                  const ResultedVendorUser = data1 as UserWithRole;
+                  this.GetQuestionsAnswers(ResultedVendorUser.UserID);
+                  this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
+                    () => {
+                      this.ResetControl();
+                      this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                      this.IsProgressBarVisibile = false;
+                      this._router.navigate(['/auth/login']);
+                    },
+                    (err) => {
+                      this.showErrorNotificationSnackBar(err);
+                    });
+
+                  // this.ResetControl();
+                  // this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                  // this.IsProgressBarVisibile = false;
+                  // this._router.navigate(['/auth/login']);
                 },
                 (err) => {
                   this.showErrorNotificationSnackBar(err);
@@ -973,11 +1055,19 @@ export class CompanyDetailsComponent implements OnInit {
           );
         } else {
           this._masterService.CreateVendorUser(vendorUser).subscribe(
-            (da) => {
-              this.ResetControl();
-              this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-              this.IsProgressBarVisibile = false;
-              this._router.navigate(['/auth/login']);
+            (data1) => {
+              const ResultedVendorUser = data1 as UserWithRole;
+              this.GetQuestionsAnswers(ResultedVendorUser.UserID);
+              this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
+                () => {
+                  this.ResetControl();
+                  this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                  this.IsProgressBarVisibile = false;
+                  this._router.navigate(['/auth/login']);
+                },
+                (err) => {
+                  this.showErrorNotificationSnackBar(err);
+                });
             },
             (err) => {
               this.showErrorNotificationSnackBar(err);
@@ -1004,10 +1094,18 @@ export class CompanyDetailsComponent implements OnInit {
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.UpdateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
-        this.ResetControl();
-        this.notificationSnackBarComponent.openSnackBar('Vendor updated successfully', SnackBarStatus.success);
-        this.IsProgressBarVisibile = false;
-        this.GetVendorOnBoardingsByEmailID();
+        this.GetQuestionsAnswers(this.CurrentUserID);
+        this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
+          () => {
+            this.ResetControl();
+            this.notificationSnackBarComponent.openSnackBar('Vendor updated successfully', SnackBarStatus.success);
+            this.IsProgressBarVisibile = false;
+            this.GetVendorOnBoardingsByEmailID();
+            this.GetQuestionAnswers();
+          },
+          (err) => {
+            this.showErrorNotificationSnackBar(err);
+          });
       },
       (err) => {
         console.error(err);
