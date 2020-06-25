@@ -220,7 +220,7 @@ export class CompanyDetailsComponent implements OnInit {
       this.InitializeBankDetailsFormGroup();
       this.InitializeContactFormGroup();
       this.InitializeQuestionsFormGroup();
-      this.GetQuestionAnswers();
+      // this.GetQuestionAnswers();
       // this.InitializeActivityLogFormGroup();
       // this.GetRegisteredVendorOnBoardings();
     }
@@ -371,8 +371,8 @@ export class CompanyDetailsComponent implements OnInit {
     Object.keys(this.questionFormGroup.controls).forEach(key => {
       this.questionFormGroup.get(key).markAsUntouched();
     });
-    // this.ClearFormArray(this.questionsFormArray);
-    this.questionsFormArray = this._formBuilder.array([]);
+    this.ClearFormArray(this.questionsFormArray);
+    // this.questionsFormArray = this._formBuilder.array([]);
   }
   ClearFormArray = (formArray: FormArray) => {
     while (formArray.length !== 0) {
@@ -591,6 +591,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.EnableAllVendorOnBoardingTypes();
     this.SetBPVendorOnBoardingValues();
     this.GetBPVendorOnBoardingSubItems();
+    this.GetQuestionAnswers();
   }
 
   typeSelected(event): void {
@@ -1101,7 +1102,7 @@ export class CompanyDetailsComponent implements OnInit {
             this.notificationSnackBarComponent.openSnackBar('Vendor updated successfully', SnackBarStatus.success);
             this.IsProgressBarVisibile = false;
             this.GetVendorOnBoardingsByEmailID();
-            this.GetQuestionAnswers();
+            // this.GetQuestionAnswers();
           },
           (err) => {
             this.showErrorNotificationSnackBar(err);
