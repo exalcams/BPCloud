@@ -219,8 +219,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.GetAllIdentityTypes();
     // this.GetQuestionnaireResultSet();
     this.InitializeQuestionsFormGroup();
-    this.GetQuestionAnswers();
-  
+    // this.GetQuestionAnswers();
   }
 
   GetQuestionnaireResultSet(): void {
@@ -240,8 +239,15 @@ export class VendorRegistrationComponent implements OnInit {
       }
     );
   }
-  GetQuestionAnswers(): void {
-    this._vendorRegistrationService.GetQuestionAnswers('BPCloud', 'Vendor').subscribe(
+  RoleSelected(event): void {
+    if (event.value) {
+      const selecteRole = event.value as string;
+      this.ClearQuestionFormGroup();
+      this.GetQuestionAnswers(selecteRole);
+    }
+  }
+  GetQuestionAnswers(selecteRole: string): void {
+    this._vendorRegistrationService.GetQuestionAnswers('BPCloud', selecteRole).subscribe(
       (data) => {
         this.AllQuestionAnswersView = data as QuestionAnswersView[];
         this.AllQuestionAnswersView.forEach(x => {
@@ -363,7 +369,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.ClearIdentificationDataSource();
     this.ClearBankDetailsDataSource();
     this.ClearContactDataSource();
-    
+
   }
 
   ClearIdentificationFormGroup(): void {

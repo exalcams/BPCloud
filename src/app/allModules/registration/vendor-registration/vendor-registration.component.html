@@ -124,7 +124,7 @@
                     <div fxFlex="33">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <!-- <input matInput placeholder="Role" formControlName="Role"> -->
-                        <mat-select matInput placeholder="Role" formControlName="Role">
+                        <mat-select matInput placeholder="Role" (selectionChange)="RoleSelected($event)" formControlName="Role">
                           <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
                         </mat-select>
                         <mat-error

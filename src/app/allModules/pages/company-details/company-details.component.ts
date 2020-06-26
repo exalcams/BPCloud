@@ -400,7 +400,7 @@ export class CompanyDetailsComponent implements OnInit {
   //   this.activityLogDataSource = new MatTableDataSource(this.ActivityLogsByVOB);
   // }
   GetQuestionAnswers(): void {
-    this._vendorRegistrationService.GetQuestionAnswersByUser('BPCloud', 'Vendor', this.CurrentUserID).subscribe(
+    this._vendorRegistrationService.GetQuestionAnswersByUser('BPCloud', this.CurrentUserRole, this.CurrentUserID).subscribe(
       (data) => {
         this.AllQuestionAnswersView = data as QuestionAnswersView[];
         this.AllQuestionAnswersView.forEach(x => {
