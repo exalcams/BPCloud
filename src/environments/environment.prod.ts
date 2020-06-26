@@ -4,6 +4,6 @@ export const environment = {
     // baseAddress : 'http://192.168.0.28:8001/',
     // baseAddress: 'http://10.111.0.124:8001/',
     baseAddress: 'http://192.168.0.28:7000/',
-    questionnaireBaseAddress: 'http://localhost:9011/',
+    questionnaireBaseAddress: 'http://192.168.0.28:9022/',
     clientId: 'ngAuthApp'
 };

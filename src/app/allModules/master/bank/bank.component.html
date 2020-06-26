@@ -93,7 +93,7 @@
 
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <mat-select (selectionChange)="CountrySelected($event)" placeholder="Bank Country"
+                      <mat-select (selectionChange)="CountrySelected()" placeholder="Bank Country"
                         formControlName="BankCountry">
                         <mat-option *ngFor="let country of AllCountries" [value]="country.CountryCode">
                           {{country.CountryName}}

@@ -81,7 +81,7 @@
                 <div fxFlex fxLayout="row" fxLayoutGap="40px">
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <mat-select (selectionChange)="CountrySelected($event)" placeholder="Country"
+                      <mat-select (selectionChange)="CountrySelected()" placeholder="Country"
                         formControlName="Country">
                         <mat-option *ngFor="let country of AllCountries" [value]="country.CountryCode">
                           {{country.CountryName}}
@@ -108,7 +108,7 @@
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-32" style="width: 100%;">
                       <input matInput placeholder="Exp Date" [matDatepicker]="picker0" formControlName="ExpDateReq"
-                        [max]="maxDate">
+                        >
                       <mat-datepicker-toggle matSuffix [for]="picker0">
                         <!-- <mat-icon matDatepickerToggleIcon svgIcon="calendarIcon" class="mb-12"></mat-icon> -->
                       </mat-datepicker-toggle>
