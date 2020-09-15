@@ -124,7 +124,8 @@
                     <div fxFlex="33">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                         <!-- <input matInput placeholder="Role" formControlName="Role"> -->
-                        <mat-select matInput placeholder="Role" (selectionChange)="RoleSelected($event)" formControlName="Role">
+                        <mat-select matInput placeholder="Role" [(ngModel)]="selected"
+                          (selectionChange)="RoleSelected($event)" formControlName="Role">
                           <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
                         </mat-select>
                         <mat-error
@@ -136,10 +137,10 @@
 
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
+                        <input #legalName matInput placeholder="Full Name" formControlName="LegalName">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
-                          Legal Name is required
+                          Full Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
@@ -166,11 +167,11 @@
                     <div fxFlex="50" fxLayout>
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput placeholder="Phone1" formControlName="Phone1">
+                          <!-- <div matPrefix class="pr-4 mr-4 borderRightClass"></div> -->
+                          <input matInput placeholder="LandLine Number" formControlName="Phone1">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
-                            Phone1 is required
+                            LandLine Number is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
                         vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
@@ -184,10 +185,10 @@
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                           <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput placeholder="Phone2" formControlName="Phone2">
+                          <input matInput placeholder="Mobile number" formControlName="Phone2">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
-                            Phone2 is required
+                            Mobile number is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
                         vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
@@ -236,7 +237,8 @@
                     <div fxFlex="50">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <!-- <input matInput placeholder="Country" formControlName="Country"> -->
-                        <mat-select matInput placeholder="Country" formControlName="Country">
+                        <mat-select matInput placeholder="Country" [(ngModel)]="selectedCountry"
+                          formControlName="Country">
                           <mat-option *ngFor="let country of AllCountries" [value]="country">{{country}}</mat-option>
                         </mat-select>
                         <mat-error
@@ -269,8 +271,10 @@
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <!-- <input matInput placeholder="State" formControlName="State"> -->
+                        <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCode}}</div> -->
                         <mat-select matInput placeholder="State" formControlName="State">
-                          <mat-option *ngFor="let sta of AllStates" [value]="sta">{{sta}}</mat-option>
+                          <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
+                            {{sta.StateCode + ' - ' + sta.State}}</mat-option>
                         </mat-select>
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
@@ -280,10 +284,10 @@
                     </div>
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput placeholder="Address Line1" formControlName="AddressLine1">
+                        <input matInput placeholder="Street/House number" formControlName="AddressLine1">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
-                          Address Line1 is required
+                          Street/House number is required
                         </mat-error>
                       </mat-form-field>
                     </div>
@@ -329,16 +333,17 @@
                   <div fxFlex="25">
                     <!-- (keyup.enter)="keytab('validUntil')" -->
                     <mat-form-field class="px-40" style="width: 100%;">
+                      <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCodeValue}}</div>
                       <input matInput placeholder="ID" formControlName="IDNumber"
                         (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
                       <mat-error
                         *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
                         ID is required
                       </mat-error>
-                      <!-- <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                      <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
                      && identificationFormGroup.get('IDNumber').hasError('pattern')">
-                        Invalid ID
-                      </mat-error> -->
+                        Invalid GSTNUMBER
+                      </mat-error>
                     </mat-form-field>
                     <div class="ValidityError"
                       *ngIf="IdentityValidity && identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')">
@@ -346,7 +351,7 @@
                     </div>
                   </div>
                   <div fxFlex="25">
-                    <mat-form-field class="px-40" style="width: 100%;">
+                    <mat-form-field class="px-40" *ngIf="isDisabledDate" style="width: 100%;">
                       <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
                         #validUntil (keydown.enter)="IdentificationEnterKeyDown()">
                       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
@@ -385,8 +390,10 @@
                   </ng-container>
 
                   <ng-container matColumnDef="ValidUntil">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> ValidUntil </th>
-                    <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.ValidUntil | date}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;" [style.display]="'none'">
+                      ValidUntil </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;" [style.display]="'none'">
+                      {{element.ValidUntil | date}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="Attachment">

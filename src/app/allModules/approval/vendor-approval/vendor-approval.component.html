@@ -54,10 +54,10 @@
                     </div>
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input #legalName matInput placeholder="Legal Name" formControlName="LegalName">
+                        <input #legalName matInput placeholder="Full Name" formControlName="LegalName">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
-                          Legal Name is required
+                          Full Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>

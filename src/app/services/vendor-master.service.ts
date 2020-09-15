@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView, CBPBankView } from 'app/models/vendor-master';
+import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView, CBPBankView, StateDetails } from 'app/models/vendor-master';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -24,6 +24,11 @@ export class VendorMasterService {
   // Location
   GetLocationByPincode(Pincode: string): Observable<CBPLocation | string> {
     return this._httpClient.get<CBPLocation>(`${this.baseAddress}vendormasterapi/Master/GetLocationByPincode?Pincode=${Pincode}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetStateDetails(): Observable<StateDetails[] | string> {
+    return this._httpClient.get<StateDetails[]>(`${this.baseAddress}vendormasterapi/Master/GetStateDetails`)
       .pipe(catchError(this.errorHandler));
   }
 

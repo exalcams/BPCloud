@@ -15,10 +15,11 @@ import {
 } from 'app/models/vendor-registration';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
-import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails, StateDetails } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
+import { DISABLED } from '@angular/forms/src/model';
 
 @Component({
   selector: 'vendor-registration',
@@ -28,9 +29,13 @@ import { Guid } from 'guid-typescript';
   animations: fuseAnimations
 })
 export class VendorRegistrationComponent implements OnInit {
+
+
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
   SelectedMenuApp: MenuApp;
+  id: string;
+  sub_id: string;
   // authenticationDetails: AuthenticationDetails;
   // CurrentUserID: Guid;
   // CurrentUserRole = '';
@@ -125,10 +130,14 @@ export class VendorRegistrationComponent implements OnInit {
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
-  AllStates: string[] = [];
+  AllStates: StateDetails[] = [];
   math = Math;
   CBPIdentity: CBPIdentity;
   TaxPayerDetails: TaxPayerDetails;
+  selected: string;
+  selectedCountry: string;
+  StateCodeValue: any;
+  StateCode: any;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -155,6 +164,7 @@ export class VendorRegistrationComponent implements OnInit {
         }
       }
     };
+
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoardingView = new BPVendorOnBoardingView();
     // this.authenticationDetails = new AuthenticationDetails();
@@ -165,58 +175,63 @@ export class VendorRegistrationComponent implements OnInit {
     this.IdentityValidity = false;
     this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
-    this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
-    // this.AllIdentityTypes = ['Pancard', 'GSTIN', 'Adhaar'];
+    this.selected = this.AllRoles[0];
+    this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
+    this.AllIdentityTypes = ['GSTIN'];
     this.AllCountries = ['India'];
-    this.AllStates = [
-      'ANDAMAN AND NICOBAR ISLANDS',
-      'ANDHRA PRADESH',
-      'ARUNACHAL PRADESH',
-      'ASSAM',
-      'BIHAR',
-      'CHANDIGARH',
-      'CHHATTISGARH',
-      'DADRA AND NAGAR HAVELI',
-      'DAMAN AND DIU',
-      'DELHI',
-      'GOA',
-      'GUJARAT',
-      'HARYANA',
-      'HIMACHAL PRADESH',
-      'JAMMU AND KASHMIR',
-      'JHARKHAND',
-      'KARNATAKA',
-      'KERALA',
-      'LAKSHADWEEP',
-      'MADHYA PRADESH',
-      'MAHARASHTRA',
-      'MANIPUR',
-      'MEGHALAYA',
-      'MIZORAM',
-      'NAGALAND',
-      'ORISSA',
-      'PONDICHERRY',
-      'PUNJAB',
-      'RAJASTHAN',
-      'SIKKIM',
-      'TAMIL NADU',
-      'TELANGANA',
-      'TRIPURA',
-      'UTTARANCHAL',
-      'UTTAR PRADESH',
-      'WEST BENGAL',
-      'UTTARAKHAND'
-    ];
+    this.selectedCountry = this.AllCountries[0];
+    // this.AllStates = [
+    //   'ANDAMAN AND NICOBAR ISLANDS',
+    //   'ANDHRA PRADESH',
+    //   'ARUNACHAL PRADESH',
+    //   'ASSAM',
+    //   'BIHAR',
+    //   'CHANDIGARH',
+    //   'CHHATTISGARH',
+    //   'DADRA AND NAGAR HAVELI',
+    //   'DAMAN AND DIU',
+    //   'DELHI',
+    //   'GOA',
+    //   'GUJARAT',
+    //   'HARYANA',
+    //   'HIMACHAL PRADESH',
+    //   'JAMMU AND KASHMIR',
+    //   'JHARKHAND',
+    //   'KARNATAKA',
+    //   'KERALA',
+    //   'LAKSHADWEEP',
+    //   'MADHYA PRADESH',
+    //   'MAHARASHTRA',
+    //   'MANIPUR',
+    //   'MEGHALAYA',
+    //   'MIZORAM',
+    //   'NAGALAND',
+    //   'ORISSA',
+    //   'PONDICHERRY',
+    //   'PUNJAB',
+    //   'RAJASTHAN',
+    //   'SIKKIM',
+    //   'TAMIL NADU',
+    //   'TELANGANA',
+    //   'TRIPURA',
+    //   'UTTARANCHAL',
+    //   'UTTAR PRADESH',
+    //   'WEST BENGAL',
+    //   'UTTARAKHAND'
+    // ];
     this.SelectedQRID = 0;
     this.answerList = new AnswerList();
+    this.StateCodeValue = '';
   }
-
+  isDisabledDate: boolean = false;
   ngOnInit(): void {
+
     this.InitializeVendorRegistrationFormGroup();
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
     this.GetAllIdentityTypes();
+    this.GetStateDetails();
     // this.GetQuestionnaireResultSet();
     this.InitializeQuestionsFormGroup();
     // this.GetQuestionAnswers();
@@ -302,8 +317,9 @@ export class VendorRegistrationComponent implements OnInit {
   InitializeIdentificationFormGroup(): void {
     this.identificationFormGroup = this._formBuilder.group({
       Type: ['', Validators.required],
-      IDNumber: ['', Validators.required],
+      IDNumber: ['', [Validators.required, Validators.pattern('^([a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[zZ]{1}[0-9a-zA-Z]{1})+$')]],
       ValidUntil: [''],
+      StateCodeValue: [''],
     });
   }
 
@@ -519,7 +535,16 @@ export class VendorRegistrationComponent implements OnInit {
     } else {
     }
   }
-
+  GetStateDetails(): void {
+    this._vendorMasterService.GetStateDetails().subscribe(
+      (data) => {
+        this.AllStates = data as StateDetails[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
   GetAllIdentityTypes(): void {
     this._vendorMasterService.GetAllIdentityTypes().subscribe(
       (data) => {
@@ -540,6 +565,8 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
+            this.identificationFormGroup.get('StateCode').patchValue(loc.StateCode);
           }
         },
         (err) => {
@@ -556,9 +583,12 @@ export class VendorRegistrationComponent implements OnInit {
         (data) => {
           const loc = data as CBPLocation;
           if (loc) {
+            this.StateCodeValue = loc.StateCode;
+            this.StateCode = loc.StateCode;
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
           }
         },
         (err) => {
@@ -869,6 +899,10 @@ export class VendorRegistrationComponent implements OnInit {
   // }
 
   AddIdentificationToTable(): void {
+    this.id = this.identificationFormGroup.get('IDNumber').value;
+    this.sub_id = this.id.substring(2, 12);
+    console.log(this.sub_id);
+
     if (this.identificationFormGroup.valid) {
       const bPIdentity = new BPIdentity();
       bPIdentity.Type = this.identificationFormGroup.get('Type').value;
@@ -883,6 +917,20 @@ export class VendorRegistrationComponent implements OnInit {
         this.IdentificationsByVOB = [];
       }
       this.IdentificationsByVOB.push(bPIdentity);
+      if (this.identificationFormGroup.value.Type === "GSTIN") {
+        const bPIdentity_PAN = new BPIdentity();
+        bPIdentity_PAN.Type = "PANCARD";
+        bPIdentity_PAN.IDNumber = this.sub_id;
+        bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+        if (this.fileToUpload) {
+          bPIdentity.AttachmentName = this.fileToUpload.name;
+          this.fileToUploadList.push(this.fileToUpload);
+          this.fileToUpload = null;
+        }
+        this.IdentificationsByVOB.push(bPIdentity_PAN);
+
+      }
+
       this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
       this.ClearIdentificationFormGroup();
     } else {

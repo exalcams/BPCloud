@@ -10,7 +10,7 @@ import { MasterService } from 'app/services/master.service';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CBPLocation } from 'app/models/vendor-master';
+import { CBPLocation, StateDetails } from 'app/models/vendor-master';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { Guid } from 'guid-typescript';
@@ -105,7 +105,7 @@ export class VendorApprovalComponent implements OnInit {
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
-  AllStates: string[] = [];
+  AllStates: StateDetails[] = [];
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -141,47 +141,47 @@ export class VendorApprovalComponent implements OnInit {
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
     this.AllRoles = ['Vendor', 'Customer'];
-    this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
+    this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
     this.AllCountries = ['India'];
-    this.AllStates = [
-      'ANDAMAN AND NICOBAR ISLANDS',
-      'ANDHRA PRADESH',
-      'ARUNACHAL PRADESH',
-      'ASSAM',
-      'BIHAR',
-      'CHANDIGARH',
-      'CHHATTISGARH',
-      'DADRA AND NAGAR HAVELI',
-      'DAMAN AND DIU',
-      'DELHI',
-      'GOA',
-      'GUJARAT',
-      'HARYANA',
-      'HIMACHAL PRADESH',
-      'JAMMU AND KASHMIR',
-      'JHARKHAND',
-      'KARNATAKA',
-      'KERALA',
-      'LAKSHADWEEP',
-      'MADHYA PRADESH',
-      'MAHARASHTRA',
-      'MANIPUR',
-      'MEGHALAYA',
-      'MIZORAM',
-      'NAGALAND',
-      'ORISSA',
-      'PONDICHERRY',
-      'PUNJAB',
-      'RAJASTHAN',
-      'SIKKIM',
-      'TAMIL NADU',
-      'TELANGANA',
-      'TRIPURA',
-      'UTTARANCHAL',
-      'UTTAR PRADESH',
-      'WEST BENGAL',
-      'UTTARAKHAND'
-    ];
+    // this.AllStates = [
+    //   'ANDAMAN AND NICOBAR ISLANDS',
+    //   'ANDHRA PRADESH',
+    //   'ARUNACHAL PRADESH',
+    //   'ASSAM',
+    //   'BIHAR',
+    //   'CHANDIGARH',
+    //   'CHHATTISGARH',
+    //   'DADRA AND NAGAR HAVELI',
+    //   'DAMAN AND DIU',
+    //   'DELHI',
+    //   'GOA',
+    //   'GUJARAT',
+    //   'HARYANA',
+    //   'HIMACHAL PRADESH',
+    //   'JAMMU AND KASHMIR',
+    //   'JHARKHAND',
+    //   'KARNATAKA',
+    //   'KERALA',
+    //   'LAKSHADWEEP',
+    //   'MADHYA PRADESH',
+    //   'MAHARASHTRA',
+    //   'MANIPUR',
+    //   'MEGHALAYA',
+    //   'MIZORAM',
+    //   'NAGALAND',
+    //   'ORISSA',
+    //   'PONDICHERRY',
+    //   'PUNJAB',
+    //   'RAJASTHAN',
+    //   'SIKKIM',
+    //   'TAMIL NADU',
+    //   'TELANGANA',
+    //   'TRIPURA',
+    //   'UTTARANCHAL',
+    //   'UTTAR PRADESH',
+    //   'WEST BENGAL',
+    //   'UTTARAKHAND'
+    // ];
   }
 
   ngOnInit(): void {
@@ -207,6 +207,7 @@ export class VendorApprovalComponent implements OnInit {
     }
 
     this.GetAllIdentityTypes();
+    this.GetStateDetails();
     this.InitializeVendorRegistrationFormGroup();
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
@@ -239,7 +240,16 @@ export class VendorApprovalComponent implements OnInit {
       }
     );
   }
-
+  GetStateDetails(): void {
+    this._vendorMasterService.GetStateDetails().subscribe(
+      (data) => {
+        this.AllStates = data as StateDetails[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
   GetAllIdentityTypes(): void {
     this._vendorMasterService.GetAllIdentityTypes().subscribe(
       (data) => {

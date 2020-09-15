@@ -51,7 +51,9 @@ export class CBPLocation extends CommonClass {
     Taluk: string;
     District: string;
     State: string;
+    StateCode: string;
     Country: string;
+    CountryCode: string;
 }
 export class CBPIdentity extends CommonClass {
     ID: number;
@@ -88,5 +90,7 @@ export class TaxPayerDetails {
     status: string;
     blkStatus: string;
 }
-
-
+export class StateDetails {
+    State: string;
+    StateCode: string;
+}
