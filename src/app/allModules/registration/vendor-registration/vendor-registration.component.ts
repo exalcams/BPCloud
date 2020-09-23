@@ -900,8 +900,8 @@ export class VendorRegistrationComponent implements OnInit {
 
   AddIdentificationToTable(): void {
     this.id = this.identificationFormGroup.get('IDNumber').value;
-    this.sub_id = this.id.substring(2, 12);
-    console.log(this.sub_id);
+    this.sub_id = this.id.substring(0, 10);
+    // console.log(this.sub_id);
 
     if (this.identificationFormGroup.valid) {
       const bPIdentity = new BPIdentity();
@@ -917,9 +917,9 @@ export class VendorRegistrationComponent implements OnInit {
         this.IdentificationsByVOB = [];
       }
       this.IdentificationsByVOB.push(bPIdentity);
-      if (this.identificationFormGroup.value.Type === "GSTIN") {
+      if (this.identificationFormGroup.value.Type === 'GSTIN') {
         const bPIdentity_PAN = new BPIdentity();
-        bPIdentity_PAN.Type = "PANCARD";
+        bPIdentity_PAN.Type = 'PAN CARD';
         bPIdentity_PAN.IDNumber = this.sub_id;
         bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
         if (this.fileToUpload) {
