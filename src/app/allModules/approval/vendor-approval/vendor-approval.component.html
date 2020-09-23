@@ -81,11 +81,11 @@
                     <div fxFlex="50" fxLayout>
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput placeholder="Phone1" formControlName="Phone1">
+                          <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div> -->
+                          <input matInput placeholder="LandLine Number" formControlName="Phone1">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
-                            Phone1 is required
+                            LandLine Number is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
                       vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
@@ -98,14 +98,14 @@
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                           <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput placeholder="Phone2" formControlName="Phone2">
+                          <input matInput placeholder="Mobile number" formControlName="Phone2">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
-                            Phone2 is required
+                            Mobile number is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
                       vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
-                            Please enter a valid phone number
+                            Please enter a valid mobile number
                           </mat-error>
                         </mat-form-field>
                       </div>
@@ -180,7 +180,8 @@
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <!-- <input matInput placeholder="State" formControlName="State"> -->
                         <mat-select matInput placeholder="State" formControlName="State">
-                          <mat-option *ngFor="let sta of AllStates" [value]="sta">{{sta}}</mat-option>
+                          <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
+                            {{sta.StateCode + ' - ' + sta.State}}</mat-option>
                         </mat-select>
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
@@ -190,10 +191,10 @@
                     </div>
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput placeholder="Address Line1" formControlName="AddressLine1">
+                        <input matInput placeholder="Street/House number" formControlName="AddressLine1">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
-                          Address Line1 is required
+                          Street/House number is required
                         </mat-error>
                       </mat-form-field>
                     </div>
