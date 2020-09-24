@@ -321,7 +321,8 @@
                   <div fxFlex="25">
                     <mat-form-field class="px-40" style="width: 100%;">
                       <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
-                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
+                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"
+                        (selectionChange)="IdentityTypeSelected()">
                         <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
                       </mat-select>
                       <mat-error
@@ -333,7 +334,7 @@
                   <div fxFlex="25">
                     <!-- (keyup.enter)="keytab('validUntil')" -->
                     <mat-form-field class="px-40" style="width: 100%;">
-                      <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCodeValue}}</div>
+                      <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCodeValue}}</div> -->
                       <input matInput placeholder="ID" formControlName="IDNumber"
                         (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
                       <mat-error
@@ -342,7 +343,12 @@
                       </mat-error>
                       <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
                      && identificationFormGroup.get('IDNumber').hasError('pattern')">
-                        Invalid GSTNUMBER
+                        Invalid Value
+                      </mat-error>
+                      <mat-error
+                        *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                     &&!identificationFormGroup.get('IDNumber').hasError('pattern')&& identificationFormGroup.get('IDNumber').hasError('gstStateCodeError')">
+                        GST Number not matched with selected StateCode
                       </mat-error>
                     </mat-form-field>
                     <div class="ValidityError"

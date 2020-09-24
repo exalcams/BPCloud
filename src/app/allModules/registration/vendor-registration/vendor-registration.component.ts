@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { MenuApp, VendorUser, UserWithRole } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl, ValidatorFn } from '@angular/forms';
 import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MasterService } from 'app/services/master.service';
@@ -35,7 +35,6 @@ export class VendorRegistrationComponent implements OnInit {
   AllMenuApps: MenuApp[] = [];
   SelectedMenuApp: MenuApp;
   id: string;
-  sub_id: string;
   // authenticationDetails: AuthenticationDetails;
   // CurrentUserID: Guid;
   // CurrentUserRole = '';
@@ -126,6 +125,7 @@ export class VendorRegistrationComponent implements OnInit {
   Status: string;
   IdentityType: string;
   IdentityValidity: boolean;
+  AllIdentities: CBPIdentity[] = [];
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
@@ -136,8 +136,7 @@ export class VendorRegistrationComponent implements OnInit {
   TaxPayerDetails: TaxPayerDetails;
   selected: string;
   selectedCountry: string;
-  StateCodeValue: any;
-  StateCode: any;
+  StateCode: string;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -221,7 +220,7 @@ export class VendorRegistrationComponent implements OnInit {
     // ];
     this.SelectedQRID = 0;
     this.answerList = new AnswerList();
-    this.StateCodeValue = '';
+    this.StateCode = '';
   }
   isDisabledDate: boolean = false;
   ngOnInit(): void {
@@ -230,6 +229,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
+    this.GetAllIdentities();
     this.GetAllIdentityTypes();
     this.GetStateDetails();
     // this.GetQuestionnaireResultSet();
@@ -304,7 +304,7 @@ export class VendorRegistrationComponent implements OnInit {
       Country: ['', Validators.required],
       PinCode: ['', Validators.required],
       Type: [''],
-      Phone1: ['', [Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
+      Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
       Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
       Email1: ['', [Validators.required, Validators.email]],
       Email2: ['', [Validators.email]],
@@ -317,16 +317,35 @@ export class VendorRegistrationComponent implements OnInit {
   InitializeIdentificationFormGroup(): void {
     this.identificationFormGroup = this._formBuilder.group({
       Type: ['', Validators.required],
-      IDNumber: ['', [Validators.required, Validators.pattern('^([a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[zZ]{1}[0-9a-zA-Z]{1})+$')]],
+      IDNumber: ['', [Validators.required]],
       ValidUntil: [''],
-      StateCodeValue: [''],
     });
   }
 
-  AddDynamicValidatorsIdentificationFormGroup(): void {
-    // console.log(this.CBPIdentity.Format);
-    // ^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$
-    this.identificationFormGroup.get('IDNumber').setValidators([Validators.pattern(this.CBPIdentity.Format)]);
+  AddDynamicValidatorsIdentificationFormGroup(selectedType: string): void {
+    const indent = this.AllIdentities.filter(x => x.Text === selectedType)[0];
+    if (indent) {
+      if (indent.Format) {
+        if (selectedType.toLowerCase().includes('gst')) {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern(indent.Format), gstStateCodeValidator(this.StateCode)]);
+        } else {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern(indent.Format)]);
+        }
+      } else {
+        if (selectedType.toLowerCase().includes('gst')) {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$'), gstStateCodeValidator(this.StateCode)]);
+        } else {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$')]);
+        }
+      }
+    } else {
+      if (selectedType.toLowerCase().includes('gst')) {
+        this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$'), gstStateCodeValidator(this.StateCode)]);
+      } else {
+        this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$')]);
+      }
+    }
+    this.identificationFormGroup.get('IDNumber').updateValueAndValidity();
   }
 
   InitializeBankDetailsFormGroup(): void {
@@ -545,6 +564,16 @@ export class VendorRegistrationComponent implements OnInit {
       }
     );
   }
+  GetAllIdentities(): void {
+    this._vendorMasterService.GetAllIdentities().subscribe(
+      (data) => {
+        this.AllIdentities = data as CBPIdentity[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
   GetAllIdentityTypes(): void {
     this._vendorMasterService.GetAllIdentityTypes().subscribe(
       (data) => {
@@ -562,11 +591,12 @@ export class VendorRegistrationComponent implements OnInit {
         (data) => {
           const loc = data as CBPLocation;
           if (loc) {
+            this.StateCode = loc.StateCode;
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
-            this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
-            this.identificationFormGroup.get('StateCode').patchValue(loc.StateCode);
+            // this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
+            // this.identificationFormGroup.get('StateCode').patchValue(loc.StateCode);
           }
         },
         (err) => {
@@ -583,12 +613,11 @@ export class VendorRegistrationComponent implements OnInit {
         (data) => {
           const loc = data as CBPLocation;
           if (loc) {
-            this.StateCodeValue = loc.StateCode;
             this.StateCode = loc.StateCode;
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
-            this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
+            // this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
           }
         },
         (err) => {
@@ -597,7 +626,6 @@ export class VendorRegistrationComponent implements OnInit {
       );
     }
   }
-
   ValidateIdentityByType(IdentityType: any, ID: any): void {
     if (IdentityType) {
       this._vendorMasterService.ValidateIdentityByType(IdentityType, ID).subscribe(
@@ -699,10 +727,10 @@ export class VendorRegistrationComponent implements OnInit {
   OnIdentityKeyEnter(event): void {
     this.IdentityType = this.identificationFormGroup.get('Type').value;
     this.validUntil.nativeElement.focus();
-    const ID = event.target.value;
-    if (ID) {
-      this.ValidateIdentityByType(this.IdentityType, ID);
-    }
+    // const ID = event.target.value;
+    // if (ID) {
+    //   this.ValidateIdentityByType(this.IdentityType, ID);
+    // }
   }
 
   keytab(elementName): void {
@@ -897,42 +925,67 @@ export class VendorRegistrationComponent implements OnInit {
   //     }
   //   );
   // }
+  IdentityTypeSelected(): void {
+    const selectedType = this.identificationFormGroup.get('Type').value as string;
+    if (selectedType) {
+      this.AddDynamicValidatorsIdentificationFormGroup(selectedType);
+      if (selectedType.toLowerCase().includes('gst')) {
+        this.identificationFormGroup.get('IDNumber').patchValue(this.StateCode);
+      }
+    }
+  }
 
   AddIdentificationToTable(): void {
-    this.id = this.identificationFormGroup.get('IDNumber').value;
-    this.sub_id = this.id.substring(0, 10);
-    // console.log(this.sub_id);
-
     if (this.identificationFormGroup.valid) {
       const bPIdentity = new BPIdentity();
       bPIdentity.Type = this.identificationFormGroup.get('Type').value;
       bPIdentity.IDNumber = this.identificationFormGroup.get('IDNumber').value;
-      bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
-      if (this.fileToUpload) {
-        bPIdentity.AttachmentName = this.fileToUpload.name;
-        this.fileToUploadList.push(this.fileToUpload);
-        this.fileToUpload = null;
-      }
-      if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
-        this.IdentificationsByVOB = [];
-      }
-      this.IdentificationsByVOB.push(bPIdentity);
-      if (this.identificationFormGroup.value.Type === 'GSTIN') {
-        const bPIdentity_PAN = new BPIdentity();
-        bPIdentity_PAN.Type = 'PAN CARD';
-        bPIdentity_PAN.IDNumber = this.sub_id;
-        bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+      if (bPIdentity.Type && bPIdentity.Type.toLowerCase().includes('gst')) {
+        const id = this.identificationFormGroup.get('IDNumber').value;
+        const state_id = id.substring(0, 2);
+        const pan_id = id.substring(2, 12);
+        if (state_id === this.StateCode) {
+          bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+          if (this.fileToUpload) {
+            bPIdentity.AttachmentName = this.fileToUpload.name;
+            this.fileToUploadList.push(this.fileToUpload);
+            this.fileToUpload = null;
+          }
+          if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+            this.IdentificationsByVOB = [];
+          }
+          this.IdentificationsByVOB.push(bPIdentity);
+          const bPIdentity_PAN = new BPIdentity();
+          bPIdentity_PAN.Type = 'PAN CARD';
+          bPIdentity_PAN.IDNumber = pan_id;
+          bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+          if (this.fileToUpload) {
+            bPIdentity.AttachmentName = this.fileToUpload.name;
+            this.fileToUploadList.push(this.fileToUpload);
+            this.fileToUpload = null;
+          }
+          this.IdentificationsByVOB.push(bPIdentity_PAN);
+          this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+          this.ClearIdentificationFormGroup();
+        } else {
+
+        }
+
+      } else {
+        bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
         if (this.fileToUpload) {
           bPIdentity.AttachmentName = this.fileToUpload.name;
           this.fileToUploadList.push(this.fileToUpload);
           this.fileToUpload = null;
         }
-        this.IdentificationsByVOB.push(bPIdentity_PAN);
-
+        if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+          this.IdentificationsByVOB = [];
+        }
+        this.IdentificationsByVOB.push(bPIdentity);
+        this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+        this.ClearIdentificationFormGroup();
       }
 
-      this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
-      this.ClearIdentificationFormGroup();
     } else {
       this.ShowValidationErrors(this.identificationFormGroup);
     }
@@ -1073,9 +1126,11 @@ export class VendorRegistrationComponent implements OnInit {
       result => {
         if (result) {
           if (Actiontype === 'Register') {
-            this.CreateVendorOnBoarding();
+            this.CreateVendorOnBoarding(Actiontype);
+          } else if (Actiontype === 'Save') {
+            this.CreateVendorOnBoarding(Actiontype);
           } else if (Actiontype === 'Update') {
-            this.CreateVendorOnBoarding();
+            this.CreateVendorOnBoarding(Actiontype);
           } else if (Actiontype === 'Delete') {
             this.DeleteVendorOnBoarding();
           }
@@ -1193,13 +1248,14 @@ export class VendorRegistrationComponent implements OnInit {
   //   });
   // }
 
-  CreateVendorOnBoarding(): void {
+  CreateVendorOnBoarding(ActionType: string): void {
     // this.GetBPVendorOnBoardingValues();
     // this.GetBPVendorOnBoardingSubItemValues();
     // this.SelectedBPVendorOnBoardingView.CreatedBy = this.authenticationDetails.userID.toString();
     const vendorUser: VendorUser = new VendorUser();
     vendorUser.Email = this.SelectedBPVendorOnBoardingView.Email1;
     vendorUser.Phone = this.SelectedBPVendorOnBoardingView.Phone1;
+    this.SelectedBPVendorOnBoardingView.Status = ActionType === 'Save' ? ActionType : 'Open';
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.CreateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
@@ -1214,7 +1270,7 @@ export class VendorRegistrationComponent implements OnInit {
                   this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
                     () => {
                       this.ResetControl();
-                      this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
+                      this.notificationSnackBarComponent.openSnackBar(`Vendor ${ActionType}d successfully`, SnackBarStatus.success);
                       this.IsProgressBarVisibile = false;
                       this._router.navigate(['/auth/login']);
                     },
@@ -1273,6 +1329,7 @@ export class VendorRegistrationComponent implements OnInit {
     // this.GetBPVendorOnBoardingSubItemValues();
     this.SelectedBPVendorOnBoardingView.TransID = this.SelectedBPVendorOnBoarding.TransID;
     // this.SelectedBPVendorOnBoardingView.ModifiedBy = this.authenticationDetails.userID.toString();
+    this.SelectedBPVendorOnBoardingView.Status = 'Open';
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.UpdateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       () => {
@@ -1345,14 +1402,14 @@ export class VendorRegistrationComponent implements OnInit {
       this.GetBPVendorOnBoardingSubItemValues();
       if (choice.toLowerCase() === 'sumbit') {
         if (this.IdentificationsByVOB.length > 0 && this.BanksByVOB.length > 0 && this.ContactsByVOB.length > 0) {
-          this.SetActionToOpenConfirmation();
+          this.SetActionToOpenConfirmation('Register');
         }
         else {
           this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity,BPBank,BPContact table', SnackBarStatus.danger);
         }
       }
       else {
-        this.SetActionToOpenConfirmation();
+        this.SetActionToOpenConfirmation('Save');
       }
       // if (this.SelectedBPVendorOnBoarding.Type.toLocaleLowerCase() === 'ui') {
       //   if (this.SelectedBPVendorOnBoardingView.bPIdentities && this.SelectedBPVendorOnBoardingView.bPIdentities.length &&
@@ -1369,13 +1426,11 @@ export class VendorRegistrationComponent implements OnInit {
     }
   }
 
-  SetActionToOpenConfirmation(): void {
+  SetActionToOpenConfirmation(Actiontype: string): void {
     if (this.SelectedBPVendorOnBoarding.TransID) {
-      const Actiontype = 'Update';
       const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     } else {
-      const Actiontype = 'Register';
       const Catagory = 'Vendor';
       this.OpenConfirmationDialog(Actiontype, Catagory);
     }
@@ -1482,5 +1537,20 @@ export class VendorRegistrationComponent implements OnInit {
   //     }
   //   });
   // }
+}
+
+export function gstStateCodeValidator(StateCode: string): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const gstNo: string = control.value;
+    if (!gstNo) {
+      return null;
+    }
+    const state_id = gstNo.substring(0, 2);
+    if (state_id === StateCode) {
+      return null;
+    } else {
+      return { 'gstStateCodeError': true };
+    }
+  };
 }
 

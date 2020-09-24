@@ -273,7 +273,7 @@ export class VendorApprovalComponent implements OnInit {
       Country: ['', Validators.required],
       PinCode: ['', Validators.required],
       Type: [''],
-      Phone1: ['', [Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
+      Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
       Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
       Email1: ['', [Validators.required, Validators.email]],
       Email2: ['', [Validators.email]],

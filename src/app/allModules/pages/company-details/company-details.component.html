@@ -74,11 +74,11 @@
                     <div fxFlex="50" fxLayout>
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput placeholder="Phone1" formControlName="Phone1">
+                          <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div> -->
+                          <input matInput placeholder="LandLine Number" formControlName="Phone1">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
-                            Phone1 is required
+                            LandLine Number is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
                       vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
@@ -91,14 +91,14 @@
                       <div fxFlex>
                         <mat-form-field class="pl-8 pr-80" style="width: 100%;">
                           <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput placeholder="Phone2" formControlName="Phone2">
+                          <input matInput placeholder="Mobile number" formControlName="Phone2">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
-                            Phone2 is required
+                            Mobile number is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
                       vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
-                            Please enter a valid phone number
+                            Please enter a valid mobile number
                           </mat-error>
                         </mat-form-field>
                       </div>
@@ -173,7 +173,8 @@
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <!-- <input matInput placeholder="State" formControlName="State"> -->
                         <mat-select matInput placeholder="State" formControlName="State">
-                          <mat-option *ngFor="let sta of AllStates" [value]="sta">{{sta}}</mat-option>
+                          <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
+                            {{sta.StateCode + ' - ' + sta.State}}</mat-option>
                         </mat-select>
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
@@ -183,10 +184,10 @@
                     </div>
                     <div fxFlex="100">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput placeholder="Address Line1" formControlName="AddressLine1">
+                        <input matInput placeholder="Street/House number" formControlName="AddressLine1">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
-                          Address Line1 is required
+                          Street/House number is required
                         </mat-error>
                       </mat-form-field>
                     </div>
@@ -195,7 +196,7 @@
                         <input matInput placeholder="Address Line2" formControlName="AddressLine2">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine2').touched && vendorRegistrationFormGroup.get('AddressLine2').hasError('required')">
-                          Address Line2 is required
+                          Address Line 2 is required
                         </mat-error>
                       </mat-form-field>
                     </div>
@@ -219,7 +220,8 @@
                   <div fxFlex="25">
                     <mat-form-field class="ml-12" style="width: 100%;">
                       <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
-                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')">
+                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"
+                        (selectionChange)="IdentityTypeSelected()">
                         <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
                       </mat-select>
                       <mat-error
@@ -236,13 +238,22 @@
                         *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
                         ID is required
                       </mat-error>
+                      <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                     && identificationFormGroup.get('IDNumber').hasError('pattern')">
+                        Invalid Value
+                      </mat-error>
+                      <mat-error
+                        *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                     &&!identificationFormGroup.get('IDNumber').hasError('pattern')&& identificationFormGroup.get('IDNumber').hasError('gstStateCodeError')">
+                        GST Number not matched with selected StateCode
+                      </mat-error>
                     </mat-form-field>
                     <div class="ValidityError" *ngIf="IdentityValidity">
                       Invalid ID
                     </div>
                   </div>
                   <div fxFlex="25">
-                    <mat-form-field style="width: 100%;">
+                    <mat-form-field *ngIf="isDisabledDate" style="width: 100%;">
                       <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
                         #validUntil (keydown.enter)="IdentificationEnterKeyDown()">
                       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
