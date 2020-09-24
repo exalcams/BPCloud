@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MenuApp, AuthenticationDetails, VendorUser, UserWithRole } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl, ValidatorFn } from '@angular/forms';
 import { BPVendorOnBoarding, BPVendorOnBoardingView, BPIdentity, BPBank, BPContact, BPActivityLog, QuestionnaireResultSet, Question, QAnswerChoice, Answers, QuestionAnswersView, AnswerList } from 'app/models/vendor-registration';
 import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -10,7 +10,7 @@ import { MasterService } from 'app/services/master.service';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CBPLocation, CBPIdentity, CBPBank } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank, StateDetails } from 'app/models/vendor-master';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { Guid } from 'guid-typescript';
@@ -106,11 +106,14 @@ export class CompanyDetailsComponent implements OnInit {
   Status: string;
   IdentityType: string;
   IdentityValidity: boolean;
+  AllIdentities: CBPIdentity[] = [];
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
   AllCountries: string[] = [];
-  AllStates: string[] = [];
+  AllStates: StateDetails[] = [];
+  StateCode: string;
+  selectedCountry: string;
   math = Math;
   AllQuestionnaireResultSet: QuestionnaireResultSet = new QuestionnaireResultSet();
   AllQuestionAnswersView: QuestionAnswersView[] = [];
@@ -120,6 +123,7 @@ export class CompanyDetailsComponent implements OnInit {
   AllQuestionAnswerChoices: QAnswerChoice[] = [];
   AllQuestionAnswers: Answers[] = [];
   QuestionID: any;
+  isDisabledDate: boolean = false;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -156,48 +160,51 @@ export class CompanyDetailsComponent implements OnInit {
     this.IdentityValidity = false;
     this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
-    this.AllTypes = ['Material', 'Services', 'Transport', 'Others'];
+    this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
+    this.AllIdentityTypes = ['GSTIN'];
     this.AllCountries = ['India'];
-    this.AllStates = [
-      'ANDAMAN AND NICOBAR ISLANDS',
-      'ANDHRA PRADESH',
-      'ARUNACHAL PRADESH',
-      'ASSAM',
-      'BIHAR',
-      'CHANDIGARH',
-      'CHHATTISGARH',
-      'DADRA AND NAGAR HAVELI',
-      'DAMAN AND DIU',
-      'DELHI',
-      'GOA',
-      'GUJARAT',
-      'HARYANA',
-      'HIMACHAL PRADESH',
-      'JAMMU AND KASHMIR',
-      'JHARKHAND',
-      'KARNATAKA',
-      'KERALA',
-      'LAKSHADWEEP',
-      'MADHYA PRADESH',
-      'MAHARASHTRA',
-      'MANIPUR',
-      'MEGHALAYA',
-      'MIZORAM',
-      'NAGALAND',
-      'ORISSA',
-      'PONDICHERRY',
-      'PUNJAB',
-      'RAJASTHAN',
-      'SIKKIM',
-      'TAMIL NADU',
-      'TELANGANA',
-      'TRIPURA',
-      'UTTARANCHAL',
-      'UTTAR PRADESH',
-      'WEST BENGAL',
-      'UTTARAKHAND'
-    ];
+    this.selectedCountry = this.AllCountries[0];
+    // this.AllStates = [
+    //   'ANDAMAN AND NICOBAR ISLANDS',
+    //   'ANDHRA PRADESH',
+    //   'ARUNACHAL PRADESH',
+    //   'ASSAM',
+    //   'BIHAR',
+    //   'CHANDIGARH',
+    //   'CHHATTISGARH',
+    //   'DADRA AND NAGAR HAVELI',
+    //   'DAMAN AND DIU',
+    //   'DELHI',
+    //   'GOA',
+    //   'GUJARAT',
+    //   'HARYANA',
+    //   'HIMACHAL PRADESH',
+    //   'JAMMU AND KASHMIR',
+    //   'JHARKHAND',
+    //   'KARNATAKA',
+    //   'KERALA',
+    //   'LAKSHADWEEP',
+    //   'MADHYA PRADESH',
+    //   'MAHARASHTRA',
+    //   'MANIPUR',
+    //   'MEGHALAYA',
+    //   'MIZORAM',
+    //   'NAGALAND',
+    //   'ORISSA',
+    //   'PONDICHERRY',
+    //   'PUNJAB',
+    //   'RAJASTHAN',
+    //   'SIKKIM',
+    //   'TAMIL NADU',
+    //   'TELANGANA',
+    //   'TRIPURA',
+    //   'UTTARANCHAL',
+    //   'UTTAR PRADESH',
+    //   'WEST BENGAL',
+    //   'UTTARAKHAND'
+    // ];
     this.Status = '';
+    this.StateCode = '';
     this.answerList = new AnswerList();
   }
 
@@ -214,7 +221,9 @@ export class CompanyDetailsComponent implements OnInit {
         this._router.navigate(['/auth/login']);
       }
       this.GetVendorOnBoardingsByEmailID();
+      this.GetAllIdentities();
       this.GetAllIdentityTypes();
+      this.GetStateDetails();
       this.InitializeVendorRegistrationFormGroup();
       this.InitializeIdentificationFormGroup();
       this.InitializeBankDetailsFormGroup();
@@ -263,7 +272,7 @@ export class CompanyDetailsComponent implements OnInit {
       Country: ['', Validators.required],
       PinCode: ['', Validators.required],
       Type: [''],
-      Phone1: ['', [Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
+      Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
       Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
       Email1: ['', [Validators.required, Validators.email]],
       Email2: ['', [Validators.email]],
@@ -280,7 +289,31 @@ export class CompanyDetailsComponent implements OnInit {
       ValidUntil: [''],
     });
   }
-
+  AddDynamicValidatorsIdentificationFormGroup(selectedType: string): void {
+    const indent = this.AllIdentities.filter(x => x.Text === selectedType)[0];
+    if (indent) {
+      if (indent.Format) {
+        if (selectedType.toLowerCase().includes('gst')) {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern(indent.Format), gstStateCodeValidator(this.StateCode)]);
+        } else {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern(indent.Format)]);
+        }
+      } else {
+        if (selectedType.toLowerCase().includes('gst')) {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$'), gstStateCodeValidator(this.StateCode)]);
+        } else {
+          this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$')]);
+        }
+      }
+    } else {
+      if (selectedType.toLowerCase().includes('gst')) {
+        this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$'), gstStateCodeValidator(this.StateCode)]);
+      } else {
+        this.identificationFormGroup.get('IDNumber').setValidators([Validators.required, Validators.pattern('^.*$')]);
+      }
+    }
+    this.identificationFormGroup.get('IDNumber').updateValueAndValidity();
+  }
   InitializeBankDetailsFormGroup(): void {
     this.bankDetailsFormGroup = this._formBuilder.group({
       AccountNo: ['', Validators.required],
@@ -418,6 +451,16 @@ export class CompanyDetailsComponent implements OnInit {
     });
     this.questionsFormArray.push(row);
   }
+  GetAllIdentities(): void {
+    this._vendorMasterService.GetAllIdentities().subscribe(
+      (data) => {
+        this.AllIdentities = data as CBPIdentity[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
   GetAllIdentityTypes(): void {
     this._vendorMasterService.GetAllIdentityTypes().subscribe(
       (data) => {
@@ -428,13 +471,23 @@ export class CompanyDetailsComponent implements OnInit {
       }
     );
   }
-
+  GetStateDetails(): void {
+    this._vendorMasterService.GetStateDetails().subscribe(
+      (data) => {
+        this.AllStates = data as StateDetails[];
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
   GetLocationDetailsByPincode(PinCode: any): void {
     if (PinCode) {
       this._vendorMasterService.GetLocationByPincode(PinCode).subscribe(
         (data) => {
           const loc = data as CBPLocation;
           if (loc) {
+            this.StateCode = loc.StateCode;
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
@@ -454,6 +507,7 @@ export class CompanyDetailsComponent implements OnInit {
         (data) => {
           const loc = data as CBPLocation;
           if (loc) {
+            this.StateCode = loc.StateCode;
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
@@ -626,6 +680,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Phone2').patchValue(this.SelectedBPVendorOnBoarding.Phone2);
     this.vendorRegistrationFormGroup.get('Email1').patchValue(this.SelectedBPVendorOnBoarding.Email1);
     this.vendorRegistrationFormGroup.get('Email2').patchValue(this.SelectedBPVendorOnBoarding.Email2);
+    this.GetLocationDetailsByPincode(this.SelectedBPVendorOnBoarding.PinCode);
     // this.contactFormGroup.get('Email').validator({}as AbstractControl);
   }
 
@@ -699,29 +754,70 @@ export class CompanyDetailsComponent implements OnInit {
   //     }
   //   );
   // }
-
+  IdentityTypeSelected(): void {
+    const selectedType = this.identificationFormGroup.get('Type').value as string;
+    if (selectedType) {
+      this.AddDynamicValidatorsIdentificationFormGroup(selectedType);
+      if (selectedType.toLowerCase().includes('gst')) {
+        this.identificationFormGroup.get('IDNumber').patchValue(this.StateCode);
+      }
+    }
+  }
   AddIdentificationToTable(): void {
     if (this.identificationFormGroup.valid) {
       const bPIdentity = new BPIdentity();
       bPIdentity.Type = this.identificationFormGroup.get('Type').value;
       bPIdentity.IDNumber = this.identificationFormGroup.get('IDNumber').value;
-      bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
-      if (this.fileToUpload) {
-        bPIdentity.AttachmentName = this.fileToUpload.name;
-        this.fileToUploadList.push(this.fileToUpload);
-        this.fileToUpload = null;
+      if (bPIdentity.Type && bPIdentity.Type.toLowerCase().includes('gst')) {
+        const id = this.identificationFormGroup.get('IDNumber').value;
+        const state_id = id.substring(0, 2);
+        const pan_id = id.substring(2, 12);
+        if (state_id === this.StateCode) {
+          bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+          if (this.fileToUpload) {
+            bPIdentity.AttachmentName = this.fileToUpload.name;
+            this.fileToUploadList.push(this.fileToUpload);
+            this.fileToUpload = null;
+          }
+          if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+            this.IdentificationsByVOB = [];
+          }
+          this.IdentificationsByVOB.push(bPIdentity);
+          const bPIdentity_PAN = new BPIdentity();
+          bPIdentity_PAN.Type = 'PAN CARD';
+          bPIdentity_PAN.IDNumber = pan_id;
+          bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+          if (this.fileToUpload) {
+            bPIdentity.AttachmentName = this.fileToUpload.name;
+            this.fileToUploadList.push(this.fileToUpload);
+            this.fileToUpload = null;
+          }
+          this.IdentificationsByVOB.push(bPIdentity_PAN);
+          this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+          this.ClearIdentificationFormGroup();
+        } else {
+
+        }
+
+      } else {
+        bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+        if (this.fileToUpload) {
+          bPIdentity.AttachmentName = this.fileToUpload.name;
+          this.fileToUploadList.push(this.fileToUpload);
+          this.fileToUpload = null;
+        }
+        if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+          this.IdentificationsByVOB = [];
+        }
+        this.IdentificationsByVOB.push(bPIdentity);
+        this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+        this.ClearIdentificationFormGroup();
       }
-      if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
-        this.IdentificationsByVOB = [];
-      }
-      this.IdentificationsByVOB.push(bPIdentity);
-      this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
-      this.ClearIdentificationFormGroup();
+
     } else {
       this.ShowValidationErrors(this.identificationFormGroup);
     }
   }
-
   AddBankToTable(): void {
     if (this.bankDetailsFormGroup.valid) {
       const bPBank = new BPBank();
@@ -1092,6 +1188,7 @@ export class CompanyDetailsComponent implements OnInit {
     // this.GetBPVendorOnBoardingSubItemValues();
     this.SelectedBPVendorOnBoardingView.TransID = this.SelectedBPVendorOnBoarding.TransID;
     this.SelectedBPVendorOnBoardingView.ModifiedBy = this.authenticationDetails.UserID.toString();
+    this.SelectedBPVendorOnBoardingView.Status = 'Open';
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.UpdateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
@@ -1310,4 +1407,18 @@ export class CompanyDetailsComponent implements OnInit {
   //     }
   //   });
   // }
+}
+export function gstStateCodeValidator(StateCode: string): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const gstNo: string = control.value;
+    if (!gstNo) {
+      return null;
+    }
+    const state_id = gstNo.substring(0, 2);
+    if (state_id === StateCode) {
+      return null;
+    } else {
+      return { 'gstStateCodeError': true };
+    }
+  };
 }
