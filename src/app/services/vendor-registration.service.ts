@@ -166,6 +166,14 @@ export class VendorRegistrationService {
     ).pipe(catchError(this.errorHandler));
 
   }
+  DowloandAttachment(AttachmentName: string, ASNNumber: string): Observable<Blob | string> {
+    return this._httpClient.get(`${this.baseAddress}vendorregisterapi/Attachment/DowloandInvoiceAttachment?AttachmentName=${AttachmentName}&ASNNumber=${ASNNumber}`, {
+      responseType: 'blob',
+      headers: new HttpHeaders().append('Content-Type', 'application/json')
+    })
+      .pipe(catchError(this.errorHandler));
+  }
+
   GetQuestionnaireResultSetByQRID(): Observable<QuestionnaireResultSet | string> {
     return this._httpClient.get<QuestionnaireResultSet>(`${this.baseAddress}vendorregisterapi/Registration/GetQuestionnaireResultSetByQRID`)
       .pipe(catchError(this.errorHandler));

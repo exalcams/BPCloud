@@ -20,6 +20,8 @@ import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
 import { DISABLED } from '@angular/forms/src/model';
+import { AttachmentDetails } from 'app/models/attachment';
+import { AttachmentDialogComponent } from 'app/notifications/attachment-dialog/attachment-dialog.component';
 
 @Component({
   selector: 'vendor-registration',
@@ -29,8 +31,6 @@ import { DISABLED } from '@angular/forms/src/model';
   animations: fuseAnimations
 })
 export class VendorRegistrationComponent implements OnInit {
-
-
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
   SelectedMenuApp: MenuApp;
@@ -99,6 +99,7 @@ export class VendorRegistrationComponent implements OnInit {
   //   'Text',
   //   'Action'
   // ];
+  SelectedIdentity: BPIdentity;
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
   contactDataSource = new MatTableDataSource<BPContact>();
@@ -120,6 +121,8 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('activityTime') activityTime: ElementRef;
   @ViewChild('activityText') activityText: ElementRef;
   @ViewChild('legalName') legalName: ElementRef;
+
+  @ViewChild('fileInput1') fileInput: ElementRef<HTMLElement>;
   fileToUpload: File;
   fileToUploadList: File[] = [];
   Status: string;
@@ -221,6 +224,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedQRID = 0;
     this.answerList = new AnswerList();
     this.StateCode = '';
+    this.SelectedIdentity = new BPIdentity();
   }
   isDisabledDate: boolean = false;
   ngOnInit(): void {
@@ -1451,10 +1455,33 @@ export class VendorRegistrationComponent implements OnInit {
   handleFileInput(evt): void {
     if (evt.target.files && evt.target.files.length > 0) {
       this.fileToUpload = evt.target.files[0];
+      if (this.SelectedIdentity && this.SelectedIdentity.Type) {
+        const selectFileName = this.SelectedIdentity.AttachmentName;
+        const indexx = this.IdentificationsByVOB.findIndex(x => x.Type === this.SelectedIdentity.Type && x.IDNumber === this.SelectedIdentity.IDNumber);
+        if (indexx > -1) {
+          this.IdentificationsByVOB[indexx].AttachmentName = this.fileToUpload.name;
+          this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+          this.fileToUploadList.push(this.fileToUpload);
+          if (selectFileName) {
+            const fileIndex = this.fileToUploadList.findIndex(x => x.name === selectFileName);
+            if (fileIndex > -1) {
+              this.fileToUploadList.splice(fileIndex, 1);
+            }
+          }
+          this.fileToUpload = null;
+        }
+        this.SelectedIdentity = new BPIdentity();
+      }
       // this.fileToUploadList.push(this.fileToUpload);
     }
   }
-
+  ReplaceIdentificationAttachment(element: BPIdentity): void {
+    // const el: HTMLElement = this.fileInput.nativeElement;
+    // el.click();
+    this.SelectedIdentity = element;
+    const event = new MouseEvent('click', { bubbles: false });
+    this.fileInput.nativeElement.dispatchEvent(event);
+  }
   numberOnly(event): boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
     if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 46
@@ -1496,47 +1523,48 @@ export class VendorRegistrationComponent implements OnInit {
   }
 
 
-  // GetAttachment(fileName: string, file?: File): void {
-  //   if (file && file.size) {
-  //     const blob = new Blob([file], { type: file.type });
-  //     this.OpenAttachmentDialog(fileName, blob);
-  //   } else {
-  //     this.IsProgressBarVisibile = true;
-  //     this._vendorRegistrationService.DowloandBPVendorOnBoardingImage(fileName).subscribe(
-  //       data => {
-  //         if (data) {
-  //           let fileType = 'image/jpg';
-  //           fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
-  //             fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
-  //               fileName.toLowerCase().includes('.png') ? 'image/png' :
-  //                 fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
-  //           const blob = new Blob([data], { type: fileType });
-  //           this.OpenAttachmentDialog(fileName, blob);
-  //         }
-  //         this.IsProgressBarVisibile = false;
-  //       },
-  //       error => {
-  //         console.error(error);
-  //         this.IsProgressBarVisibile = false;
-  //       }
-  //     );
-  //   }
-  // }
-  // OpenAttachmentDialog(FileName: string, blob: Blob): void {
-  //   const attachmentDetails: AttachmentDetails = {
-  //     FileName: FileName,
-  //     blob: blob
-  //   };
-  //   const dialogConfig: MatDialogConfig = {
-  //     data: attachmentDetails,
-  //     panelClass: 'attachment-dialog'
-  //   };
-  //   const dialogRef = this.dialog.open(AttachmentDialogComponent, dialogConfig);
-  //   dialogRef.afterClosed().subscribe(result => {
-  //     if (result) {
-  //     }
-  //   });
-  // }
+  GetIdentAttachment(fileName: string): void {
+    const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
+    if (file && file.size) {
+      const blob = new Blob([file], { type: file.type });
+      this.OpenAttachmentDialog(fileName, blob);
+    } else {
+      this.IsProgressBarVisibile = true;
+      this._vendorRegistrationService.DowloandAttachment(fileName, '2').subscribe(
+        data => {
+          if (data) {
+            let fileType = 'image/jpg';
+            fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
+              fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
+                fileName.toLowerCase().includes('.png') ? 'image/png' :
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+            const blob = new Blob([data], { type: fileType });
+            this.OpenAttachmentDialog(fileName, blob);
+          }
+          this.IsProgressBarVisibile = false;
+        },
+        error => {
+          console.error(error);
+          this.IsProgressBarVisibile = false;
+        }
+      );
+    }
+  }
+  OpenAttachmentDialog(FileName: string, blob: Blob): void {
+    const attachmentDetails: AttachmentDetails = {
+      FileName: FileName,
+      blob: blob
+    };
+    const dialogConfig: MatDialogConfig = {
+      data: attachmentDetails,
+      panelClass: 'attachment-dialog'
+    };
+    const dialogRef = this.dialog.open(AttachmentDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+      }
+    });
+  }
 }
 
 export function gstStateCodeValidator(StateCode: string): ValidatorFn {

@@ -55,7 +55,6 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DecimalPipe } from '@angular/common';
-import { AttachmentDialogComponent } from './attachment-dialog/attachment-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ChartsModule } from 'ng2-charts';
@@ -149,12 +148,11 @@ const routes = [
         })
 
     ],
-    declarations: [DashboardComponent, CompanyDetailsComponent, AttachmentDialogComponent],
+    declarations: [DashboardComponent, CompanyDetailsComponent],
     providers: [
         DecimalPipe
     ],
     entryComponents: [
-        AttachmentDialogComponent
     ]
 })
 export class PagesModule { }

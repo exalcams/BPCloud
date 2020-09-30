@@ -21,6 +21,7 @@ import { DatePipe } from '@angular/common';
 import { NotificationDialogComponent } from './notifications/notification-dialog/notification-dialog.component';
 import { WINDOW_PROVIDERS } from './window.providers';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
+import { AttachmentDialogComponent } from './notifications/attachment-dialog/attachment-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 
@@ -56,6 +57,7 @@ const appRoutes: Routes = [
         AppComponent,
         NotificationSnackBarComponent,
         NotificationDialogComponent,
+        AttachmentDialogComponent
     ],
     imports: [
         BrowserModule,
@@ -97,7 +99,8 @@ const appRoutes: Routes = [
         AppComponent
     ],
     entryComponents: [
-        NotificationDialogComponent
+        NotificationDialogComponent,
+        AttachmentDialogComponent
     ]
 })
 export class AppModule {
