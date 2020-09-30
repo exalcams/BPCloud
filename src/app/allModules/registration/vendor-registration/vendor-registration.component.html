@@ -380,6 +380,12 @@
                   </div>
                 </form>
               </div>
+              <div fxLayout *ngIf="fileToUpload?.name" style="margin-top: -12px;padding-left: 8px;">
+                <div fxFlex="75"></div>
+                <div fxFlex="25" class="pl-20">
+                  {{fileToUpload?.name}}
+                </div>
+              </div>
               <div style="margin-left: 8px;margin-top: 10px;">
                 <table *ngIf="IdentificationsByVOB?.length" class="table" mat-table
                   [dataSource]="identificationDataSource" matSort>
@@ -405,7 +411,16 @@
                   <ng-container matColumnDef="Attachment">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Attachment </th>
                     <td mat-cell *matCellDef="let element" style="width: 20%;">
-                      <mat-icon *ngIf="element.AttachmentName">attach_file</mat-icon>
+                      <div fxLayout *ngIf="element.AttachmentName">
+                        <div fxFlex (click)="GetIdentAttachment(element?.AttachmentName)" class="pdfLinkClass pl-8">
+                          {{element.AttachmentName}}</div>
+                        <div fxFlex align="end">
+                          <img class="addBlueIcon pdfLinkClass" src="assets/images/replay.png" (click)="ReplaceIdentificationAttachment(element)">
+                        </div>
+                      </div>
+                      <div fxLayout *ngIf="!element.AttachmentName">
+                        <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="ReplaceIdentificationAttachment(element)">
+                      </div>
                     </td>
                   </ng-container>
 
