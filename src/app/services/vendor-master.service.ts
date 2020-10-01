@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView, CBPBankView, StateDetails } from 'app/models/vendor-master';
+import { CBPLocation, CBPBank, CBPIdentity, TaxPayerDetails, CBPIdentityView, CBPBankView, StateDetails, CBPFieldMaster } from 'app/models/vendor-master';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -137,4 +137,17 @@ export class VendorMasterService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetAllOnBoardingFieldMaster(): Observable<CBPFieldMaster[] | string> {
+    return this._httpClient.get<CBPFieldMaster[]>(`${this.baseAddress}vendormasterapi/Master/GetAllOnBoardingFieldMaster`)
+      .pipe(catchError(this.errorHandler));
+  }
+  UpdateOnBoardingFieldMaster(fieldMaster: CBPFieldMaster): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendormasterapi/Master/UpdateOnBoardingFieldMaster`,
+      fieldMaster, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    })
+      .pipe(catchError(this.errorHandler));
+  }
 }

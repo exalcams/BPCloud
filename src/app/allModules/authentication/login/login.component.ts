@@ -241,6 +241,16 @@ export class LoginComponent implements OnInit {
         },
       );
     }
+    if (true || this.MenuItems.indexOf('OBD Field Master') >= 0) {
+      this.subChildren.push(
+        {
+          id: 'obdfield',
+          title: 'OBD Field',
+          type: 'item',
+          url: '/master/obdfield'
+        },
+      );
+    }
 
     // if (true || this.MenuItems.indexOf('App') >= 0) {
     //   this.subChildren.push(

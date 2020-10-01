@@ -16,6 +16,7 @@ import { UserComponent } from './user/user.component';
 import { ReasonComponent } from './reason/reason.component';
 import { IdentityComponent } from './identity/identity.component';
 import { BankComponent } from './bank/bank.component';
+import { OnBoardingFieldMasterComponent } from './on-boarding-field-master/on-boarding-field-master.component';
 
 const menuRoutes: Routes = [
     {
@@ -42,6 +43,10 @@ const menuRoutes: Routes = [
         path: 'bank',
         component: BankComponent,
     },
+    {
+        path: 'obdfield',
+        component: OnBoardingFieldMasterComponent,
+    },
 ];
 @NgModule({
     declarations: [
@@ -50,7 +55,8 @@ const menuRoutes: Routes = [
         MenuAppComponent,
         ReasonComponent,
         IdentityComponent,
-        BankComponent
+        BankComponent,
+        OnBoardingFieldMasterComponent
     ],
     imports: [
         MatButtonModule,

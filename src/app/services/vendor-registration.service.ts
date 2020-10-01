@@ -173,7 +173,13 @@ export class VendorRegistrationService {
     })
       .pipe(catchError(this.errorHandler));
   }
-
+  GetIdentityAttachment(AppNumber: string, HeaderNumber: string, AttachmentName: string): Observable<Blob | string> {
+    return this._httpClient.get(`${this.baseAddress}vendorregisterapi/Attachment/GetIdentityAttachment?AppNumber=${AppNumber}&HeaderNumber=${HeaderNumber}&AttachmentName=${AttachmentName}`, {
+      responseType: 'blob',
+      headers: new HttpHeaders().append('Content-Type', 'application/json')
+    })
+      .pipe(catchError(this.errorHandler));
+  }
   GetQuestionnaireResultSetByQRID(): Observable<QuestionnaireResultSet | string> {
     return this._httpClient.get<QuestionnaireResultSet>(`${this.baseAddress}vendorregisterapi/Registration/GetQuestionnaireResultSetByQRID`)
       .pipe(catchError(this.errorHandler));
