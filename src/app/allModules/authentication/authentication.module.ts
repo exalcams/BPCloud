@@ -5,7 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { LinkForForgetPasswordComponent } from './link-for-forget-password/link-for-forget-password.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ForgetPasswordLinkDialogComponent } from './forget-password-link-dialog/forget-password-link-dialog.component';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
@@ -24,10 +23,6 @@ const authRoutes: Routes = [
         component: ForgotPasswordComponent
     },
     {
-        path: 'linkForgotPassword',
-        component: LinkForForgetPasswordComponent
-    },
-    {
         path: '**',
         redirectTo: 'login'
     }
@@ -38,7 +33,6 @@ const authRoutes: Routes = [
         LoginComponent,
         ChangePasswordComponent,
         ForgotPasswordComponent,
-        LinkForForgetPasswordComponent,
         ChangePasswordDialogComponent,
         ForgetPasswordLinkDialogComponent
     ],

@@ -398,4 +398,24 @@
     margin-top: -16px;
     margin-left: 40px;
   }
+  .pdfLinkClass {
+    color: #1e8bed;
+    cursor: pointer;
+  }
+  .addIcon {
+    height: 20px;
+    margin-top: 26px;
+    padding-left: 4px;
+    cursor: pointer !important;
+  }
+  .addAttachmentClass {
+    margin-top: 25px;
+    color: #4784f7;
+    cursor: pointer !important;
+  }
+  .addBlueIcon {
+    @extend .addIcon;
+    margin-top: 0px;
+    height: 15px;
+  }
 }

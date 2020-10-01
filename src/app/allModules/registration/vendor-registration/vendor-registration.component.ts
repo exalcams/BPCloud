@@ -15,7 +15,7 @@ import {
 } from 'app/models/vendor-registration';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
-import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails, StateDetails } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails, StateDetails, CBPFieldMaster } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
@@ -137,9 +137,8 @@ export class VendorRegistrationComponent implements OnInit {
   math = Math;
   CBPIdentity: CBPIdentity;
   TaxPayerDetails: TaxPayerDetails;
-  selected: string;
-  selectedCountry: string;
   StateCode: string;
+  AllOnBoardingFieldMaster: CBPFieldMaster[] = [];
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -177,11 +176,9 @@ export class VendorRegistrationComponent implements OnInit {
     this.IdentityValidity = false;
     this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
-    this.selected = this.AllRoles[0];
     this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
     this.AllIdentityTypes = ['GSTIN'];
     this.AllCountries = ['India'];
-    this.selectedCountry = this.AllCountries[0];
     // this.AllStates = [
     //   'ANDAMAN AND NICOBAR ISLANDS',
     //   'ANDHRA PRADESH',
@@ -228,8 +225,8 @@ export class VendorRegistrationComponent implements OnInit {
   }
   isDisabledDate: boolean = false;
   ngOnInit(): void {
-
     this.InitializeVendorRegistrationFormGroup();
+    this.GetAllOnBoardingFieldMaster();
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
@@ -299,13 +296,13 @@ export class VendorRegistrationComponent implements OnInit {
   InitializeVendorRegistrationFormGroup(): void {
     this.vendorRegistrationFormGroup = this._formBuilder.group({
       Name: ['', Validators.required],
-      Role: ['', Validators.required],
+      Role: ['Vendor', Validators.required],
       LegalName: ['', Validators.required],
       AddressLine1: ['', Validators.required],
       AddressLine2: ['', Validators.required],
       City: ['', Validators.required],
       State: ['', Validators.required],
-      Country: ['', Validators.required],
+      Country: ['India', Validators.required],
       PinCode: ['', Validators.required],
       Type: [''],
       Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
@@ -313,8 +310,8 @@ export class VendorRegistrationComponent implements OnInit {
       Email1: ['', [Validators.required, Validators.email]],
       Email2: ['', [Validators.email]],
     });
-    this.vendorRegistrationFormGroup.get('City').disable();
-    this.vendorRegistrationFormGroup.get('State').disable();
+    // this.vendorRegistrationFormGroup.get('City').disable();
+    // this.vendorRegistrationFormGroup.get('State').disable();
     // this.vendorRegistrationFormGroup.get('Country').disable();
   }
 
@@ -390,15 +387,12 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoardingView = new BPVendorOnBoardingView();
     this.selectID = 0;
-    this.vendorRegistrationFormGroup.reset();
-    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
-      this.vendorRegistrationFormGroup.get(key).enable();
-      this.vendorRegistrationFormGroup.get(key).markAsUntouched();
-    });
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
     this.fileToUpload = null;
     this.fileToUploadList = [];
+    this.ResetVendorRegistrationFormGroup();
+    this.InitializeVendorRegistrationFormGroupByFieldMaster();
     this.ClearIdentificationFormGroup();
     this.ClearQuestionFormGroup();
     this.ClearBankDetailsFormGroup();
@@ -410,7 +404,17 @@ export class VendorRegistrationComponent implements OnInit {
     this.ClearContactDataSource();
 
   }
-
+  ResetVendorRegistrationFormGroup(): void {
+    this.vendorRegistrationFormGroup.reset();
+    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
+      this.vendorRegistrationFormGroup.get(key).enable();
+      this.vendorRegistrationFormGroup.get(key).markAsUntouched();
+    });
+  }
+  SetInitialValueForVendorRegistrationFormGroup(): void {
+    this.vendorRegistrationFormGroup.get('Role').patchValue('Vendor');
+    this.vendorRegistrationFormGroup.get('Country').patchValue('India');
+  }
   ClearIdentificationFormGroup(): void {
     this.identificationFormGroup.reset();
     Object.keys(this.identificationFormGroup.controls).forEach(key => {
@@ -1404,7 +1408,7 @@ export class VendorRegistrationComponent implements OnInit {
       // const file: File = this.fileToUpload;
       this.GetBPVendorOnBoardingValues();
       this.GetBPVendorOnBoardingSubItemValues();
-      if (choice.toLowerCase() === 'sumbit') {
+      if (choice.toLowerCase() === 'submit') {
         if (this.IdentificationsByVOB.length > 0 && this.BanksByVOB.length > 0 && this.ContactsByVOB.length > 0) {
           this.SetActionToOpenConfirmation('Register');
         }
@@ -1523,14 +1527,15 @@ export class VendorRegistrationComponent implements OnInit {
   }
 
 
-  GetIdentAttachment(fileName: string): void {
+  GetIdentAttachment(element: BPIdentity): void {
+    const fileName = element.AttachmentName;
     const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
     if (file && file.size) {
       const blob = new Blob([file], { type: file.type });
       this.OpenAttachmentDialog(fileName, blob);
     } else {
       this.IsProgressBarVisibile = true;
-      this._vendorRegistrationService.DowloandAttachment(fileName, '2').subscribe(
+      this._vendorRegistrationService.GetIdentityAttachment(element.Type, element.TransID.toString(), fileName).subscribe(
         data => {
           if (data) {
             let fileType = 'image/jpg';
@@ -1562,6 +1567,92 @@ export class VendorRegistrationComponent implements OnInit {
     const dialogRef = this.dialog.open(AttachmentDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+      }
+    });
+  }
+
+  GetAllOnBoardingFieldMaster(): void {
+    this._vendorMasterService.GetAllOnBoardingFieldMaster().subscribe(
+      (data) => {
+        this.AllOnBoardingFieldMaster = data as CBPFieldMaster[];
+        this.InitializeVendorRegistrationFormGroupByFieldMaster();
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+  GetOBDFieldLabel(field: string): string {
+    if (this.AllOnBoardingFieldMaster && this.AllOnBoardingFieldMaster.length) {
+      const fieldMaster = this.AllOnBoardingFieldMaster.filter(x => x.Field === field)[0];
+      if (fieldMaster) {
+        return fieldMaster.Text;
+      }
+    }
+    return field;
+  }
+
+  GetOBDFieldVisibility(field: string): string {
+    if (this.AllOnBoardingFieldMaster && this.AllOnBoardingFieldMaster.length) {
+      const fieldMaster = this.AllOnBoardingFieldMaster.filter(x => x.Field === field)[0];
+      if (fieldMaster) {
+        if (fieldMaster.Invisible) {
+          return 'none';
+        }
+      }
+    }
+    return 'inherit';
+  }
+  GetOBDFieldMaster(field: string): CBPFieldMaster {
+    if (this.AllOnBoardingFieldMaster && this.AllOnBoardingFieldMaster.length) {
+      return this.AllOnBoardingFieldMaster.filter(x => x.Field === field)[0];
+    }
+    return null;
+  }
+  InitializeVendorRegistrationFormGroupByFieldMaster(): void {
+    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
+      const fieldMaster = this.GetOBDFieldMaster(key);
+      if (fieldMaster) {
+        if (fieldMaster.Invisible) {
+          this.vendorRegistrationFormGroup.get(key).clearValidators();
+          this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
+        } else {
+          if (fieldMaster.DefaultValue) {
+            this.vendorRegistrationFormGroup.get(key).patchValue(fieldMaster.DefaultValue);
+          } else {
+            // this.vendorRegistrationFormGroup.get(key).patchValue('');
+          }
+          if (fieldMaster.Mandatory) {
+            if (key === 'Phone1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
+            } else if (key === 'Phone2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+            } else if (key === 'Email1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email]);
+            } else if (key === 'Email2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email]);
+            }
+            else {
+              this.vendorRegistrationFormGroup.get(key).setValidators(Validators.required);
+            }
+            this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
+          } else {
+            if (key === 'Phone1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
+            } else if (key === 'Phone2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+            } else if (key === 'Email1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email]);
+            } else if (key === 'Email2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email]);
+            }
+            else {
+              this.vendorRegistrationFormGroup.get(key).clearValidators();
+            }
+            this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
+          }
+
+        }
       }
     });
   }

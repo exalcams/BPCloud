@@ -94,3 +94,12 @@ export class StateDetails {
     State: string;
     StateCode: string;
 }
+export class CBPFieldMaster extends CommonClass {
+    ID: number;
+    Field: string;
+    FieldName: string;
+    Text: string;
+    DefaultValue: string;
+    Mandatory: boolean;
+    Invisible: boolean;
+}

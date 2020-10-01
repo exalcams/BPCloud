@@ -10,10 +10,12 @@ import { MasterService } from 'app/services/master.service';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CBPLocation, StateDetails } from 'app/models/vendor-master';
+import { CBPFieldMaster, CBPLocation, StateDetails } from 'app/models/vendor-master';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { Guid } from 'guid-typescript';
+import { AttachmentDetails } from 'app/models/attachment';
+import { AttachmentDialogComponent } from 'app/notifications/attachment-dialog/attachment-dialog.component';
 
 @Component({
   selector: 'app-vendor-approval',
@@ -50,6 +52,7 @@ export class VendorApprovalComponent implements OnInit {
     'Type',
     'IDNumber',
     'ValidUntil',
+    'Attachment',
     // 'Action'
   ];
   bankDetailsDisplayedColumns: string[] = [
@@ -106,6 +109,7 @@ export class VendorApprovalComponent implements OnInit {
   AllTypes: string[] = [];
   AllCountries: string[] = [];
   AllStates: StateDetails[] = [];
+  AllOnBoardingFieldMaster: CBPFieldMaster[] = [];
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -205,7 +209,7 @@ export class VendorApprovalComponent implements OnInit {
       // console.log(this.SelectedID);
       this.GetVendorOnBoardingsByID();
     }
-
+    this.GetAllOnBoardingFieldMaster();
     this.GetAllIdentityTypes();
     this.GetStateDetails();
     this.InitializeVendorRegistrationFormGroup();
@@ -1043,45 +1047,133 @@ export class VendorApprovalComponent implements OnInit {
     }
     return true;
   }
-  // GetAttachment(fileName: string, file?: File): void {
-  //   if (file && file.size) {
-  //     const blob = new Blob([file], { type: file.type });
-  //     this.OpenAttachmentDialog(fileName, blob);
-  //   } else {
-  //     this.IsProgressBarVisibile = true;
-  //     this._vendorRegistrationService.DowloandBPVendorOnBoardingImage(fileName).subscribe(
-  //       data => {
-  //         if (data) {
-  //           let fileType = 'image/jpg';
-  //           fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
-  //             fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
-  //               fileName.toLowerCase().includes('.png') ? 'image/png' :
-  //                 fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
-  //           const blob = new Blob([data], { type: fileType });
-  //           this.OpenAttachmentDialog(fileName, blob);
-  //         }
-  //         this.IsProgressBarVisibile = false;
-  //       },
-  //       error => {
-  //         console.error(error);
-  //         this.IsProgressBarVisibile = false;
-  //       }
-  //     );
-  //   }
-  // }
-  // OpenAttachmentDialog(FileName: string, blob: Blob): void {
-  //   const attachmentDetails: AttachmentDetails = {
-  //     FileName: FileName,
-  //     blob: blob
-  //   };
-  //   const dialogConfig: MatDialogConfig = {
-  //     data: attachmentDetails,
-  //     panelClass: 'attachment-dialog'
-  //   };
-  //   const dialogRef = this.dialog.open(AttachmentDialogComponent, dialogConfig);
-  //   dialogRef.afterClosed().subscribe(result => {
-  //     if (result) {
-  //     }
-  //   });
-  // }
+  GetIdentAttachment(element: BPIdentity): void {
+    const fileName = element.AttachmentName;
+    const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
+    if (file && file.size) {
+      const blob = new Blob([file], { type: file.type });
+      this.OpenAttachmentDialog(fileName, blob);
+    } else {
+      this.IsProgressBarVisibile = true;
+      this._vendorRegistrationService.GetIdentityAttachment(element.Type, element.TransID.toString(), fileName).subscribe(
+        data => {
+          if (data) {
+            let fileType = 'image/jpg';
+            fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
+              fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
+                fileName.toLowerCase().includes('.png') ? 'image/png' :
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+            const blob = new Blob([data], { type: fileType });
+            this.OpenAttachmentDialog(fileName, blob);
+          }
+          this.IsProgressBarVisibile = false;
+        },
+        error => {
+          console.error(error);
+          this.IsProgressBarVisibile = false;
+        }
+      );
+    }
+  }
+  OpenAttachmentDialog(FileName: string, blob: Blob): void {
+    const attachmentDetails: AttachmentDetails = {
+      FileName: FileName,
+      blob: blob
+    };
+    const dialogConfig: MatDialogConfig = {
+      data: attachmentDetails,
+      panelClass: 'attachment-dialog'
+    };
+    const dialogRef = this.dialog.open(AttachmentDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+      }
+    });
+  }
+
+  GetAllOnBoardingFieldMaster(): void {
+    this._vendorMasterService.GetAllOnBoardingFieldMaster().subscribe(
+      (data) => {
+        this.AllOnBoardingFieldMaster = data as CBPFieldMaster[];
+        this.InitializeVendorRegistrationFormGroupByFieldMaster();
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+  GetOBDFieldLabel(field: string): string {
+    if (this.AllOnBoardingFieldMaster && this.AllOnBoardingFieldMaster.length) {
+      const fieldMaster = this.AllOnBoardingFieldMaster.filter(x => x.Field === field)[0];
+      if (fieldMaster) {
+        return fieldMaster.Text;
+      }
+    }
+    return field;
+  }
+
+  GetOBDFieldVisibility(field: string): string {
+    if (this.AllOnBoardingFieldMaster && this.AllOnBoardingFieldMaster.length) {
+      const fieldMaster = this.AllOnBoardingFieldMaster.filter(x => x.Field === field)[0];
+      if (fieldMaster) {
+        if (fieldMaster.Invisible) {
+          return 'none';
+        }
+      }
+    }
+    return 'inherit';
+  }
+  GetOBDFieldMaster(field: string): CBPFieldMaster {
+    if (this.AllOnBoardingFieldMaster && this.AllOnBoardingFieldMaster.length) {
+      return this.AllOnBoardingFieldMaster.filter(x => x.Field === field)[0];
+    }
+    return null;
+  }
+  InitializeVendorRegistrationFormGroupByFieldMaster(): void {
+    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
+      const fieldMaster = this.GetOBDFieldMaster(key);
+      if (fieldMaster) {
+        if (fieldMaster.Invisible) {
+          this.vendorRegistrationFormGroup.get(key).clearValidators();
+          this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
+        } else {
+          if (fieldMaster.DefaultValue) {
+            this.vendorRegistrationFormGroup.get(key).patchValue(fieldMaster.DefaultValue);
+          } else {
+            // this.vendorRegistrationFormGroup.get(key).patchValue('');
+          }
+          if (fieldMaster.Mandatory) {
+            if (key === 'Phone1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
+            } else if (key === 'Phone2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+            } else if (key === 'Email1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email]);
+            } else if (key === 'Email2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email]);
+            }
+            else {
+              this.vendorRegistrationFormGroup.get(key).setValidators(Validators.required);
+            }
+            this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
+          } else {
+            if (key === 'Phone1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
+            } else if (key === 'Phone2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+            } else if (key === 'Email1') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email]);
+            } else if (key === 'Email2') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email]);
+            }
+            else {
+              this.vendorRegistrationFormGroup.get(key).clearValidators();
+            }
+            this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
+          }
+
+        }
+      }
+    });
+  }
 }
