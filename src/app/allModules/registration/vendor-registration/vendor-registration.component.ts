@@ -100,6 +100,7 @@ export class VendorRegistrationComponent implements OnInit {
   //   'Action'
   // ];
   SelectedIdentity: BPIdentity;
+  SelectedBank: BPBank;
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
   contactDataSource = new MatTableDataSource<BPContact>();
@@ -123,6 +124,7 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('legalName') legalName: ElementRef;
 
   @ViewChild('fileInput1') fileInput: ElementRef<HTMLElement>;
+  @ViewChild('fileInput2') fileInput2: ElementRef<HTMLElement>;
   fileToUpload: File;
   fileToUploadList: File[] = [];
   Status: string;
@@ -132,7 +134,7 @@ export class VendorRegistrationComponent implements OnInit {
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
   AllTypes: string[] = [];
-  AllCountries: string[] = [];
+  AllCountries: any[] = [];
   AllStates: StateDetails[] = [];
   math = Math;
   CBPIdentity: CBPIdentity;
@@ -176,9 +178,255 @@ export class VendorRegistrationComponent implements OnInit {
     this.IdentityValidity = false;
     this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
-    this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
+    this.AllTypes = ['Domestic supply', 'Domestic Service', 'Import vendor', 'Others'];
+    // this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
     this.AllIdentityTypes = ['GSTIN'];
-    this.AllCountries = ['India'];
+    // this.AllCountries = ['India'];
+    this.AllCountries = [
+      { name: 'Afghanistan', code: 'AF' },
+      { name: 'Åland Islands', code: 'AX' },
+      { name: 'Albania', code: 'AL' },
+      { name: 'Algeria', code: 'DZ' },
+      { name: 'American Samoa', code: 'AS' },
+      { name: 'AndorrA', code: 'AD' },
+      { name: 'Angola', code: 'AO' },
+      { name: 'Anguilla', code: 'AI' },
+      { name: 'Antarctica', code: 'AQ' },
+      { name: 'Antigua and Barbuda', code: 'AG' },
+      { name: 'Argentina', code: 'AR' },
+      { name: 'Armenia', code: 'AM' },
+      { name: 'Aruba', code: 'AW' },
+      { name: 'Australia', code: 'AU' },
+      { name: 'Austria', code: 'AT' },
+      { name: 'Azerbaijan', code: 'AZ' },
+      { name: 'Bahamas', code: 'BS' },
+      { name: 'Bahrain', code: 'BH' },
+      { name: 'Bangladesh', code: 'BD' },
+      { name: 'Barbados', code: 'BB' },
+      { name: 'Belarus', code: 'BY' },
+      { name: 'Belgium', code: 'BE' },
+      { name: 'Belize', code: 'BZ' },
+      { name: 'Benin', code: 'BJ' },
+      { name: 'Bermuda', code: 'BM' },
+      { name: 'Bhutan', code: 'BT' },
+      { name: 'Bolivia', code: 'BO' },
+      { name: 'Bosnia and Herzegovina', code: 'BA' },
+      { name: 'Botswana', code: 'BW' },
+      { name: 'Bouvet Island', code: 'BV' },
+      { name: 'Brazil', code: 'BR' },
+      { name: 'British Indian Ocean Territory', code: 'IO' },
+      { name: 'Brunei Darussalam', code: 'BN' },
+      { name: 'Bulgaria', code: 'BG' },
+      { name: 'Burkina Faso', code: 'BF' },
+      { name: 'Burundi', code: 'BI' },
+      { name: 'Cambodia', code: 'KH' },
+      { name: 'Cameroon', code: 'CM' },
+      { name: 'Canada', code: 'CA' },
+      { name: 'Cape Verde', code: 'CV' },
+      { name: 'Cayman Islands', code: 'KY' },
+      { name: 'Central African Republic', code: 'CF' },
+      { name: 'Chad', code: 'TD' },
+      { name: 'Chile', code: 'CL' },
+      { name: 'China', code: 'CN' },
+      { name: 'Christmas Island', code: 'CX' },
+      { name: 'Cocos (Keeling) Islands', code: 'CC' },
+      { name: 'Colombia', code: 'CO' },
+      { name: 'Comoros', code: 'KM' },
+      { name: 'Congo', code: 'CG' },
+      { name: 'Congo, The Democratic Republic of the', code: 'CD' },
+      { name: 'Cook Islands', code: 'CK' },
+      { name: 'Costa Rica', code: 'CR' },
+      { name: 'Cote D\'Ivoire', code: 'CI' },
+      { name: 'Croatia', code: 'HR' },
+      { name: 'Cuba', code: 'CU' },
+      { name: 'Cyprus', code: 'CY' },
+      { name: 'Czech Republic', code: 'CZ' },
+      { name: 'Denmark', code: 'DK' },
+      { name: 'Djibouti', code: 'DJ' },
+      { name: 'Dominica', code: 'DM' },
+      { name: 'Dominican Republic', code: 'DO' },
+      { name: 'Ecuador', code: 'EC' },
+      { name: 'Egypt', code: 'EG' },
+      { name: 'El Salvador', code: 'SV' },
+      { name: 'Equatorial Guinea', code: 'GQ' },
+      { name: 'Eritrea', code: 'ER' },
+      { name: 'Estonia', code: 'EE' },
+      { name: 'Ethiopia', code: 'ET' },
+      { name: 'Falkland Islands (Malvinas)', code: 'FK' },
+      { name: 'Faroe Islands', code: 'FO' },
+      { name: 'Fiji', code: 'FJ' },
+      { name: 'Finland', code: 'FI' },
+      { name: 'France', code: 'FR' },
+      { name: 'French Guiana', code: 'GF' },
+      { name: 'French Polynesia', code: 'PF' },
+      { name: 'French Southern Territories', code: 'TF' },
+      { name: 'Gabon', code: 'GA' },
+      { name: 'Gambia', code: 'GM' },
+      { name: 'Georgia', code: 'GE' },
+      { name: 'Germany', code: 'DE' },
+      { name: 'Ghana', code: 'GH' },
+      { name: 'Gibraltar', code: 'GI' },
+      { name: 'Greece', code: 'GR' },
+      { name: 'Greenland', code: 'GL' },
+      { name: 'Grenada', code: 'GD' },
+      { name: 'Guadeloupe', code: 'GP' },
+      { name: 'Guam', code: 'GU' },
+      { name: 'Guatemala', code: 'GT' },
+      { name: 'Guernsey', code: 'GG' },
+      { name: 'Guinea', code: 'GN' },
+      { name: 'Guinea-Bissau', code: 'GW' },
+      { name: 'Guyana', code: 'GY' },
+      { name: 'Haiti', code: 'HT' },
+      { name: 'Heard Island and Mcdonald Islands', code: 'HM' },
+      { name: 'Holy See (Vatican City State)', code: 'VA' },
+      { name: 'Honduras', code: 'HN' },
+      { name: 'Hong Kong', code: 'HK' },
+      { name: 'Hungary', code: 'HU' },
+      { name: 'Iceland', code: 'IS' },
+      { name: 'India', code: 'IN' },
+      { name: 'Indonesia', code: 'ID' },
+      { name: 'Iran, Islamic Republic Of', code: 'IR' },
+      { name: 'Iraq', code: 'IQ' },
+      { name: 'Ireland', code: 'IE' },
+      { name: 'Isle of Man', code: 'IM' },
+      { name: 'Israel', code: 'IL' },
+      { name: 'Italy', code: 'IT' },
+      { name: 'Jamaica', code: 'JM' },
+      { name: 'Japan', code: 'JP' },
+      { name: 'Jersey', code: 'JE' },
+      { name: 'Jordan', code: 'JO' },
+      { name: 'Kazakhstan', code: 'KZ' },
+      { name: 'Kenya', code: 'KE' },
+      { name: 'Kiribati', code: 'KI' },
+      { name: 'Korea, Democratic People\'S Republic of', code: 'KP' },
+      { name: 'Korea, Republic of', code: 'KR' },
+      { name: 'Kuwait', code: 'KW' },
+      { name: 'Kyrgyzstan', code: 'KG' },
+      { name: 'Lao People\'S Democratic Republic', code: 'LA' },
+      { name: 'Latvia', code: 'LV' },
+      { name: 'Lebanon', code: 'LB' },
+      { name: 'Lesotho', code: 'LS' },
+      { name: 'Liberia', code: 'LR' },
+      { name: 'Libyan Arab Jamahiriya', code: 'LY' },
+      { name: 'Liechtenstein', code: 'LI' },
+      { name: 'Lithuania', code: 'LT' },
+      { name: 'Luxembourg', code: 'LU' },
+      { name: 'Macao', code: 'MO' },
+      { name: 'Macedonia, The Former Yugoslav Republic of', code: 'MK' },
+      { name: 'Madagascar', code: 'MG' },
+      { name: 'Malawi', code: 'MW' },
+      { name: 'Malaysia', code: 'MY' },
+      { name: 'Maldives', code: 'MV' },
+      { name: 'Mali', code: 'ML' },
+      { name: 'Malta', code: 'MT' },
+      { name: 'Marshall Islands', code: 'MH' },
+      { name: 'Martinique', code: 'MQ' },
+      { name: 'Mauritania', code: 'MR' },
+      { name: 'Mauritius', code: 'MU' },
+      { name: 'Mayotte', code: 'YT' },
+      { name: 'Mexico', code: 'MX' },
+      { name: 'Micronesia, Federated States of', code: 'FM' },
+      { name: 'Moldova, Republic of', code: 'MD' },
+      { name: 'Monaco', code: 'MC' },
+      { name: 'Mongolia', code: 'MN' },
+      { name: 'Montserrat', code: 'MS' },
+      { name: 'Morocco', code: 'MA' },
+      { name: 'Mozambique', code: 'MZ' },
+      { name: 'Myanmar', code: 'MM' },
+      { name: 'Namibia', code: 'NA' },
+      { name: 'Nauru', code: 'NR' },
+      { name: 'Nepal', code: 'NP' },
+      { name: 'Netherlands', code: 'NL' },
+      { name: 'Netherlands Antilles', code: 'AN' },
+      { name: 'New Caledonia', code: 'NC' },
+      { name: 'New Zealand', code: 'NZ' },
+      { name: 'Nicaragua', code: 'NI' },
+      { name: 'Niger', code: 'NE' },
+      { name: 'Nigeria', code: 'NG' },
+      { name: 'Niue', code: 'NU' },
+      { name: 'Norfolk Island', code: 'NF' },
+      { name: 'Northern Mariana Islands', code: 'MP' },
+      { name: 'Norway', code: 'NO' },
+      { name: 'Oman', code: 'OM' },
+      { name: 'Pakistan', code: 'PK' },
+      { name: 'Palau', code: 'PW' },
+      { name: 'Palestinian Territory, Occupied', code: 'PS' },
+      { name: 'Panama', code: 'PA' },
+      { name: 'Papua New Guinea', code: 'PG' },
+      { name: 'Paraguay', code: 'PY' },
+      { name: 'Peru', code: 'PE' },
+      { name: 'Philippines', code: 'PH' },
+      { name: 'Pitcairn', code: 'PN' },
+      { name: 'Poland', code: 'PL' },
+      { name: 'Portugal', code: 'PT' },
+      { name: 'Puerto Rico', code: 'PR' },
+      { name: 'Qatar', code: 'QA' },
+      { name: 'Reunion', code: 'RE' },
+      { name: 'Romania', code: 'RO' },
+      { name: 'Russian Federation', code: 'RU' },
+      { name: 'RWANDA', code: 'RW' },
+      { name: 'Saint Helena', code: 'SH' },
+      { name: 'Saint Kitts and Nevis', code: 'KN' },
+      { name: 'Saint Lucia', code: 'LC' },
+      { name: 'Saint Pierre and Miquelon', code: 'PM' },
+      { name: 'Saint Vincent and the Grenadines', code: 'VC' },
+      { name: 'Samoa', code: 'WS' },
+      { name: 'San Marino', code: 'SM' },
+      { name: 'Sao Tome and Principe', code: 'ST' },
+      { name: 'Saudi Arabia', code: 'SA' },
+      { name: 'Senegal', code: 'SN' },
+      { name: 'Serbia and Montenegro', code: 'CS' },
+      { name: 'Seychelles', code: 'SC' },
+      { name: 'Sierra Leone', code: 'SL' },
+      { name: 'Singapore', code: 'SG' },
+      { name: 'Slovakia', code: 'SK' },
+      { name: 'Slovenia', code: 'SI' },
+      { name: 'Solomon Islands', code: 'SB' },
+      { name: 'Somalia', code: 'SO' },
+      { name: 'South Africa', code: 'ZA' },
+      { name: 'South Georgia and the South Sandwich Islands', code: 'GS' },
+      { name: 'Spain', code: 'ES' },
+      { name: 'Sri Lanka', code: 'LK' },
+      { name: 'Sudan', code: 'SD' },
+      { name: 'Suriname', code: 'SR' },
+      { name: 'Svalbard and Jan Mayen', code: 'SJ' },
+      { name: 'Swaziland', code: 'SZ' },
+      { name: 'Sweden', code: 'SE' },
+      { name: 'Switzerland', code: 'CH' },
+      { name: 'Syrian Arab Republic', code: 'SY' },
+      { name: 'Taiwan, Province of China', code: 'TW' },
+      { name: 'Tajikistan', code: 'TJ' },
+      { name: 'Tanzania, United Republic of', code: 'TZ' },
+      { name: 'Thailand', code: 'TH' },
+      { name: 'Timor-Leste', code: 'TL' },
+      { name: 'Togo', code: 'TG' },
+      { name: 'Tokelau', code: 'TK' },
+      { name: 'Tonga', code: 'TO' },
+      { name: 'Trinidad and Tobago', code: 'TT' },
+      { name: 'Tunisia', code: 'TN' },
+      { name: 'Turkey', code: 'TR' },
+      { name: 'Turkmenistan', code: 'TM' },
+      { name: 'Turks and Caicos Islands', code: 'TC' },
+      { name: 'Tuvalu', code: 'TV' },
+      { name: 'Uganda', code: 'UG' },
+      { name: 'Ukraine', code: 'UA' },
+      { name: 'United Arab Emirates', code: 'AE' },
+      { name: 'United Kingdom', code: 'GB' },
+      { name: 'United States', code: 'US' },
+      { name: 'United States Minor Outlying Islands', code: 'UM' },
+      { name: 'Uruguay', code: 'UY' },
+      { name: 'Uzbekistan', code: 'UZ' },
+      { name: 'Vanuatu', code: 'VU' },
+      { name: 'Venezuela', code: 'VE' },
+      { name: 'Viet Nam', code: 'VN' },
+      { name: 'Virgin Islands, British', code: 'VG' },
+      { name: 'Virgin Islands, U.S.', code: 'VI' },
+      { name: 'Wallis and Futuna', code: 'WF' },
+      { name: 'Western Sahara', code: 'EH' },
+      { name: 'Yemen', code: 'YE' },
+      { name: 'Zambia', code: 'ZM' },
+      { name: 'Zimbabwe', code: 'ZW' }
+    ];
     // this.AllStates = [
     //   'ANDAMAN AND NICOBAR ISLANDS',
     //   'ANDHRA PRADESH',
@@ -222,6 +470,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.answerList = new AnswerList();
     this.StateCode = '';
     this.SelectedIdentity = new BPIdentity();
+    this.SelectedBank = new BPBank();
   }
   isDisabledDate: boolean = false;
   ngOnInit(): void {
@@ -254,6 +503,16 @@ export class VendorRegistrationComponent implements OnInit {
         console.error(err);
       }
     );
+  }
+  TypeSelected(event): void {
+    if (event.value) {
+      const selecteType = event.value as string;
+      if (selecteType && selecteType === 'Import vendor') {
+        this.vendorRegistrationFormGroup.get('Country').enable();
+      } else {
+        this.vendorRegistrationFormGroup.get('Country').disable();
+      }
+    }
   }
   RoleSelected(event): void {
     if (event.value) {
@@ -295,24 +554,34 @@ export class VendorRegistrationComponent implements OnInit {
 
   InitializeVendorRegistrationFormGroup(): void {
     this.vendorRegistrationFormGroup = this._formBuilder.group({
-      Name: ['', Validators.required],
+      Name: ['', [Validators.required, Validators.maxLength(40)]],
       Role: ['Vendor', Validators.required],
-      LegalName: ['', Validators.required],
+      LegalName: ['', [Validators.required, Validators.maxLength(40)]],
       AddressLine1: ['', Validators.required],
       AddressLine2: ['', Validators.required],
       City: ['', Validators.required],
       State: ['', Validators.required],
       Country: ['India', Validators.required],
-      PinCode: ['', Validators.required],
+      PinCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(10)]],
       Type: [''],
       Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
       Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
-      Email1: ['', [Validators.required, Validators.email]],
-      Email2: ['', [Validators.email]],
+      Email1: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      Email2: ['', [Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      Field1: [''],
+      Field2: [''],
+      Field3: [''],
+      Field4: [''],
+      Field5: [''],
+      Field6: [''],
+      Field7: [''],
+      Field8: [''],
+      Field9: [''],
+      Field10: [''],
     });
     // this.vendorRegistrationFormGroup.get('City').disable();
     // this.vendorRegistrationFormGroup.get('State').disable();
-    // this.vendorRegistrationFormGroup.get('Country').disable();
+    this.vendorRegistrationFormGroup.get('Country').disable();
   }
 
   InitializeIdentificationFormGroup(): void {
@@ -321,6 +590,14 @@ export class VendorRegistrationComponent implements OnInit {
       IDNumber: ['', [Validators.required]],
       ValidUntil: [''],
     });
+    this.InitializeIdentificationTable();
+  }
+
+  InitializeIdentificationTable(): void {
+    const bPIdentity = new BPIdentity();
+    this.IdentificationsByVOB.push(bPIdentity);
+    this.IdentificationsByVOB.push(bPIdentity);
+    this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
   }
 
   AddDynamicValidatorsIdentificationFormGroup(selectedType: string): void {
@@ -358,16 +635,29 @@ export class VendorRegistrationComponent implements OnInit {
       Branch: ['', Validators.required],
       City: ['', Validators.required],
     });
+    this.InitializeBankDetailsTable();
   }
-
+  InitializeBankDetailsTable(): void {
+    const bPIdentity = new BPBank();
+    this.BanksByVOB.push(bPIdentity);
+    this.BanksByVOB.push(bPIdentity);
+    this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
+  }
   InitializeContactFormGroup(): void {
     this.contactFormGroup = this._formBuilder.group({
       Name: ['', Validators.required],
       Department: ['', Validators.required],
       Title: ['', Validators.required],
       Mobile: ['', [Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
-      Email: ['', [Validators.required, Validators.email]],
+      Email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
     });
+    this.InitializeContactTable();
+  }
+  InitializeContactTable(): void {
+    const bPIdentity = new BPContact();
+    this.ContactsByVOB.push(bPIdentity);
+    this.ContactsByVOB.push(bPIdentity);
+    this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
   }
   InitializeQuestionsFormGroup(): void {
     this.questionFormGroup = this._formBuilder.group({
@@ -603,6 +893,7 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(`${loc.Taluk}, ${loc.District}`);
             // this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
             // this.identificationFormGroup.get('StateCode').patchValue(loc.StateCode);
           }
@@ -625,6 +916,7 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(`${loc.Taluk}, ${loc.District}`);
             // this.vendorRegistrationFormGroup.get('CountryCode').patchValue(loc.CountryCode);
           }
         },
@@ -861,6 +1153,16 @@ export class VendorRegistrationComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Email1').patchValue(this.SelectedBPVendorOnBoarding.Email1);
     this.vendorRegistrationFormGroup.get('Email2').patchValue(this.SelectedBPVendorOnBoarding.Email2);
     // this.contactFormGroup.get('Email').validator({}as AbstractControl);
+    this.vendorRegistrationFormGroup.get('Field1').patchValue(this.SelectedBPVendorOnBoarding.Field1);
+    this.vendorRegistrationFormGroup.get('Field2').patchValue(this.SelectedBPVendorOnBoarding.Field2);
+    this.vendorRegistrationFormGroup.get('Field3').patchValue(this.SelectedBPVendorOnBoarding.Field3);
+    this.vendorRegistrationFormGroup.get('Field4').patchValue(this.SelectedBPVendorOnBoarding.Field4);
+    this.vendorRegistrationFormGroup.get('Field5').patchValue(this.SelectedBPVendorOnBoarding.Field5);
+    this.vendorRegistrationFormGroup.get('Field6').patchValue(this.SelectedBPVendorOnBoarding.Field6);
+    this.vendorRegistrationFormGroup.get('Field7').patchValue(this.SelectedBPVendorOnBoarding.Field7);
+    this.vendorRegistrationFormGroup.get('Field8').patchValue(this.SelectedBPVendorOnBoarding.Field8);
+    this.vendorRegistrationFormGroup.get('Field9').patchValue(this.SelectedBPVendorOnBoarding.Field9);
+    this.vendorRegistrationFormGroup.get('Field10').patchValue(this.SelectedBPVendorOnBoarding.Field10);
   }
 
   GetBPVendorOnBoardingSubItems(): void {
@@ -959,7 +1261,7 @@ export class VendorRegistrationComponent implements OnInit {
             this.fileToUploadList.push(this.fileToUpload);
             this.fileToUpload = null;
           }
-          if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+          if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
             this.IdentificationsByVOB = [];
           }
           this.IdentificationsByVOB.push(bPIdentity);
@@ -986,7 +1288,7 @@ export class VendorRegistrationComponent implements OnInit {
           this.fileToUploadList.push(this.fileToUpload);
           this.fileToUpload = null;
         }
-        if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+        if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
           this.IdentificationsByVOB = [];
         }
         this.IdentificationsByVOB.push(bPIdentity);
@@ -1013,7 +1315,7 @@ export class VendorRegistrationComponent implements OnInit {
         this.fileToUploadList.push(this.fileToUpload);
         this.fileToUpload = null;
       }
-      if (!this.BanksByVOB || !this.BanksByVOB.length) {
+      if (!this.BanksByVOB || !this.BanksByVOB.length || !this.BanksByVOB[0].AccountNo) {
         this.BanksByVOB = [];
       }
       this.BanksByVOB.push(bPBank);
@@ -1032,7 +1334,7 @@ export class VendorRegistrationComponent implements OnInit {
       bPContact.Title = this.contactFormGroup.get('Title').value;
       bPContact.Mobile = this.contactFormGroup.get('Mobile').value;
       bPContact.Email = this.contactFormGroup.get('Email').value;
-      if (!this.ContactsByVOB || !this.ContactsByVOB.length) {
+      if (!this.ContactsByVOB || !this.ContactsByVOB.length || !this.ContactsByVOB[0].Name) {
         this.ContactsByVOB = [];
       }
       this.ContactsByVOB.push(bPContact);
@@ -1164,7 +1466,16 @@ export class VendorRegistrationComponent implements OnInit {
     // this.SelectedBPVendorOnBoarding.VendorCode = this.SelectedBPVendorOnBoardingView.VendorCode = this.vendorRegistrationFormGroup.get('VendorCode').value;
     // this.SelectedBPVendorOnBoarding.ParentVendor = this.SelectedBPVendorOnBoardingView.ParentVendor = this.vendorRegistrationFormGroup.get('ParentVendor').value;
     // this.SelectedBPVendorOnBoarding.Status = this.SelectedBPVendorOnBoardingView.Status = this.vendorRegistrationFormGroup.get('Status').value;
-
+    this.SelectedBPVendorOnBoarding.Field1 = this.SelectedBPVendorOnBoardingView.Field1 = this.vendorRegistrationFormGroup.get('Field1').value;
+    this.SelectedBPVendorOnBoarding.Field2 = this.SelectedBPVendorOnBoardingView.Field2 = this.vendorRegistrationFormGroup.get('Field2').value;
+    this.SelectedBPVendorOnBoarding.Field3 = this.SelectedBPVendorOnBoardingView.Field3 = this.vendorRegistrationFormGroup.get('Field3').value;
+    this.SelectedBPVendorOnBoarding.Field4 = this.SelectedBPVendorOnBoardingView.Field4 = this.vendorRegistrationFormGroup.get('Field4').value;
+    this.SelectedBPVendorOnBoarding.Field5 = this.SelectedBPVendorOnBoardingView.Field5 = this.vendorRegistrationFormGroup.get('Field5').value;
+    this.SelectedBPVendorOnBoarding.Field6 = this.SelectedBPVendorOnBoardingView.Field6 = this.vendorRegistrationFormGroup.get('Field6').value;
+    this.SelectedBPVendorOnBoarding.Field7 = this.SelectedBPVendorOnBoardingView.Field7 = this.vendorRegistrationFormGroup.get('Field7').value;
+    this.SelectedBPVendorOnBoarding.Field8 = this.SelectedBPVendorOnBoardingView.Field8 = this.vendorRegistrationFormGroup.get('Field8').value;
+    this.SelectedBPVendorOnBoarding.Field9 = this.SelectedBPVendorOnBoardingView.Field9 = this.vendorRegistrationFormGroup.get('Field9').value;
+    this.SelectedBPVendorOnBoarding.Field10 = this.SelectedBPVendorOnBoardingView.Field10 = this.vendorRegistrationFormGroup.get('Field10').value;
   }
 
   GetBPVendorOnBoardingSubItemValues(): void {
@@ -1409,7 +1720,9 @@ export class VendorRegistrationComponent implements OnInit {
       this.GetBPVendorOnBoardingValues();
       this.GetBPVendorOnBoardingSubItemValues();
       if (choice.toLowerCase() === 'submit') {
-        if (this.IdentificationsByVOB.length > 0 && this.BanksByVOB.length > 0 && this.ContactsByVOB.length > 0) {
+        if (this.IdentificationsByVOB.length > 0 && this.IdentificationsByVOB[0].Type &&
+          this.BanksByVOB.length > 0 && this.BanksByVOB[0].AccountNo &&
+          this.ContactsByVOB.length > 0 && this.ContactsByVOB[0].Name) {
           this.SetActionToOpenConfirmation('Register');
         }
         else {
@@ -1479,12 +1792,42 @@ export class VendorRegistrationComponent implements OnInit {
       // this.fileToUploadList.push(this.fileToUpload);
     }
   }
+  handleFileInput2(evt): void {
+    if (evt.target.files && evt.target.files.length > 0) {
+      this.fileToUpload = evt.target.files[0];
+      if (this.SelectedBank && this.SelectedBank.AccountNo) {
+        const selectFileName = this.SelectedBank.AttachmentName;
+        const indexx = this.BanksByVOB.findIndex(x => x.AccountNo === this.SelectedBank.AccountNo && x.IFSC === this.SelectedBank.IFSC);
+        if (indexx > -1) {
+          this.BanksByVOB[indexx].AttachmentName = this.fileToUpload.name;
+          this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
+          this.fileToUploadList.push(this.fileToUpload);
+          if (selectFileName) {
+            const fileIndex = this.fileToUploadList.findIndex(x => x.name === selectFileName);
+            if (fileIndex > -1) {
+              this.fileToUploadList.splice(fileIndex, 1);
+            }
+          }
+          this.fileToUpload = null;
+        }
+        this.SelectedBank = new BPBank();
+      }
+      // this.fileToUploadList.push(this.fileToUpload);
+    }
+  }
   ReplaceIdentificationAttachment(element: BPIdentity): void {
     // const el: HTMLElement = this.fileInput.nativeElement;
     // el.click();
     this.SelectedIdentity = element;
     const event = new MouseEvent('click', { bubbles: false });
     this.fileInput.nativeElement.dispatchEvent(event);
+  }
+  ReplaceBankAttachment(element: BPBank): void {
+    // const el: HTMLElement = this.fileInput.nativeElement;
+    // el.click();
+    this.SelectedBank = element;
+    const event = new MouseEvent('click', { bubbles: false });
+    this.fileInput2.nativeElement.dispatchEvent(event);
   }
   numberOnly(event): boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
@@ -1628,9 +1971,15 @@ export class VendorRegistrationComponent implements OnInit {
             } else if (key === 'Phone2') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
             } else if (key === 'Email1') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]);
             } else if (key === 'Email2') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]);
+            } else if (key === 'Name') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.maxLength(40)]);
+            } else if (key === 'LegalName') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.maxLength(40)]);
+            } else if (key === 'PinCode') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.minLength(6), Validators.maxLength(10)]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).setValidators(Validators.required);
@@ -1642,9 +1991,15 @@ export class VendorRegistrationComponent implements OnInit {
             } else if (key === 'Phone2') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
             } else if (key === 'Email1') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]);
             } else if (key === 'Email2') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]);
+            } else if (key === 'Name') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.maxLength(40)]);
+            } else if (key === 'LegalName') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.maxLength(40)]);
+            } else if (key === 'PinCode') {
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.minLength(6), Validators.maxLength(10)]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).clearValidators();
