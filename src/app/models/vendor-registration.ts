@@ -27,6 +27,16 @@ export class BPVendorOnBoarding extends CommonClass {
     VendorCode: number;
     ParentVendor: string;
     Status: string;
+    Field1: string;
+    Field2: string;
+    Field3: string;
+    Field4: string;
+    Field5: string;
+    Field6: string;
+    Field7: string;
+    Field8: string;
+    Field9: string;
+    Field10: string;
 }
 export class BPIdentity extends CommonClass {
     TransID: number;
@@ -94,6 +104,16 @@ export class BPVendorOnBoardingView extends CommonClass {
     VendorCode: number;
     ParentVendor: string;
     Status: string;
+    Field1: string;
+    Field2: string;
+    Field3: string;
+    Field4: string;
+    Field5: string;
+    Field6: string;
+    Field7: string;
+    Field8: string;
+    Field9: string;
+    Field10: string;
     bPIdentities: BPIdentity[];
     bPBanks: BPBank[];
     bPContacts: BPContact[];

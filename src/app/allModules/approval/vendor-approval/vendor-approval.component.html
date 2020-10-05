@@ -22,212 +22,342 @@
             </div>
 
             <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
-              [formGroup]="vendorRegistrationFormGroup">
-              <div fxLayout class="mt-20">
-                <div fxFlex fxLayout="column">
-                  <div fxLayout="row wrap" fxLayoutAlign="start">
-                    <div fxFlex="100">
-                      <div class="SectionTitle mb-8">
-                        <strong>Basic Details</strong>
-                      </div>
+            [formGroup]="vendorRegistrationFormGroup">
+            <div fxLayout class="mt-20">
+              <div fxFlex fxLayout="column">
+                <div fxLayout="row wrap" fxLayoutAlign="start">
+                  <div fxFlex="100">
+                    <div class="SectionTitle mb-8">
+                      <strong>Basic Details</strong>
                     </div>
-                    <div fxFlex="66" [style.display]="GetOBDFieldVisibility('Name')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('Name')" formControlName="Name">
+                  </div>
+
+                  <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Role')">
+                    <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <!-- <input matInput placeholder="Role" formControlName="Role"> -->
+                      <mat-select matInput [placeholder]="GetOBDFieldLabel('Role')"
+                        (selectionChange)="RoleSelected($event)" formControlName="Role">
+                        <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
+                      </mat-select>
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('Role').touched && vendorRegistrationFormGroup.get('Role').hasError('required')">
+                        {{GetOBDFieldLabel('Role')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Type')">
+                    <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <!-- <input matInput placeholder="Type" formControlName="Type"> -->
+                      <mat-select matInput [placeholder]="GetOBDFieldLabel('Type')" formControlName="Type"
+                        (selectionChange)="TypeSelected($event)">
+                        <mat-option *ngFor="let type of AllTypes" [value]="type">{{type}}</mat-option>
+                      </mat-select>
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
+                        {{GetOBDFieldLabel('Type')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Name')">
+                    <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('Name')" formControlName="Name">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('Name').touched && vendorRegistrationFormGroup.get('Name').hasError('required')">
+                        {{GetOBDFieldLabel('Name')}} is required
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Name').touched && !vendorRegistrationFormGroup.get('Name').hasError('required')
+                        &&vendorRegistrationFormGroup.get('Name').hasError('maxlength')">
+                        Maximum allowed character is 40
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('LegalName')">
+                    <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <input #legalName matInput [placeholder]="GetOBDFieldLabel('LegalName')"
+                        formControlName="LegalName">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
+                        {{GetOBDFieldLabel('LegalName')}} is required
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && !vendorRegistrationFormGroup.get('LegalName').hasError('required')
+                      && vendorRegistrationFormGroup.get('LegalName').hasError('maxlength')">
+                        Maximum allowed character is 40
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="100">
+                    <div class="SectionTitle mb-8">
+                      <strong>Contact Info.</strong>
+                    </div>
+                  </div>
+
+                  <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone1')">
+                    <div fxFlex>
+                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                        <!-- <div matPrefix class="pr-4 mr-4 borderRightClass"></div> -->
+                        <input matInput [placeholder]="GetOBDFieldLabel('Phone1')" formControlName="Phone1">
                         <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Name').touched && vendorRegistrationFormGroup.get('Name').hasError('required')">
-                          {{GetOBDFieldLabel('Name')}} is required
+                          *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
+                          {{GetOBDFieldLabel('Phone1')}} is required is required
                         </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="33" [style.display]="GetOBDFieldVisibility('Role')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <!-- <input matInput placeholder="Role" formControlName="Role"> -->
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Role')"
-                          (selectionChange)="RoleSelected($event)" formControlName="Role">
-                          <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
-                        </mat-select>
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Role').touched && vendorRegistrationFormGroup.get('Role').hasError('required')">
-                          {{GetOBDFieldLabel('Role')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('LegalName')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input #legalName matInput [placeholder]="GetOBDFieldLabel('LegalName')"
-                          formControlName="LegalName">
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
-                          {{GetOBDFieldLabel('LegalName')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Type')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <!-- <input matInput placeholder="Type" formControlName="Type"> -->
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Type')" formControlName="Type">
-                          <mat-option *ngFor="let type of AllTypes" [value]="type">{{type}}</mat-option>
-                        </mat-select>
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
-                          {{GetOBDFieldLabel('Type')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="100">
-                      <div class="SectionTitle mb-8">
-                        <strong>Contact Info.</strong>
-                      </div>
-                    </div>
-
-                    <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone1')">
-                      <div fxFlex>
-                        <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                          <!-- <div matPrefix class="pr-4 mr-4 borderRightClass"></div> -->
-                          <input matInput [placeholder]="GetOBDFieldLabel('Phone1')" formControlName="Phone1">
-                          <mat-error
-                            *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
-                            {{GetOBDFieldLabel('Phone1')}} is required is required
-                          </mat-error>
-                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
-                            Please enter a valid phone number
-                          </mat-error>
-                        </mat-form-field>
-                      </div>
-                    </div>
-
-                    <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone2')">
-                      <div fxFlex>
-                        <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput [placeholder]="GetOBDFieldLabel('Phone2')" formControlName="Phone2">
-                          <mat-error
-                            *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
-                            {{GetOBDFieldLabel('Phone2')}} is required
-                          </mat-error>
-                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
-                            Please enter a valid mobile number
-                          </mat-error>
-                        </mat-form-field>
-                      </div>
-                    </div>
-
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Email1')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('Email1')" formControlName="Email1">
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Email1').touched && vendorRegistrationFormGroup.get('Email1').hasError('required')">
-                          {{GetOBDFieldLabel('Email1')}} is required
-                        </mat-error>
-                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Email1').hasError('email')">
-                          Please enter a valid email address
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Email2')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('Email2')" formControlName="Email2">
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Email2').touched && vendorRegistrationFormGroup.get('Email2').hasError('required')">
-                          {{GetOBDFieldLabel('Email2')}} is required
-                        </mat-error>
-                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Email2').touched && !vendorRegistrationFormGroup.get('Email2').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Email2').hasError('email')">
-                          Please enter a valid email address
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
+                          Please enter a valid phone number
                         </mat-error>
                       </mat-form-field>
                     </div>
                   </div>
-                </div>
-                <div fxFlex fxLayout="column">
-                  <div fxLayout="row wrap" fxLayoutAlign="start">
-                    <div fxFlex="100">
-                      <div class="SectionTitle mb-8">
-                        <strong>Address</strong>
-                      </div>
-                    </div>
-                    <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Country')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <!-- <input matInput placeholder="Country" formControlName="Country"> -->
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Country')" formControlName="Country">
-                          <mat-option *ngFor="let country of AllCountries" [value]="country">{{country}}</mat-option>
-                        </mat-select>
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Country').touched && vendorRegistrationFormGroup.get('Country').hasError('required')">
-                          {{GetOBDFieldLabel('Country')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
 
-                    <div fxFlex="50" [style.display]="GetOBDFieldVisibility('PinCode')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('PinCode')" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
+                  <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone2')">
+                    <div fxFlex>
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                        <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
+                        <input matInput [placeholder]="GetOBDFieldLabel('Phone2')" formControlName="Phone2">
                         <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
-                          {{GetOBDFieldLabel('PinCode')}} is required
+                          *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
+                          {{GetOBDFieldLabel('Phone2')}} is required
                         </mat-error>
-                      </mat-form-field>
-                    </div>
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('City')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('City')" formControlName="City">
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('City').touched && vendorRegistrationFormGroup.get('City').hasError('required')">
-                          {{GetOBDFieldLabel('City')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('State')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <!-- <input matInput placeholder="State" formControlName="State"> -->
-                        <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCode}}</div> -->
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('State')" formControlName="State">
-                          <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
-                            {{sta.StateCode + ' - ' + sta.State}}</mat-option>
-                        </mat-select>
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
-                          {{GetOBDFieldLabel('State')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine1')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('AddressLine1')" formControlName="AddressLine1">
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
-                          {{GetOBDFieldLabel('AddressLine1')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div>
-
-                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine2')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('AddressLine2')" formControlName="AddressLine2">
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('AddressLine2').touched && vendorRegistrationFormGroup.get('AddressLine2').hasError('required')">
-                          {{GetOBDFieldLabel('AddressLine2')}} is required
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
+                          Please enter a valid mobile number
                         </mat-error>
                       </mat-form-field>
                     </div>
                   </div>
+
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Email1')">
+                    <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('Email1')" formControlName="Email1">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('Email1').touched && vendorRegistrationFormGroup.get('Email1').hasError('required')">
+                        {{GetOBDFieldLabel('Email1')}} is required
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Email1').hasError('email')">
+                        Please enter a valid email address
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Email1').hasError('pattern')">
+                        Please enter a valid email address
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Email2')">
+                    <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('Email2')" formControlName="Email2">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('Email2').touched && vendorRegistrationFormGroup.get('Email2').hasError('required')">
+                        {{GetOBDFieldLabel('Email2')}} is required
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Email2').touched && !vendorRegistrationFormGroup.get('Email2').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Email2').hasError('email')">
+                        Please enter a valid email address
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('Email2').touched && !vendorRegistrationFormGroup.get('Email2').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Email2').hasError('pattern')">
+                        Please enter a valid email address
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
                 </div>
               </div>
-              <div fxLayout="row wrap" fxLayoutAlign="start">
+              <div fxFlex fxLayout="column">
+                <div fxLayout="row wrap" fxLayoutAlign="start">
+                  <div fxFlex="100">
+                    <div class="SectionTitle mb-8">
+                      <strong>Address</strong>
+                    </div>
+                  </div>
+                  <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Country')">
+                    <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <!-- <input matInput placeholder="Country" formControlName="Country"> -->
+                      <!-- <mat-select matInput [placeholder]="GetOBDFieldLabel('Country')" formControlName="Country">
+                        <mat-option *ngFor="let country of AllCountries" [value]="country.name">{{country.name}}
+                        </mat-option>
+                      </mat-select> -->
+                      <input type="text" placeholder="Country" matInput formControlName="Country"
+                        [matAutocomplete]="auto">
+                      <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let country of AllCountries" [value]="country.name">
+                          {{country.name}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('Country').touched && vendorRegistrationFormGroup.get('Country').hasError('required')">
+                        {{GetOBDFieldLabel('Country')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
 
+                  <div fxFlex="50" [style.display]="GetOBDFieldVisibility('PinCode')">
+                    <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('PinCode')" formControlName="PinCode"
+                        (blur)="GetLocationByPincode($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
+                        {{GetOBDFieldLabel('PinCode')}} is required
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
+                      &&vendorRegistrationFormGroup.get('PinCode').hasError('minlength')">
+                        Minimum 6 digit is required
+                      </mat-error>
+                      <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
+                    &&vendorRegistrationFormGroup.get('PinCode').hasError('maxlength')">
+                        Maximum allowed length is 10 digit
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('City')">
+                    <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('City')" formControlName="City">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('City').touched && vendorRegistrationFormGroup.get('City').hasError('required')">
+                        {{GetOBDFieldLabel('City')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('State')">
+                    <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <!-- <input matInput placeholder="State" formControlName="State"> -->
+                      <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCode}}</div> -->
+                      <!-- <mat-select matInput [placeholder]="GetOBDFieldLabel('State')" formControlName="State">
+                        <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
+                          {{sta.StateCode + ' - ' + sta.State}}</mat-option>
+                      </mat-select> -->
+                      <input type="text" placeholder="State" matInput formControlName="State"
+                        [matAutocomplete]="automatic">
+                      <mat-autocomplete #automatic="matAutocomplete">
+                        <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
+                          {{sta.StateCode + ' - ' + sta.State}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('State').touched && vendorRegistrationFormGroup.get('State').hasError('required')">
+                        {{GetOBDFieldLabel('State')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine1')">
+                    <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('AddressLine1')" formControlName="AddressLine1">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
+                        {{GetOBDFieldLabel('AddressLine1')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine2')">
+                    <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <input matInput [placeholder]="GetOBDFieldLabel('AddressLine2')" formControlName="AddressLine2">
+                      <mat-error
+                        *ngIf="vendorRegistrationFormGroup.get('AddressLine2').touched && vendorRegistrationFormGroup.get('AddressLine2').hasError('required')">
+                        {{GetOBDFieldLabel('AddressLine2')}} is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
               </div>
-            </form>
+            </div>
+            <div fxLayout="row wrap" fxLayoutAlign="start">
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field1')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field1')" formControlName="Field1">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field1').touched && vendorRegistrationFormGroup.get('Field1').hasError('required')">
+                    {{GetOBDFieldLabel('Field1')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field2')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field2')" formControlName="Field2">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field2').touched && vendorRegistrationFormGroup.get('Field2').hasError('required')">
+                    {{GetOBDFieldLabel('Field2')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field3')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field3')" formControlName="Field3">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field3').touched && vendorRegistrationFormGroup.get('Field3').hasError('required')">
+                    {{GetOBDFieldLabel('Field3')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field4')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field4')" formControlName="Field4">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field4').touched && vendorRegistrationFormGroup.get('Field4').hasError('required')">
+                    {{GetOBDFieldLabel('Field4')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field5')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field5')" formControlName="Field5">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field5').touched && vendorRegistrationFormGroup.get('Field5').hasError('required')">
+                    {{GetOBDFieldLabel('Field5')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field6')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field6')" formControlName="Field6">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field6').touched && vendorRegistrationFormGroup.get('Field6').hasError('required')">
+                    {{GetOBDFieldLabel('Field6')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field7')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field7')" formControlName="Field7">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field7').touched && vendorRegistrationFormGroup.get('Field7').hasError('required')">
+                    {{GetOBDFieldLabel('Field7')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field8')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field8')" formControlName="Field8">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field8').touched && vendorRegistrationFormGroup.get('Field8').hasError('required')">
+                    {{GetOBDFieldLabel('Field8')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field9')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field9')" formControlName="Field9">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field9').touched && vendorRegistrationFormGroup.get('Field9').hasError('required')">
+                    {{GetOBDFieldLabel('Field9')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <div fxFlex="25" [style.display]="GetOBDFieldVisibility('Field10')">
+                <mat-form-field class="pl-8 pr-60" style="width: 100%;">
+                  <input matInput [placeholder]="GetOBDFieldLabel('Field10')" formControlName="Field10">
+                  <mat-error
+                    *ngIf="vendorRegistrationFormGroup.get('Field10').touched && vendorRegistrationFormGroup.get('Field10').hasError('required')">
+                    {{GetOBDFieldLabel('Field10')}} is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
 
             <div fxFlex fxLayout="column" class="mt-24" *ngIf="IdentificationsByVOB?.length">
               <div style="margin-left: 7px">
@@ -290,8 +420,10 @@
                   </ng-container>
 
                   <ng-container matColumnDef="ValidUntil">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;" [style.display]="'none'"> Valid Until </th>
-                    <td mat-cell *matCellDef="let element" style="width: 25%;" [style.display]="'none'"> {{element.ValidUntil | date}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;" [style.display]="'none'">
+                      Valid Until </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;" [style.display]="'none'">
+                      {{element.ValidUntil | date}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="Attachment">
