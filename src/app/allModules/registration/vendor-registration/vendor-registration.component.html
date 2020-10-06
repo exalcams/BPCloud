@@ -123,7 +123,7 @@
                         <!-- <input matInput placeholder="Type" formControlName="Type"> -->
                         <mat-select matInput [placeholder]="GetOBDFieldLabel('Type')" formControlName="Type"
                           (selectionChange)="TypeSelected($event)">
-                          <mat-option *ngFor="let type of AllTypes" [value]="type">{{type}}</mat-option>
+                          <mat-option *ngFor="let type of AllTypes" [value]="type.Value">{{type.Key}}</mat-option>
                         </mat-select>
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
@@ -212,8 +212,9 @@
                         vendorRegistrationFormGroup.get('Email1').hasError('email')">
                           Please enter a valid email address
                         </mat-error>
-                        <mat-error *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Email1').hasError('pattern')">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Email1').touched && !vendorRegistrationFormGroup.get('Email1').hasError('required') &&
+                        !vendorRegistrationFormGroup.get('Email1').hasError('email') && vendorRegistrationFormGroup.get('Email1').hasError('pattern')">
                           Please enter a valid email address
                         </mat-error>
                       </mat-form-field>
@@ -231,7 +232,7 @@
                           Please enter a valid email address
                         </mat-error>
                         <mat-error *ngIf="vendorRegistrationFormGroup.get('Email2').touched && !vendorRegistrationFormGroup.get('Email2').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Email2').hasError('pattern')">
+                        !vendorRegistrationFormGroup.get('Email2').hasError('email') && vendorRegistrationFormGroup.get('Email2').hasError('pattern')">
                           Please enter a valid email address
                         </mat-error>
                       </mat-form-field>
@@ -254,7 +255,8 @@
                         </mat-select> -->
                         <input type="text" placeholder="Country" matInput formControlName="Country"
                           [matAutocomplete]="auto">
-                        <mat-autocomplete #auto="matAutocomplete">
+                        <mat-autocomplete #auto="matAutocomplete"
+                          (optionSelected)='CountrySelected($event.option.value)'>
                           <mat-option *ngFor="let country of AllCountries" [value]="country.name">
                             {{country.name}}
                           </mat-option>
@@ -700,7 +702,7 @@
                       <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> Attachment </th>
                       <td mat-cell *matCellDef="let element;let index=index" style="width: 10%;">
                         <div fxLayout *ngIf="element.AttachmentName">
-                          <div fxFlex (click)="GetIdentAttachment(element)" class="pdfLinkClass pl-8">
+                          <div fxFlex (click)="GetBankAttachment(element)" class="pdfLinkClass pl-8">
                             {{element.AttachmentName}}</div>
                           <div fxFlex align="end">
                             <img class="addBlueIcon pdfLinkClass" src="assets/images/replay.png"
@@ -799,8 +801,9 @@
                       contactFormGroup.get('Email').hasError('email')">
                         Please enter a valid email address
                       </mat-error>
-                      <mat-error *ngIf="contactFormGroup.get('Email').touched && !contactFormGroup.get('Email').hasError('required') &&
-                      contactFormGroup.get('Email').hasError('pattern')">
+                      <mat-error
+                        *ngIf="contactFormGroup.get('Email').touched && !contactFormGroup.get('Email').hasError('required') &&
+                      !contactFormGroup.get('Email').hasError('email') && contactFormGroup.get('Email').hasError('pattern')">
                         Please enter a valid email address
                       </mat-error>
                     </mat-form-field>

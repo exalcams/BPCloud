@@ -62,6 +62,7 @@ export class VendorApprovalComponent implements OnInit {
     'BankName',
     'Branch',
     'City',
+    'Attachment',
     // 'Action'
   ];
 
@@ -106,7 +107,7 @@ export class VendorApprovalComponent implements OnInit {
   BPVendorOnBoarding: BPVendorOnBoarding;
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
-  AllTypes: string[] = [];
+  AllTypes: any[] = [];
   AllCountries: any[] = [];
   AllStates: StateDetails[] = [];
   AllOnBoardingFieldMaster: CBPFieldMaster[] = [];
@@ -146,7 +147,12 @@ export class VendorApprovalComponent implements OnInit {
     this.IsDisplayEmail2 = false;
     this.AllRoles = ['Vendor', 'Customer'];
     // this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
-    this.AllTypes = ['Domestic supply', 'Domestic Service', 'Import vendor', 'Others'];
+    // this.AllTypes = ['Domestic supply', 'Domestic Service', 'Import vendor', 'Others'];
+    this.AllTypes = [
+      { Key: 'Domestic supply', Value: '1' },
+      { Key: 'Domestic Service', Value: '2' },
+      { Key: 'Import vendor', Value: '3' },
+    ];
     // this.AllCountries = ['India'];
     this.AllCountries = [
       { name: 'Afghanistan', code: 'AF' },
@@ -653,11 +659,39 @@ export class VendorApprovalComponent implements OnInit {
   TypeSelected(event): void {
     if (event.value) {
       const selecteType = event.value as string;
-      if (selecteType && selecteType === 'Import vendor') {
+      if (selecteType && selecteType === '3') {
         this.vendorRegistrationFormGroup.get('Country').enable();
       } else {
         this.vendorRegistrationFormGroup.get('Country').disable();
       }
+    }
+  }
+  CountrySelected(val: string): void {
+    if (val) {
+      this.vendorRegistrationFormGroup.get('PinCode').patchValue('');
+      this.vendorRegistrationFormGroup.get('City').patchValue('');
+      this.vendorRegistrationFormGroup.get('State').patchValue('');
+      this.vendorRegistrationFormGroup.get('AddressLine1').patchValue('');
+      this.vendorRegistrationFormGroup.get('AddressLine2').patchValue('');
+    }
+  }
+  OnPincodeKeyEnter(event): void {
+    this.legalName.nativeElement.focus();
+    const Pincode = event.target.value;
+    if (Pincode) {
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
+        (data) => {
+          const loc = data as CBPLocation;
+          if (loc) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+          }
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
     }
   }
   GetLocationByPincode(event): void {
@@ -670,6 +704,7 @@ export class VendorApprovalComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(`${loc.Taluk}, ${loc.District}`);
           }
         },
         (err) => {
@@ -1007,6 +1042,7 @@ export class VendorApprovalComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(`${loc.Taluk}, ${loc.District}`);
           }
         },
         (err) => {
@@ -1340,6 +1376,34 @@ export class VendorApprovalComponent implements OnInit {
     } else {
       this.IsProgressBarVisibile = true;
       this._vendorRegistrationService.GetIdentityAttachment(element.Type, element.TransID.toString(), fileName).subscribe(
+        data => {
+          if (data) {
+            let fileType = 'image/jpg';
+            fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
+              fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
+                fileName.toLowerCase().includes('.png') ? 'image/png' :
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+            const blob = new Blob([data], { type: fileType });
+            this.OpenAttachmentDialog(fileName, blob);
+          }
+          this.IsProgressBarVisibile = false;
+        },
+        error => {
+          console.error(error);
+          this.IsProgressBarVisibile = false;
+        }
+      );
+    }
+  }
+  GetBankAttachment(element: BPBank): void {
+    const fileName = element.AttachmentName;
+    const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
+    if (file && file.size) {
+      const blob = new Blob([file], { type: file.type });
+      this.OpenAttachmentDialog(fileName, blob);
+    } else {
+      this.IsProgressBarVisibile = true;
+      this._vendorRegistrationService.GetIdentityAttachment(element.AccountNo, element.TransID.toString(), fileName).subscribe(
         data => {
           if (data) {
             let fileType = 'image/jpg';
