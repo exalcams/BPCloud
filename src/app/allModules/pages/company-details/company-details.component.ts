@@ -83,6 +83,7 @@ export class CompanyDetailsComponent implements OnInit {
   //   'Action'
   // ];
   SelectedIdentity: BPIdentity;
+  SelectedBank: BPBank;
   identificationDataSource = new MatTableDataSource<BPIdentity>();
   bankDetailsDataSource = new MatTableDataSource<BPBank>();
   contactDataSource = new MatTableDataSource<BPContact>();
@@ -105,6 +106,7 @@ export class CompanyDetailsComponent implements OnInit {
   @ViewChild('activityText') activityText: ElementRef;
   @ViewChild('legalName') legalName: ElementRef;
   @ViewChild('fileInput1') fileInput: ElementRef<HTMLElement>;
+  @ViewChild('fileInput2') fileInput2: ElementRef<HTMLElement>;
   fileToUpload: File;
   fileToUploadList: File[] = [];
   Status: string;
@@ -113,7 +115,7 @@ export class CompanyDetailsComponent implements OnInit {
   AllIdentities: CBPIdentity[] = [];
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
-  AllTypes: string[] = [];
+  AllTypes: any[] = [];
   AllCountries: any[] = [];
   AllStates: StateDetails[] = [];
   StateCode: string;
@@ -166,7 +168,12 @@ export class CompanyDetailsComponent implements OnInit {
     this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
     // this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
-    this.AllTypes = ['Domestic supply', 'Domestic Service', 'Import vendor', 'Others'];
+    // this.AllTypes = ['Domestic supply', 'Domestic Service', 'Import vendor', 'Others'];
+    this.AllTypes = [
+      { Key: 'Domestic supply', Value: '1' },
+      { Key: 'Domestic Service', Value: '2' },
+      { Key: 'Import vendor', Value: '3' },
+    ];
     this.AllIdentityTypes = ['GSTIN'];
     // this.AllCountries = ['India'];
     this.AllCountries = [
@@ -458,6 +465,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.StateCode = '';
     this.answerList = new AnswerList();
     this.SelectedIdentity = new BPIdentity();
+    this.SelectedBank = new BPBank();
   }
 
   ngOnInit(): void {
@@ -472,16 +480,16 @@ export class CompanyDetailsComponent implements OnInit {
         );
         this._router.navigate(['/auth/login']);
       }
-      this.GetVendorOnBoardingsByEmailID();
-      this.GetAllOnBoardingFieldMaster();
-      this.GetAllIdentities();
-      this.GetAllIdentityTypes();
-      this.GetStateDetails();
       this.InitializeVendorRegistrationFormGroup();
       this.InitializeIdentificationFormGroup();
       this.InitializeBankDetailsFormGroup();
       this.InitializeContactFormGroup();
       this.InitializeQuestionsFormGroup();
+      this.GetVendorOnBoardingsByEmailID();
+      this.GetAllOnBoardingFieldMaster();
+      this.GetAllIdentities();
+      this.GetAllIdentityTypes();
+      this.GetStateDetails();
       // this.GetQuestionAnswers();
       // this.InitializeActivityLogFormGroup();
       // this.GetRegisteredVendorOnBoardings();
@@ -542,7 +550,7 @@ export class CompanyDetailsComponent implements OnInit {
     });
     // this.vendorRegistrationFormGroup.get('City').disable();
     // this.vendorRegistrationFormGroup.get('State').disable();
-    // this.vendorRegistrationFormGroup.get('Country').disable();
+    this.vendorRegistrationFormGroup.get('Country').disable();
   }
 
   InitializeIdentificationFormGroup(): void {
@@ -698,13 +706,42 @@ export class CompanyDetailsComponent implements OnInit {
   TypeSelected(event): void {
     if (event.value) {
       const selecteType = event.value as string;
-      if (selecteType && selecteType === 'Import vendor') {
+      if (selecteType && selecteType === '3') {
         this.vendorRegistrationFormGroup.get('Country').enable();
       } else {
         this.vendorRegistrationFormGroup.get('Country').disable();
       }
     }
   }
+  CountrySelected(val: string): void {
+    if (val) {
+      this.vendorRegistrationFormGroup.get('PinCode').patchValue('');
+      this.vendorRegistrationFormGroup.get('City').patchValue('');
+      this.vendorRegistrationFormGroup.get('State').patchValue('');
+      this.vendorRegistrationFormGroup.get('AddressLine1').patchValue('');
+      this.vendorRegistrationFormGroup.get('AddressLine2').patchValue('');
+    }
+  }
+  // RoleSelected(event): void {
+  //   if (event.value) {
+  //     const selecteRole = event.value as string;
+  //     this.ClearQuestionFormGroup();
+  //     this.GetQuestionAnswers(selecteRole);
+  //   }
+  // }
+  // GetQuestionAnswers(selecteRole: string): void {
+  //   this._vendorRegistrationService.GetQuestionAnswers('BPCloud', selecteRole).subscribe(
+  //     (data) => {
+  //       this.AllQuestionAnswersView = data as QuestionAnswersView[];
+  //       this.AllQuestionAnswersView.forEach(x => {
+  //         this.AddToQuestionsFormGroup(x);
+  //       });
+  //     },
+  //     (err) => {
+  //       console.error(err);
+  //     }
+  //   );
+  // }
   GetQuestionAnswers(): void {
     this._vendorRegistrationService.GetQuestionAnswersByUser('BPCloud', this.CurrentUserRole, this.CurrentUserID).subscribe(
       (data) => {
@@ -764,6 +801,7 @@ export class CompanyDetailsComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(`${loc.Taluk}, ${loc.District}`);
           }
         },
         (err) => {
@@ -784,6 +822,7 @@ export class CompanyDetailsComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('City').patchValue(loc.District);
             this.vendorRegistrationFormGroup.get('State').patchValue(loc.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(loc.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(`${loc.Taluk}, ${loc.District}`);
           }
         },
         (err) => {
@@ -936,6 +975,7 @@ export class CompanyDetailsComponent implements OnInit {
     Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
       this.vendorRegistrationFormGroup.get(key).enable();
     });
+    this.vendorRegistrationFormGroup.get('Country').disable();
   }
 
   SetBPVendorOnBoardingValues(): void {
@@ -963,7 +1003,7 @@ export class CompanyDetailsComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Field8').patchValue(this.SelectedBPVendorOnBoarding.Field8);
     this.vendorRegistrationFormGroup.get('Field9').patchValue(this.SelectedBPVendorOnBoarding.Field9);
     this.vendorRegistrationFormGroup.get('Field10').patchValue(this.SelectedBPVendorOnBoarding.Field10);
-    this.GetLocationDetailsByPincode(this.SelectedBPVendorOnBoarding.PinCode);
+    // this.GetLocationDetailsByPincode(this.SelectedBPVendorOnBoarding.PinCode);
     // this.contactFormGroup.get('Email').validator({}as AbstractControl);
   }
 
@@ -1656,6 +1696,29 @@ export class CompanyDetailsComponent implements OnInit {
       // this.fileToUploadList.push(this.fileToUpload);
     }
   }
+  handleFileInput2(evt): void {
+    if (evt.target.files && evt.target.files.length > 0) {
+      this.fileToUpload = evt.target.files[0];
+      if (this.SelectedBank && this.SelectedBank.AccountNo) {
+        const selectFileName = this.SelectedBank.AttachmentName;
+        const indexx = this.BanksByVOB.findIndex(x => x.AccountNo === this.SelectedBank.AccountNo && x.IFSC === this.SelectedBank.IFSC);
+        if (indexx > -1) {
+          this.BanksByVOB[indexx].AttachmentName = this.fileToUpload.name;
+          this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
+          this.fileToUploadList.push(this.fileToUpload);
+          if (selectFileName) {
+            const fileIndex = this.fileToUploadList.findIndex(x => x.name === selectFileName);
+            if (fileIndex > -1) {
+              this.fileToUploadList.splice(fileIndex, 1);
+            }
+          }
+          this.fileToUpload = null;
+        }
+        this.SelectedBank = new BPBank();
+      }
+      // this.fileToUploadList.push(this.fileToUpload);
+    }
+  }
   ReplaceIdentificationAttachment(element: BPIdentity): void {
     // const el: HTMLElement = this.fileInput.nativeElement;
     // el.click();
@@ -1663,7 +1726,13 @@ export class CompanyDetailsComponent implements OnInit {
     const event = new MouseEvent('click', { bubbles: false });
     this.fileInput.nativeElement.dispatchEvent(event);
   }
-
+  ReplaceBankAttachment(element: BPBank): void {
+    // const el: HTMLElement = this.fileInput.nativeElement;
+    // el.click();
+    this.SelectedBank = element;
+    const event = new MouseEvent('click', { bubbles: false });
+    this.fileInput2.nativeElement.dispatchEvent(event);
+  }
   numberOnly(event): boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
     if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 46
@@ -1712,6 +1781,34 @@ export class CompanyDetailsComponent implements OnInit {
     } else {
       this.IsProgressBarVisibile = true;
       this._vendorRegistrationService.GetIdentityAttachment(element.Type, element.TransID.toString(), fileName).subscribe(
+        data => {
+          if (data) {
+            let fileType = 'image/jpg';
+            fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
+              fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
+                fileName.toLowerCase().includes('.png') ? 'image/png' :
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+            const blob = new Blob([data], { type: fileType });
+            this.OpenAttachmentDialog(fileName, blob);
+          }
+          this.IsProgressBarVisibile = false;
+        },
+        error => {
+          console.error(error);
+          this.IsProgressBarVisibile = false;
+        }
+      );
+    }
+  }
+  GetBankAttachment(element: BPBank): void {
+    const fileName = element.AttachmentName;
+    const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
+    if (file && file.size) {
+      const blob = new Blob([file], { type: file.type });
+      this.OpenAttachmentDialog(fileName, blob);
+    } else {
+      this.IsProgressBarVisibile = true;
+      this._vendorRegistrationService.GetIdentityAttachment(element.AccountNo, element.TransID.toString(), fileName).subscribe(
         data => {
           if (data) {
             let fileType = 'image/jpg';

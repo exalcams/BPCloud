@@ -5,7 +5,7 @@ import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl, Validat
 import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MasterService } from 'app/services/master.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { VendorRegistrationService } from 'app/services/vendor-registration.service';
@@ -133,7 +133,7 @@ export class VendorRegistrationComponent implements OnInit {
   AllIdentities: CBPIdentity[] = [];
   AllIdentityTypes: string[] = [];
   AllRoles: string[] = [];
-  AllTypes: string[] = [];
+  AllTypes: any[] = [];
   AllCountries: any[] = [];
   AllStates: StateDetails[] = [];
   math = Math;
@@ -149,7 +149,8 @@ export class VendorRegistrationComponent implements OnInit {
     private _router: Router,
     public snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private _formBuilder: FormBuilder
+    private _formBuilder: FormBuilder,
+    private _activatedRoute: ActivatedRoute,
   ) {
     this._fuseConfigService.config = {
       layout: {
@@ -178,7 +179,11 @@ export class VendorRegistrationComponent implements OnInit {
     this.IdentityValidity = false;
     this.Status = '';
     this.AllRoles = ['Vendor', 'Customer'];
-    this.AllTypes = ['Domestic supply', 'Domestic Service', 'Import vendor', 'Others'];
+    this.AllTypes = [
+      { Key: 'Domestic supply', Value: '1' },
+      { Key: 'Domestic Service', Value: '2' },
+      { Key: 'Import vendor', Value: '3' },
+    ];
     // this.AllTypes = ['Manufacturer', 'Service Provider', 'Tranporter', 'Others'];
     this.AllIdentityTypes = ['GSTIN'];
     // this.AllCountries = ['India'];
@@ -507,11 +512,20 @@ export class VendorRegistrationComponent implements OnInit {
   TypeSelected(event): void {
     if (event.value) {
       const selecteType = event.value as string;
-      if (selecteType && selecteType === 'Import vendor') {
+      if (selecteType && selecteType === '3') {
         this.vendorRegistrationFormGroup.get('Country').enable();
       } else {
         this.vendorRegistrationFormGroup.get('Country').disable();
       }
+    }
+  }
+  CountrySelected(val: string): void {
+    if (val) {
+      this.vendorRegistrationFormGroup.get('PinCode').patchValue('');
+      this.vendorRegistrationFormGroup.get('City').patchValue('');
+      this.vendorRegistrationFormGroup.get('State').patchValue('');
+      this.vendorRegistrationFormGroup.get('AddressLine1').patchValue('');
+      this.vendorRegistrationFormGroup.get('AddressLine2').patchValue('');
     }
   }
   RoleSelected(event): void {
@@ -816,7 +830,7 @@ export class VendorRegistrationComponent implements OnInit {
               //   });
               // }
               this.AddIdentificationToTableFromTaxPayerDetails(this.TaxPayerDetails.gstin, 'GSTIN');
-              this.AddIdentificationToTableFromTaxPayerDetails(panCard, 'Pancard');
+              this.AddIdentificationToTableFromTaxPayerDetails(panCard, 'PAN CARD');
             }
           }
           else {
@@ -844,7 +858,7 @@ export class VendorRegistrationComponent implements OnInit {
       //   this.fileToUploadList.push(this.fileToUpload);
       //   this.fileToUpload = null;
       // }
-      if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length) {
+      if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
         this.IdentificationsByVOB = [];
       }
       this.IdentificationsByVOB.push(bPIdentity);
@@ -1726,7 +1740,7 @@ export class VendorRegistrationComponent implements OnInit {
           this.SetActionToOpenConfirmation('Register');
         }
         else {
-          this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for BPIdentity,BPBank,BPContact table', SnackBarStatus.danger);
+          this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for Identity,Bank,Contact table', SnackBarStatus.danger);
         }
       }
       else {
@@ -1898,6 +1912,34 @@ export class VendorRegistrationComponent implements OnInit {
       );
     }
   }
+  GetBankAttachment(element: BPBank): void {
+    const fileName = element.AttachmentName;
+    const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
+    if (file && file.size) {
+      const blob = new Blob([file], { type: file.type });
+      this.OpenAttachmentDialog(fileName, blob);
+    } else {
+      this.IsProgressBarVisibile = true;
+      this._vendorRegistrationService.GetIdentityAttachment(element.AccountNo, element.TransID.toString(), fileName).subscribe(
+        data => {
+          if (data) {
+            let fileType = 'image/jpg';
+            fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
+              fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
+                fileName.toLowerCase().includes('.png') ? 'image/png' :
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+            const blob = new Blob([data], { type: fileType });
+            this.OpenAttachmentDialog(fileName, blob);
+          }
+          this.IsProgressBarVisibile = false;
+        },
+        error => {
+          console.error(error);
+          this.IsProgressBarVisibile = false;
+        }
+      );
+    }
+  }
   OpenAttachmentDialog(FileName: string, blob: Blob): void {
     const attachmentDetails: AttachmentDetails = {
       FileName: FileName,
@@ -2010,6 +2052,28 @@ export class VendorRegistrationComponent implements OnInit {
         }
       }
     });
+    this.InitializeVendorRegistrationFormGroupByQueryString();
+  }
+  InitializeVendorRegistrationFormGroupByQueryString(): void {
+    const Plant = this._activatedRoute.snapshot.queryParamMap.get('Plant');
+    const Name = this._activatedRoute.snapshot.queryParamMap.get('Name');
+    if (Name) {
+      this.vendorRegistrationFormGroup.get('Name').patchValue(Name);
+    }
+    const Email1 = this._activatedRoute.snapshot.queryParamMap.get('Email');
+    if (Email1) {
+      this.vendorRegistrationFormGroup.get('Email1').patchValue(Email1);
+    }
+    const VendorType = +this._activatedRoute.snapshot.queryParamMap.get('VendorType');
+    if (VendorType) {
+      this.vendorRegistrationFormGroup.get('Type').patchValue(VendorType.toString());
+    }
+    const GSTNo = this._activatedRoute.snapshot.queryParamMap.get('GSTNo');
+    if (GSTNo) {
+      this.AddIdentificationToTableFromTaxPayerDetails(GSTNo, 'GSTIN');
+      const pan_id = GSTNo.substring(2, 12);
+      this.AddIdentificationToTableFromTaxPayerDetails(pan_id, 'PAN CARD');
+    }
   }
 }
 
