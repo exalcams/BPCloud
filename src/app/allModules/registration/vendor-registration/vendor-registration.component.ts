@@ -126,6 +126,7 @@ export class VendorRegistrationComponent implements OnInit {
   @ViewChild('fileInput1') fileInput: ElementRef<HTMLElement>;
   @ViewChild('fileInput2') fileInput2: ElementRef<HTMLElement>;
   fileToUpload: File;
+  fileToUpload1: File;
   fileToUploadList: File[] = [];
   Status: string;
   IdentityType: string;
@@ -151,6 +152,7 @@ export class VendorRegistrationComponent implements OnInit {
     private dialog: MatDialog,
     private _formBuilder: FormBuilder,
     private _activatedRoute: ActivatedRoute,
+    private el: ElementRef
   ) {
     this._fuseConfigService.config = {
       layout: {
@@ -515,6 +517,7 @@ export class VendorRegistrationComponent implements OnInit {
       if (selecteType && selecteType === '3') {
         this.vendorRegistrationFormGroup.get('Country').enable();
       } else {
+        this.vendorRegistrationFormGroup.get('Country').patchValue('India');
         this.vendorRegistrationFormGroup.get('Country').disable();
       }
     }
@@ -576,7 +579,7 @@ export class VendorRegistrationComponent implements OnInit {
       City: ['', Validators.required],
       State: ['', Validators.required],
       Country: ['India', Validators.required],
-      PinCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(10)]],
+      PinCode: ['', [Validators.required, Validators.pattern('^\\d{6,10}$')]],
       Type: [''],
       Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
       Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
@@ -694,6 +697,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.IsDisplayPhone2 = false;
     this.IsDisplayEmail2 = false;
     this.fileToUpload = null;
+    this.fileToUpload1 = null;
     this.fileToUploadList = [];
     this.ResetVendorRegistrationFormGroup();
     this.InitializeVendorRegistrationFormGroupByFieldMaster();
@@ -1261,55 +1265,67 @@ export class VendorRegistrationComponent implements OnInit {
 
   AddIdentificationToTable(): void {
     if (this.identificationFormGroup.valid) {
-      const bPIdentity = new BPIdentity();
-      bPIdentity.Type = this.identificationFormGroup.get('Type').value;
-      bPIdentity.IDNumber = this.identificationFormGroup.get('IDNumber').value;
-      if (bPIdentity.Type && bPIdentity.Type.toLowerCase().includes('gst')) {
-        const id = this.identificationFormGroup.get('IDNumber').value;
-        const state_id = id.substring(0, 2);
-        const pan_id = id.substring(2, 12);
-        if (state_id === this.StateCode) {
-          bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
-          if (this.fileToUpload) {
-            bPIdentity.AttachmentName = this.fileToUpload.name;
-            this.fileToUploadList.push(this.fileToUpload);
-            this.fileToUpload = null;
-          }
-          if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
-            this.IdentificationsByVOB = [];
-          }
-          this.IdentificationsByVOB.push(bPIdentity);
-          const bPIdentity_PAN = new BPIdentity();
-          bPIdentity_PAN.Type = 'PAN CARD';
-          bPIdentity_PAN.IDNumber = pan_id;
-          bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
-          if (this.fileToUpload) {
-            bPIdentity.AttachmentName = this.fileToUpload.name;
-            this.fileToUploadList.push(this.fileToUpload);
-            this.fileToUpload = null;
-          }
-          this.IdentificationsByVOB.push(bPIdentity_PAN);
-          this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
-          this.ClearIdentificationFormGroup();
-        } else {
-
-        }
-
-      } else {
-        bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
-        if (this.fileToUpload) {
-          bPIdentity.AttachmentName = this.fileToUpload.name;
-          this.fileToUploadList.push(this.fileToUpload);
-          this.fileToUpload = null;
-        }
+      if (this.fileToUpload) {
+        const bPIdentity = new BPIdentity();
+        bPIdentity.Type = this.identificationFormGroup.get('Type').value;
+        bPIdentity.IDNumber = this.identificationFormGroup.get('IDNumber').value;
         if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
           this.IdentificationsByVOB = [];
         }
-        this.IdentificationsByVOB.push(bPIdentity);
-        this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
-        this.ClearIdentificationFormGroup();
-      }
+        const dup = this.IdentificationsByVOB.filter(x => x.Type === bPIdentity.Type && x.IDNumber === bPIdentity.IDNumber)[0];
+        if (!dup) {
+          if (bPIdentity.Type && bPIdentity.Type.toLowerCase().includes('gst')) {
+            const id = this.identificationFormGroup.get('IDNumber').value;
+            const state_id = id.substring(0, 2);
+            const pan_id = id.substring(2, 12);
+            if (state_id === this.StateCode) {
+              bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+              if (this.fileToUpload) {
+                bPIdentity.AttachmentName = this.fileToUpload.name;
+                this.fileToUploadList.push(this.fileToUpload);
+                this.fileToUpload = null;
+              }
+              if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
+                this.IdentificationsByVOB = [];
+              }
+              this.IdentificationsByVOB.push(bPIdentity);
+              const bPIdentity_PAN = new BPIdentity();
+              bPIdentity_PAN.Type = 'PAN CARD';
+              bPIdentity_PAN.IDNumber = pan_id;
+              bPIdentity_PAN.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+              if (this.fileToUpload) {
+                bPIdentity.AttachmentName = this.fileToUpload.name;
+                this.fileToUploadList.push(this.fileToUpload);
+                this.fileToUpload = null;
+              }
+              this.IdentificationsByVOB.push(bPIdentity_PAN);
+              this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+              this.ClearIdentificationFormGroup();
+            } else {
 
+            }
+
+          } else {
+            bPIdentity.ValidUntil = this.identificationFormGroup.get('ValidUntil').value;
+            if (this.fileToUpload) {
+              bPIdentity.AttachmentName = this.fileToUpload.name;
+              this.fileToUploadList.push(this.fileToUpload);
+              this.fileToUpload = null;
+            }
+            if (!this.IdentificationsByVOB || !this.IdentificationsByVOB.length || !this.IdentificationsByVOB[0].Type) {
+              this.IdentificationsByVOB = [];
+            }
+            this.IdentificationsByVOB.push(bPIdentity);
+            this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
+            this.ClearIdentificationFormGroup();
+          }
+        }
+        else {
+          this.notificationSnackBarComponent.openSnackBar(`Duplicate record`, SnackBarStatus.danger, 5000);
+        }
+      } else {
+        this.notificationSnackBarComponent.openSnackBar(`Please select an attachment`, SnackBarStatus.danger, 5000);
+      }
     } else {
       this.ShowValidationErrors(this.identificationFormGroup);
     }
@@ -1317,24 +1333,28 @@ export class VendorRegistrationComponent implements OnInit {
 
   AddBankToTable(): void {
     if (this.bankDetailsFormGroup.valid) {
-      const bPBank = new BPBank();
-      bPBank.AccountNo = this.bankDetailsFormGroup.get('AccountNo').value;
-      bPBank.Name = this.bankDetailsFormGroup.get('Name').value;
-      bPBank.IFSC = this.bankDetailsFormGroup.get('IFSC').value;
-      bPBank.BankName = this.bankDetailsFormGroup.get('BankName').value;
-      bPBank.Branch = this.bankDetailsFormGroup.get('Branch').value;
-      bPBank.City = this.bankDetailsFormGroup.get('City').value;
-      if (this.fileToUpload) {
-        bPBank.AttachmentName = this.fileToUpload.name;
-        this.fileToUploadList.push(this.fileToUpload);
-        this.fileToUpload = null;
+      if (this.fileToUpload1) {
+        const bPBank = new BPBank();
+        bPBank.AccountNo = this.bankDetailsFormGroup.get('AccountNo').value;
+        bPBank.Name = this.bankDetailsFormGroup.get('Name').value;
+        bPBank.IFSC = this.bankDetailsFormGroup.get('IFSC').value;
+        bPBank.BankName = this.bankDetailsFormGroup.get('BankName').value;
+        bPBank.Branch = this.bankDetailsFormGroup.get('Branch').value;
+        bPBank.City = this.bankDetailsFormGroup.get('City').value;
+        if (this.fileToUpload1) {
+          bPBank.AttachmentName = this.fileToUpload1.name;
+          this.fileToUploadList.push(this.fileToUpload1);
+          this.fileToUpload1 = null;
+        }
+        if (!this.BanksByVOB || !this.BanksByVOB.length || !this.BanksByVOB[0].AccountNo) {
+          this.BanksByVOB = [];
+        }
+        this.BanksByVOB.push(bPBank);
+        this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
+        this.ClearBankDetailsFormGroup();
+      } else {
+        this.notificationSnackBarComponent.openSnackBar(`Please select an attachment`, SnackBarStatus.danger, 5000);
       }
-      if (!this.BanksByVOB || !this.BanksByVOB.length || !this.BanksByVOB[0].AccountNo) {
-        this.BanksByVOB = [];
-      }
-      this.BanksByVOB.push(bPBank);
-      this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
-      this.ClearBankDetailsFormGroup();
     } else {
       this.ShowValidationErrors(this.bankDetailsFormGroup);
     }
@@ -1553,7 +1573,9 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoardingView.bPIdentities = [];
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
     this.IdentificationsByVOB.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.bPIdentities.push(x);
+      if (x.Type) {
+        this.SelectedBPVendorOnBoardingView.bPIdentities.push(x);
+      }
     });
   }
 
@@ -1561,7 +1583,9 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoardingView.bPBanks = [];
     // this.SelectedBPVendorOnBoardingView.BPBanks.push(...this.BanksByVOB);
     this.BanksByVOB.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.bPBanks.push(x);
+      if (x.AccountNo) {
+        this.SelectedBPVendorOnBoardingView.bPBanks.push(x);
+      }
     });
   }
 
@@ -1569,7 +1593,9 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoardingView.bPContacts = [];
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
     this.ContactsByVOB.forEach(x => {
-      this.SelectedBPVendorOnBoardingView.bPContacts.push(x);
+      if (x.Name) {
+        this.SelectedBPVendorOnBoardingView.bPContacts.push(x);
+      }
     });
   }
 
@@ -1653,7 +1679,7 @@ export class VendorRegistrationComponent implements OnInit {
 
   showErrorNotificationSnackBar(err: any): void {
     console.error(err);
-    this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+    this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger, 5000);
     this.IsProgressBarVisibile = false;
   }
 
@@ -1700,9 +1726,15 @@ export class VendorRegistrationComponent implements OnInit {
   }
 
   ShowValidationErrors(formGroup: FormGroup): void {
+    let first = false;
     Object.keys(formGroup.controls).forEach(key => {
       if (!formGroup.get(key).valid) {
         console.log(key);
+        if (!first) {
+          const invalidControl = this.el.nativeElement.querySelector('[formcontrolname="' + key + '"]');
+          invalidControl.focus();
+          first = true;
+        }
       }
       formGroup.get(key).markAsTouched();
       formGroup.get(key).markAsDirty();
@@ -1740,7 +1772,18 @@ export class VendorRegistrationComponent implements OnInit {
           this.SetActionToOpenConfirmation('Register');
         }
         else {
-          this.notificationSnackBarComponent.openSnackBar('Please add atleast one record for Identity,Bank,Contact table', SnackBarStatus.danger);
+          let errorMsg = 'Please add atleast one record for';
+          if (this.IdentificationsByVOB.length <= 0 || !this.IdentificationsByVOB[0].Type) {
+            errorMsg += ' Identity,';
+          }
+          if (this.BanksByVOB.length <= 0 || !this.BanksByVOB[0].AccountNo) {
+            errorMsg += ' Bank,';
+          }
+          if (this.ContactsByVOB.length <= 0 || !this.ContactsByVOB[0].Name) {
+            errorMsg += ' Contact';
+          }
+          errorMsg = errorMsg.replace(/,\s*$/, '');
+          this.notificationSnackBarComponent.openSnackBar(`${errorMsg}`, SnackBarStatus.danger);
         }
       }
       else {
@@ -1808,21 +1851,21 @@ export class VendorRegistrationComponent implements OnInit {
   }
   handleFileInput2(evt): void {
     if (evt.target.files && evt.target.files.length > 0) {
-      this.fileToUpload = evt.target.files[0];
+      this.fileToUpload1 = evt.target.files[0];
       if (this.SelectedBank && this.SelectedBank.AccountNo) {
         const selectFileName = this.SelectedBank.AttachmentName;
         const indexx = this.BanksByVOB.findIndex(x => x.AccountNo === this.SelectedBank.AccountNo && x.IFSC === this.SelectedBank.IFSC);
         if (indexx > -1) {
-          this.BanksByVOB[indexx].AttachmentName = this.fileToUpload.name;
+          this.BanksByVOB[indexx].AttachmentName = this.fileToUpload1.name;
           this.bankDetailsDataSource = new MatTableDataSource(this.BanksByVOB);
-          this.fileToUploadList.push(this.fileToUpload);
+          this.fileToUploadList.push(this.fileToUpload1);
           if (selectFileName) {
             const fileIndex = this.fileToUploadList.findIndex(x => x.name === selectFileName);
             if (fileIndex > -1) {
               this.fileToUploadList.splice(fileIndex, 1);
             }
           }
-          this.fileToUpload = null;
+          this.fileToUpload1 = null;
         }
         this.SelectedBank = new BPBank();
       }
@@ -2021,7 +2064,7 @@ export class VendorRegistrationComponent implements OnInit {
             } else if (key === 'LegalName') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.maxLength(40)]);
             } else if (key === 'PinCode') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.minLength(6), Validators.maxLength(10)]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^\\d{6,10}$')]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).setValidators(Validators.required);
@@ -2041,7 +2084,7 @@ export class VendorRegistrationComponent implements OnInit {
             } else if (key === 'LegalName') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.maxLength(40)]);
             } else if (key === 'PinCode') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.minLength(6), Validators.maxLength(10)]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^\\d{6,10}$')]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).clearValidators();
