@@ -1,6 +1,6 @@
 @import "src/@fuse/scss/fuse";
 
-#chat {
+#reg {
   .progressBarPostion {
     position: absolute !important;
     bottom: 50%;
@@ -205,7 +205,7 @@
 
   .TablePadFont {
     padding: 5px;
-    font-size: 12px;
+    font-size: 14px;
     // min-width: 100px !important;
   }
 
@@ -222,7 +222,6 @@
     td {
       @include TableBorderRight(rgba(0, 0, 0, 0.12));
       @extend .TablePadFont;
-      font-size: 12px;
       min-width: max-content !important;
     }
 
@@ -458,5 +457,8 @@
   .pdfLinkClass {
     color: #1e8bed;
     cursor: pointer;
+  }
+  .mat-tooltip {
+    font-size: 12px !important;
   }
 }

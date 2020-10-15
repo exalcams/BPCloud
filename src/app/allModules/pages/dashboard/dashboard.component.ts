@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit {
     MenuItems: string[];
     notificationSnackBarComponent: NotificationSnackBarComponent;
     IsProgressBarVisibile: boolean;
-    // AllUserWithRoles: UserWithRole[] = [];
+    //AllUserWithRoles: UserWithRole[] = [];
     VendorOnBoardingsDisplayedColumns: string[] = [
         'Name',
         'LegalName',

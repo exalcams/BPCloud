@@ -220,7 +220,7 @@ export class LoginComponent implements OnInit {
       );
     }
 
-    if (true || this.MenuItems.indexOf('Identity') >= 0) {
+    if (this.MenuItems.indexOf('Identity') >= 0) {
       this.subChildren.push(
         {
           id: 'identity',
@@ -231,7 +231,7 @@ export class LoginComponent implements OnInit {
       );
     }
 
-    if (true || this.MenuItems.indexOf('Bank') >= 0) {
+    if (this.MenuItems.indexOf('Bank') >= 0) {
       this.subChildren.push(
         {
           id: 'bank',
@@ -241,7 +241,7 @@ export class LoginComponent implements OnInit {
         },
       );
     }
-    if (true || this.MenuItems.indexOf('OBD Field Master') >= 0) {
+    if (this.MenuItems.indexOf('OBD Field Master') >= 0) {
       this.subChildren.push(
         {
           id: 'obdfield',
@@ -283,7 +283,7 @@ export class LoginComponent implements OnInit {
     //   );
     // }
 
-    if (true || this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
+    if (this.MenuItems.indexOf('App') >= 0 || this.MenuItems.indexOf('Role') >= 0 ||
       this.MenuItems.indexOf('User') >= 0 || this.MenuItems.indexOf('Identity') >= 0
       || this.MenuItems.indexOf('Bank') >= 0) {
       this.children.push({

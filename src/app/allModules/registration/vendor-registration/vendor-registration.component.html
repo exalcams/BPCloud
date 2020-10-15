@@ -1,4 +1,4 @@
-<div id="chat" class="page-layout carded fullwidth">
+<div id="reg" class="page-layout carded fullwidth">
   <div class="center normal" style="margin-top: -27px !important;padding:32px 0px 1px !important;">
     <div fxLayout class="content-card1">
       <!-- <div fxFlex="23" class="side-bar">
@@ -271,19 +271,23 @@
                     <div fxFlex="50" [style.display]="GetOBDFieldVisibility('PinCode')">
                       <mat-form-field class="pl-8 pr-40" style="width: 100%;">
                         <input matInput [placeholder]="GetOBDFieldLabel('PinCode')" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
+                          (blur)="GetLocationByPincode($event)" (keydown)="numberOnly($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           {{GetOBDFieldLabel('PinCode')}} is required
                         </mat-error>
                         <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
+                        &&vendorRegistrationFormGroup.get('PinCode').hasError('pattern')">
+                          Please enter a valid PIN Code
+                        </mat-error>
+                        <!-- <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
                         &&vendorRegistrationFormGroup.get('PinCode').hasError('minlength')">
                           Minimum 6 digit is required
                         </mat-error>
                         <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
                       &&vendorRegistrationFormGroup.get('PinCode').hasError('maxlength')">
                           Maximum allowed length is 10 digit
-                        </mat-error>
+                        </mat-error> -->
                       </mat-form-field>
                     </div>
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('City')">
@@ -447,7 +451,7 @@
                       <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
                       <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"
                         (selectionChange)="IdentityTypeSelected()">
-                        <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
+                        <mat-option *ngFor="let type of AllIdentityTypes" [value]="type" [matTooltip]="type">{{type}}</mat-option>
                       </mat-select>
                       <mat-error
                         *ngIf="identificationFormGroup.get('Type').touched && identificationFormGroup.get('Type').hasError('required')">
@@ -577,7 +581,7 @@
               <div class="mt-8">
                 <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup">
                   <div fxFlex fxLayout="row">
-                    <div fxFlex="10">
+                    <div fxFlex="14">
                       <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc (blur)="GetBankByIFSC($event)"
                           (keyup.enter)="OnIFSCKeyEnter($event)">
@@ -587,7 +591,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="15">
+                    <div fxFlex="13">
                       <mat-form-field class="pr-16" style="width: 100%;">
                         <input matInput placeholder="Acc No" formControlName="AccountNo" #accountNo
                           (keyup.enter)="keytab('accHolderName')">
@@ -597,7 +601,7 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="20">
+                    <div fxFlex="18">
                       <mat-form-field class="pr-16" style="width: 100%;">
                         <input matInput placeholder="Acc Holders name" formControlName="Name" #accHolderName
                           (keyup.enter)="keytab('bankName')">
@@ -649,6 +653,12 @@
                     </div>
                   </div>
                 </form>
+              </div>
+              <div fxLayout *ngIf="fileToUpload1?.name" style="margin-top: -12px;padding-left: 8px;">
+                <div fxFlex="85"></div>
+                <div fxFlex="15" class="pl-20">
+                  {{fileToUpload1?.name}}
+                </div>
               </div>
               <div style="margin-left: 8px;margin-top: 10px;">
                 <div style="overflow-x:auto;">
