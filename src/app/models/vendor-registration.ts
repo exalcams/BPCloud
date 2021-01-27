@@ -18,12 +18,27 @@ export class BPVendorOnBoarding extends CommonClass {
     City: number;
     State: string;
     Country: string;
-    PinCode: number;
+    PinCode: string;
     Type: string;
+    TypeofIndustry:string;
+    Token: string;
+    Plant:string;
     Phone1: string;
     Phone2: number;
     Email1: string;
     Email2: string;
+    Invoice: string;
+    GSTNumber: string;
+    PANNumber: string
+    AccountGroup:string;
+    CompanyCode:string;
+    PurchaseOrg:string;
+    MSME_TYPE:string;
+    Department:string;
+    EmamiContactPerson:string;
+    EmamiContactPersonMail:string;
+
+    WebsiteAddress: string;
     VendorCode: number;
     ParentVendor: string;
     Status: string;
@@ -37,6 +52,7 @@ export class BPVendorOnBoarding extends CommonClass {
     Field8: string;
     Field9: string;
     Field10: string;
+    Remarkss: string;
 }
 export class BPIdentity extends CommonClass {
     TransID: number;
@@ -47,6 +63,7 @@ export class BPIdentity extends CommonClass {
     AttachmentName: string;
     BPAttachment: any;
     IsValid: boolean;
+    Option: any;
 }
 export class BPBank extends CommonClass {
     TransID: number;
@@ -84,7 +101,6 @@ export class BPText extends CommonClass {
     Text: string;
 }
 
-
 export class BPVendorOnBoardingView extends CommonClass {
     TransID: number;
     Name: string;
@@ -92,15 +108,29 @@ export class BPVendorOnBoardingView extends CommonClass {
     LegalName: number;
     AddressLine1: string;
     AddressLine2: string;
+    Token: string;
+    Plant:string;
     City: number;
     State: string;
     Country: string;
-    PinCode: number;
+    PinCode: string;
+    GSTNumber: string;
+    PANNumber: string;
+    AccountGroup:string;
+    CompanyCode:string;
+    PurchaseOrg:string;
+    Department:string;
+    MSME_TYPE:string;
+    TypeofIndustry:string;
+    EmamiContactPerson:string;
+    EmamiContactPersonMail:string;
     Type: string;
     Phone1: string;
     Phone2: number;
     Email1: string;
     Email2: string;
+    Invoice: string;
+    WebsiteAddress: string;
     VendorCode: number;
     ParentVendor: string;
     Status: string;
@@ -114,11 +144,13 @@ export class BPVendorOnBoardingView extends CommonClass {
     Field8: string;
     Field9: string;
     Field10: string;
+
     bPIdentities: BPIdentity[];
     bPBanks: BPBank[];
     bPContacts: BPContact[];
     bPActivityLogs: BPActivityLog[];
     // QuestionAnswers: Answers[];
+    Remarkss: string;
 }
 export class Questionnaires {
     QRID: number;
@@ -200,7 +232,13 @@ export class QAnswerChoiceView {
     ChoiceText: string;
     IsDefault: boolean;
 }
-
+export class VendorTokenCheck {
+    transID: number;
+    emailAddress: string;
+    token: string;
+    isValid: boolean;
+    message: string;
+}
 export class AnswerList {
     constructor() {
         this.Answerss = [];

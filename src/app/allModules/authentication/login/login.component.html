@@ -12,13 +12,13 @@
       <div class="title">Sign In</div>
       <div class="border"></div>
 
-      <div class="subTitel">Welcome back ! Please Sign In to Continue</div>
+      <!-- <div class="subTitel">Welcome back ! Please Sign In to Continue</div> -->
 
       <form name="loginForm" [formGroup]="loginForm" novalidate>
 
         <mat-form-field>
           <mat-label>User Name</mat-label>
-          <input matInput formControlName="userName">
+          <input matInput formControlName="userName" [(ngModel)]="Username">
           <mat-error *ngIf="loginForm.get('userName').hasError('required')">
             User name is required
           </mat-error>
@@ -39,10 +39,10 @@
         </div>
 
         <button mat-raised-button color="accent" class="submit-button" aria-label="LOGIN" (click)="LoginClicked()">
-          <span class="loginButton">LOG IN ></span>
+          <span class="loginButton">LOG IN </span>
         </button>
 
-        <a class="link" href="/#/register/vendor">Click here to register</a>
+        <!-- <a class="link" href="/#/register/vendor">Click here to register</a> -->
 
       </form>
       <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="ProgressBarPostion" color="accent"

@@ -8,6 +8,12 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ForgetPasswordLinkDialogComponent } from './forget-password-link-dialog/forget-password-link-dialog.component';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
+import { CookieService } from 'angular2-cookie/services/cookies.service';
+
+
+import { CookieOptions } from 'angular2-cookie/services/base-cookie-options';
+
+
 
 const authRoutes: Routes = [
     {
@@ -29,6 +35,10 @@ const authRoutes: Routes = [
 ];
 
 @NgModule({
+    providers:[ 
+        CookieService,
+        { provide: CookieOptions, useValue: {} } 
+      ],
     declarations: [
         LoginComponent,
         ChangePasswordComponent,

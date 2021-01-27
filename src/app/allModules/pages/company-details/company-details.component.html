@@ -2,23 +2,37 @@
   <div class="center">
     <div class="outer" fxLayout>
       <div class="bg"></div>
-      <div>
-        <h3 style="margin: 0px;padding-left: 10px;"><b>My Details</b></h3>
+      <div fxFlex align="start">
+        <span><img src="assets/images/logo.svg"  class="logo" style="height: 60px;
+          margin-top: 10px;
+          margin-left: 25px;padding: 4px 15px 2px 0px;"></span>
       </div>
-      <div fxFlex align="end">
+      <div fxFlex align="center">
+        <span>
+          <h1 style="margin-left: -60%;"><b>Supplier Registration - {{titlevalue}}</b></h1>
+        </span>
+      </div>
+
+      <div fxFlex="20" fxLayoutAlign="end" align="end">
+        <button   class="GSTNBtn mr-40" mat-stroked-button (click)="OpenSelectGstinDialog()">
+          <span fxFlex fxLayout="row wrap" class="btn_text">Adopt from GSTIN</span></button>
+      </div>
+      <!-- <div fxFlex align="center"></div> -->
+      <!-- <div fxFlex align="end">
         <span><img src="assets/images/logo.svg" style="height: 40px;padding: 4px 15px 2px 0px;"></span>
-      </div>
+      </div> -->
     </div>
     <div fxLayout class="content-card1" style="margin-bottom: 30px;">
-      <div fxFlex class="side-bar">
+      <div fxFlex class="side-bar" style="width:-webkit-fill-available ;">
         <div class="sidenav-content" fxFlex fxLayout="column">
-          <mat-card style="padding: 0px 20px 20px 20px;" fxFlex fxLayout="column">
+          <mat-card
+            style="padding: 0px 20px 20px 20px;margin-right: 15px;margin-left: 15px;margin-top: 15px;margin-bottom: 40px;border: 2px solid #909090;"
+            fxFlex fxLayout="column">
 
-            <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
-              [formGroup]="vendorRegistrationFormGroup">
-              <div fxLayout class="mt-20">
-                <div fxFlex fxLayout="column">
-                  <div fxLayout="row wrap" fxLayoutAlign="start">
+            <form autocomplete="off" name="form" novalidate [formGroup]="vendorRegistrationFormGroup">
+              <div fxLayout="row" class="mt-20" fxLayout.xs="column" fxLayoutAlign.xs="spacebetween center">
+                <div fxFlex fxLayout="column" fxFill>
+                  <div fxLayout="row wrap" fxLayoutAlign="spacebetween center">
                     <div fxFlex="100">
                       <div class="SectionTitle mb-8">
                         <strong>Basic Details</strong>
@@ -26,9 +40,10 @@
                     </div>
 
                     <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Role')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
                         <!-- <input matInput placeholder="Role" formControlName="Role"> -->
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Role')" formControlName="Role">
+                        <mat-select matNativeControl matInput [disabled]="true" [placeholder]="GetOBDFieldLabel('Role')"
+                          formControlName="Role" style="font-weight: 600;opacity: 0.8;">
                           <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
                         </mat-select>
                         <mat-error
@@ -39,15 +54,12 @@
                     </div>
 
                     <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Type')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
                         <!-- <input matInput placeholder="Type" formControlName="Type"> -->
-                        <!-- <mat-select matInput [placeholder]="GetOBDFieldLabel('Type')" formControlName="Type"
-                          (selectionChange)="TypeSelected($event)">
-                          <mat-option *ngFor="let type of AllTypes" [value]="type">{{type}}</mat-option>
-                        </mat-select> -->
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Type')" formControlName="Type"
-                          (selectionChange)="TypeSelected($event)">
-                          <mat-option *ngFor="let type of AllTypes" [value]="type.Value">{{type.Key}}</mat-option>
+                        <mat-select matInput  [disabled]="true" [placeholder]="GetOBDFieldLabel('Type')" formControlName="Type"
+                          (selectionChange)="TypeSelected($event)" style="font-weight: 600;opacity: 0.8;">
+                          <mat-option *ngFor="let type of AllTypes" [value]="type.Value" (click)="typefunc(type)">
+                            {{type.Key}}</mat-option>
                         </mat-select>
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
@@ -57,8 +69,9 @@
                     </div>
 
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Name')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('Name')" formControlName="Name">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('Name')" style="font-weight: 600;opacity: 0.8;"
+                          formControlName="Name" maxlength="40">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('Name').touched && vendorRegistrationFormGroup.get('Name').hasError('required')">
                           {{GetOBDFieldLabel('Name')}} is required
@@ -71,15 +84,30 @@
                     </div>
 
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('LegalName')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input #legalName matInput [placeholder]="GetOBDFieldLabel('LegalName')"
-                          formControlName="LegalName">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input #legalName matInput [placeholder]="GetOBDFieldLabel('Group Company / Short Name')"
+                          formControlName="LegalName" maxlength="40" style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && vendorRegistrationFormGroup.get('LegalName').hasError('required')">
-                          {{GetOBDFieldLabel('LegalName')}} is required
+                          {{GetOBDFieldLabel('Group Company / Short Name')}} is required
                         </mat-error>
                         <mat-error *ngIf="vendorRegistrationFormGroup.get('LegalName').touched && !vendorRegistrationFormGroup.get('LegalName').hasError('required')
                         && vendorRegistrationFormGroup.get('LegalName').hasError('maxlength')">
+                          Maximum allowed character is 40
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('WebsiteAddress')">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input #legalName matInput [placeholder]="GetOBDFieldLabel('Website Address ')"
+                          formControlName="WebsiteAddress" style="font-weight: 600;opacity: 0.8;">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('WebsiteAddress').touched && vendorRegistrationFormGroup.get('WebsiteAddress').hasError('required')">
+                          {{GetOBDFieldLabel('Website Address')}} is required
+                        </mat-error>
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('WebsiteAddress').touched && !vendorRegistrationFormGroup.get('WebsiteAddress').hasError('required')
+                        && vendorRegistrationFormGroup.get('WebsiteAddress').hasError('maxlength')">
                           Maximum allowed character is 40
                         </mat-error>
                       </mat-form-field>
@@ -93,41 +121,156 @@
 
                     <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone1')">
                       <div fxFlex>
-                        <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                          <!-- <div matPrefix class="pr-4 mr-4 borderRightClass"></div> -->
-                          <input matInput [placeholder]="GetOBDFieldLabel('Phone1')" formControlName="Phone1">
+                        <!-- <mat-form-field class="pl-8 pr-40" style="width: 100%;"> -->
+                        <!-- <div matPrefix class="pr-4 mr-4 borderRightClass"></div> -->
+                        <!-- <ng-template [(ngModel)]='codeselected'>
+                          </ng-template> -->
+                        <!-- <ng-template  *ngIf="codeselected.length==1;then notShowBlock; else  showBlock">
+                            
+
+                          
+                          </ng-template> -->
+                        <!-- <ng-template > -->
+
+                        <!-- </ng-template> -->
+                        <!-- <ng-template> -->
+                        <div *ngIf="result1=='Landline'" matPrefix class="pr-4 mr-4 borderRightClass1" style="width: 55px;
+                            font-weight: 600;
+                            opacity: 0.8;
+                            position: fixed;
+                            margin-top: 25px;
+                            margin-left: 10px;">
+                          <span class="position:fixed">
+
+                            <input matInput [(ngModel)]="land_num" style="width:55px;" [matAutocomplete]="auto"
+                              [formControl]="myControl1" (click)="_filterlandline(0)" formControlName="landlinecode"
+                              placeholder="Code">
+                            <mat-autocomplete #auto="matAutocomplete" matNativeControl>
+                              <mat-option *ngFor="let lanline of filteredlandline | async" [value]="lanline.num"
+                                (click)="landlinefunc(landline.num)">
+
+                                {{lanline.num}}
+                              </mat-option>
+                            </mat-autocomplete>
+                          </span>
+                        </div>
+                        <!-- </mat-form-field> -->
+                        <!-- </ng-template> -->
+                        <mat-form-field class="pl-8 pr-20 " [ngClass]="result1=='Landline'?'mat-width':'mat-width1'">
+                          <div *ngIf="result1=='Moblile'" matPrefix class="pr-4 mr-4 borderRightClass">
+                            {{codeselected}}
+
+                          </div>
+                          <input matInput [placeholder]="GetOBDFieldLabel('Contact 1')" formControlName="Phone1"
+                            (click)="phone1_dialog()" style="font-weight: 600;opacity: 0.8;">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && vendorRegistrationFormGroup.get('Phone1').hasError('required')">
-                            {{GetOBDFieldLabel('Phone1')}} is required is required
+                            {{GetOBDFieldLabel('Contact 1')}} is required
                           </mat-error>
-                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Phone1').hasError('pattern')">
-                            Please enter a valid phone number
+                          <mat-error
+                            *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Phone1').hasError('pattern')&& !vendorRegistrationFormGroup.get('Phone1').hasError('maxlength')">
+                            Please enter a valid Contact 1 number
+                          </mat-error>
+                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone1').touched && !vendorRegistrationFormGroup.get('Phone1').hasError('required')  &&
+                        vendorRegistrationFormGroup.get('Phone1').hasError('maxlength')">
+                            only 15 numbers are allowed
                           </mat-error>
                         </mat-form-field>
                       </div>
                     </div>
 
-                    <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone2')">
+                    <div fxFlex="50" fxLayout [style.display]="GetOBDFieldVisibility('Phone2')"
+                      style="font-weight: 600;opacity: 0.8;">
                       <div fxFlex>
+                        <!-- <mat-form-field class="pl-8 pr-40" style="width: 100%;"> -->
+                        <!-- <div matPrefix class="pr-4 mr-4 borderRightClass"></div> -->
+                        <!-- <ng-template [(ngModel)]='codeselected'>
+                          </ng-template> -->
+                        <!-- <ng-template  *ngIf="codeselected.length==1;then notShowBlock; else  showBlock">
+                            
+
+                          
+                          </ng-template> -->
+                        <!-- <ng-template > -->
+
+                        <!-- </ng-template> -->
+                        <!-- <ng-template> -->
+                        <div *ngIf="result2=='Landline'" matPrefix class="pr-4 mr-4 borderRightClass1" style="width: 55px;
+                            font-weight: 600;
+                            opacity: 0.8;
+                            position: fixed;
+                            margin-top: 25px;
+                            margin-left: 10px;">
+                          <span class="position:fixed">
+                            <!-- phone2 -->
+
+                            <input matInput [(ngModel)]="land_num1" style="width:55px;" [matAutocomplete]="auto"
+                              [formControl]="myControl2" (click)="_filterlandline1(0)" formControlName="landlinecode1"
+                              placeholder="Code">
+                            <mat-autocomplete #auto="matAutocomplete" matNativeControl>
+                              <mat-option *ngFor="let lanline of filteredlandline1 | async" [value]="lanline.num"
+                                (click)="landlinefunc1(landline.num)">
+
+                                {{lanline.num}}
+                              </mat-option>
+                            </mat-autocomplete>
+                          </span>
+                        </div>
+                        <!-- </mat-form-field> -->
+                        <!-- </ng-template> -->
+                        <mat-form-field class="pl-8  pr-20" [ngClass]="result2=='Landline'?'mat-width':'mat-width1'">
+                          <div *ngIf="result2=='Moblile'" matPrefix class="pr-4 mr-4 borderRightClass">
+                            {{codeselected}}
+
+                          </div>
+                          <input matInput [placeholder]="GetOBDFieldLabel('Contact 2')" formControlName="Phone2"
+                            (click)="phone1_dialog1()" style="font-weight: 600;opacity: 0.8;">
+                          <!-- <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
+                          {{GetOBDFieldLabel('Contact 2')}} is required
+                        </mat-error> -->
+                          <mat-error
+                            *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
+                      vendorRegistrationFormGroup.get('Phone2').hasError('pattern')&& !vendorRegistrationFormGroup.get('Phone2').hasError('maxlength')">
+                            Please enter a valid Contact 2 number
+                          </mat-error>
+                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required')  &&
+                        vendorRegistrationFormGroup.get('Phone2').hasError('maxlength')">
+                            only 15 numbers are allowed
+                          </mat-error>
+                        </mat-form-field>
+                      </div>
+
+
+
+                      <!-- <div fxFlex>
                         <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                          <div matPrefix class="pr-4 mr-4 borderRightClass">+91</div>
-                          <input matInput [placeholder]="GetOBDFieldLabel('Phone2')" formControlName="Phone2">
+                          <div matPrefix class="pr-4 mr-4 borderRightClass" style="font-weight: 600;opacity: 0.8;">{{codeselected}}</div>
+                          <input matInput [placeholder]="GetOBDFieldLabel('Contact 2')"  (click)="phone1_dialog()"   formControlName="Phone2"  style="font-weight: 600;opacity: 0.8;">
                           <mat-error
                             *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && vendorRegistrationFormGroup.get('Phone2').hasError('required')">
-                            {{GetOBDFieldLabel('Phone2')}} is required
+                            {{GetOBDFieldLabel('Contact 2')}} is required
                           </mat-error>
                           <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required') &&
-                        vendorRegistrationFormGroup.get('Phone2').hasError('pattern')">
-                            Please enter a valid mobile number
+                        vendorRegistrationFormGroup.get('Phone2').hasError('pattern')&& !vendorRegistrationFormGroup.get('Phone2').hasError('maxlength')">
+                            Please enter a valid Contact 2 number
                           </mat-error>
+                          <mat-error *ngIf="vendorRegistrationFormGroup.get('Phone2').touched && !vendorRegistrationFormGroup.get('Phone2').hasError('required')  &&
+                          vendorRegistrationFormGroup.get('Phone2').hasError('maxlength')">
+                          only 15 numbers are allowed
+                            </mat-error> 
                         </mat-form-field>
-                      </div>
+                        <mat-error *ngIf="vendorRegistrationFormGroup.controls.Phone2.errors?.phoneNumberInvalid"> phone No should be less than 15 -->
+                      <!-- </mat-error> -->
+                      <!-- </div> -->
                     </div>
 
+
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Email1')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('Email1')" formControlName="Email1">
+                      <mat-form-field class="pl-8  pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('Email1')" formControlName="Email1"
+                          style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('Email1').touched && vendorRegistrationFormGroup.get('Email1').hasError('required')">
                           {{GetOBDFieldLabel('Email1')}} is required
@@ -145,8 +288,9 @@
                     </div>
 
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Email2')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('Email2')" formControlName="Email2">
+                      <mat-form-field class="pl-8  pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('Email2')" formControlName="Email2"
+                          style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('Email2').touched && vendorRegistrationFormGroup.get('Email2').hasError('required')">
                           {{GetOBDFieldLabel('Email2')}} is required
@@ -172,48 +316,90 @@
                       </div>
                     </div>
                     <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Country')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <!-- <input matInput placeholder="Country" formControlName="Country"> -->
-                        <!-- <mat-select matInput [placeholder]="GetOBDFieldLabel('Country')" formControlName="Country">
-                          <mat-option *ngFor="let country of AllCountries" [value]="country.name">{{country.name}}
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <!-- <input matInput placeholder="Country" formControlName="Country">
+                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Country')" formControlName="Country">
+                          <mat-option *ngFor="let country of filteredOptions | async" [value]="country.name">{{country.name}}
                           </mat-option>
                         </mat-select> -->
                         <input type="text" placeholder="Country" matInput formControlName="Country"
-                          [matAutocomplete]="auto">
+                          [matAutocomplete]="auto" [formControl]="myControl" [(ngModel)]='Country'
+                          autocomplete="doNotAutoComplete" (keyup)="countryfunc()"
+                          style="font-weight: 600;opacity: 0.8;">
+                        <!-- (change)="onKey($event)"  -->
                         <mat-autocomplete #auto="matAutocomplete"
-                          (optionSelected)='CountrySelected($event.option.value)'>
-                          <mat-option *ngFor="let country of AllCountries" [value]="country.name">
+                          (optionSelected)='CountrySelected($event.option.value)' matNativeControl>
+                          <mat-option *ngFor="let country of filteredOptions | async" [value]="country.name"
+                            (click)=Countrycodefunc(country)>
+
                             {{country.name}}
                           </mat-option>
                         </mat-autocomplete>
+                        <!-- <div *ngIf="Country | lowercase =='india'">
+
+                          </div> -->
+                        <!-- <mat-select matInput placeholder="Country" formControlName="Country" [(ngModel)]='Country' [formControl]="myControl" (optionSelected)='CountrySelected($event.option.value)' matNativeControl
+                           style="font-weight: 600;opacity: 0.8;">
+                           <option value="0">--Select--</option>
+                          <mat-option *ngFor="
+                          let country of filteredOptions | async" [value]="country.name">{{country.name}}</mat-option>
+                        </mat-select> -->
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('Country').touched && vendorRegistrationFormGroup.get('Country').hasError('required')">
                           {{GetOBDFieldLabel('Country')}} is required
                         </mat-error>
+                        <mat-error *ngIf="!vendorRegistrationFormGroup.get('Country').hasError('required')">enter a
+                          valid country </mat-error>
+
                       </mat-form-field>
+                      <!-- <mat-error *ngIf="  vendorRegistrationFormGroup.controls.Country.errors?.countryInvalid " class="country"> country is invalid
+                        
+                      </mat-error> -->
                     </div>
 
                     <div fxFlex="50" [style.display]="GetOBDFieldVisibility('PinCode')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('PinCode')" formControlName="PinCode"
-                          (blur)="GetLocationByPincode($event)" (keyup.enter)="OnPincodeKeyEnter($event)">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('Pin Code')" autocomplete="doNotAutoComplete"
+                          formControlName="PinCode" maxlength="6" (blur)="GetLocationByPincode($event)"
+                          (keyup)="pinfunc()" (keydown)="numberOnly($event)" (keyup.enter)="OnPincodeKeyEnter($event)"
+                          style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
-                          {{GetOBDFieldLabel('PinCode')}} is required
+                          {{GetOBDFieldLabel('Pin Code')}} is required
                         </mat-error>
-                        <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
+
+                        <!-- <mat-error *ngIf=" !vendorRegistrationFormGroup.get('PinCode').hasError('required') "> Pincode
+                          is invalid </mat-error> -->
+                          <mat-error *ngIf="!Postaldata">
+                            Pincode not valid.
+                          </mat-error>
+                        <!-- Input not valid. -->
+                        <!-- </mat-error> -->
+                        <!-- <mat-error *ngIf="!vendorRegistrationFormGroup.get('PinCode').hasError('required')
+                        && vendorRegistrationFormGroup.get('PinCode').hasError('invalid')">
+                          Please enter a valid PIN Code
+                        </mat-error> -->
+                        <!-- <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
                         &&vendorRegistrationFormGroup.get('PinCode').hasError('minlength')">
                           Minimum 6 digit is required
                         </mat-error>
                         <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
                       &&vendorRegistrationFormGroup.get('PinCode').hasError('maxlength')">
                           Maximum allowed length is 10 digit
-                        </mat-error>
+                        </mat-error> -->
+
+                        <!-- <mat-error *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('required')
+                        &&vendorRegistrationFormGroup.get('PinCode').hasError('invalid')">
+                          invalid
+                        </mat-error> -->
+                        <!-- <mat-error *ngIf="!PinCode.valid ">enter a valid country </mat-error> -->
                       </mat-form-field>
+                      <!-- <mat-error *ngIf="PinCode.invalid"> enter a valid pincode</mat-error> -->
                     </div>
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('City')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('City')" formControlName="City">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('City')" formControlName="City"
+                          style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('City').touched && vendorRegistrationFormGroup.get('City').hasError('required')">
                           {{GetOBDFieldLabel('City')}} is required
@@ -222,7 +408,7 @@
                     </div>
 
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('State')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
                         <!-- <input matInput placeholder="State" formControlName="State"> -->
                         <!-- <div matPrefix class="pr-4 mr-4 borderRightClass">{{StateCode}}</div> -->
                         <!-- <mat-select matInput [placeholder]="GetOBDFieldLabel('State')" formControlName="State">
@@ -230,10 +416,11 @@
                             {{sta.StateCode + ' - ' + sta.State}}</mat-option>
                         </mat-select> -->
                         <input type="text" placeholder="State" matInput formControlName="State"
-                          [matAutocomplete]="automatic">
+                          [matAutocomplete]="automatic" [formControl]="statecontrol"
+                          style="font-weight: 600;opacity: 0.8;">
                         <mat-autocomplete #automatic="matAutocomplete">
-                          <mat-option *ngFor="let sta of AllStates" [value]="sta.State">
-                            {{sta.StateCode + ' - ' + sta.State}}
+                          <mat-option *ngFor="let sta of filteredstate | async" [value]="sta.State">
+                            {{sta.State}}
                           </mat-option>
                         </mat-autocomplete>
                         <mat-error
@@ -243,21 +430,38 @@
                       </mat-form-field>
                     </div>
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine1')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('AddressLine1')" formControlName="AddressLine1">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <!-- <input matInput [placeholder]="GetOBDFieldLabel('Address Line1')" formControlName="AddressLine1"
+                          style="font-weight: 600;opacity: 0.8;"> -->
+                        <mat-select matNativeControl matInput [placeholder]="GetOBDFieldLabel('AddressLine1')"
+                          formControlName="AddressLine1" style="font-weight: 600;opacity: 0.8;">
+                          <mat-option *ngFor="let address of addressline1" [value]="address">{{address}}</mat-option>
+                        </mat-select>
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
-                          {{GetOBDFieldLabel('AddressLine1')}} is required
+                          {{GetOBDFieldLabel('Address Line1')}} is required
                         </mat-error>
                       </mat-form-field>
                     </div>
 
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine2')">
-                      <mat-form-field class="pl-8 pr-40" style="width: 100%;">
-                        <input matInput [placeholder]="GetOBDFieldLabel('AddressLine2')" formControlName="AddressLine2">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('Address Line2')" formControlName="AddressLine2"
+                          style="font-weight: 600;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine2').touched && vendorRegistrationFormGroup.get('AddressLine2').hasError('required')">
-                          {{GetOBDFieldLabel('AddressLine2')}} is required
+                          {{GetOBDFieldLabel('Address Line2')}} is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine2')">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input matInput [placeholder]="GetOBDFieldLabel('Email sent to Invoice')"
+                          formControlName="Invoice" style="font-weight: 600;opacity: 0.8;">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('Invoice').touched && vendorRegistrationFormGroup.get('Invoice').hasError('required')">
+                          {{GetOBDFieldLabel('Email sent to Invoice')}} is required
                         </mat-error>
                       </mat-form-field>
                     </div>
@@ -365,47 +569,153 @@
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="row" fxLayoutGap="60px" fxLayoutAlign="start" fxFlex="1 0 auto"
-                  name="form" novalidate [formGroup]="identificationFormGroup">
-                  <div fxFlex="25">
-                    <mat-form-field class="ml-12" style="width: 100%;">
-                      <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
-                      <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"
+                <form autocomplete="off" name="form" novalidate [formGroup]="identificationFormGroup"
+                  style="width: -webkit-fill-available;">
+                  <!-- <div fxFlex fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="15px" style="width: 100%">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;"> -->
+                        <!-- <input matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"> -->
+                        <!-- <mat-select matInput placeholder="Type" formControlName="Type" (keyup.enter)="keytab('iDNumber')"
                         (selectionChange)="IdentityTypeSelected()">
                         <mat-option *ngFor="let type of AllIdentityTypes" [value]="type">{{type}}</mat-option>
+                        </mat-select> -->
+                        <!-- <mat-select matInput placeholder="Type" formControlName="Type"
+                          (keyup.enter)="keytab('iDNumber')" (selectionChange)="IdentityTypeSelected()"
+                          (selectionChange)="OptionSelected($event)" style="font-weight: 600;opacity: 0.8;">
+                          <mat-option *ngFor="let type of AllIdentityTypes" [value]="type.Key" [matTooltip]="type.Key">
+                            {{type.Key}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('Type').touched && identificationFormGroup.get('Type').hasError('required')">
+                          Type is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div> -->
+
+
+                    <!-- <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="25">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;" *ngIf="hiddenoption">
+                        <mat-select matInput placeholder="Option" style="font-weight: 600;opacity: 0.8;"
+                          formControlName="Option">
+                          <mat-option *ngFor="let option of AllOption" [value]="option">{{option}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('Option').touched && identificationFormGroup.get('Option').hasError('required')">
+                          Option is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div> -->
+                    <!-- <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
+                        <input matInput placeholder="ID" formControlName="IDNumber"
+                          style="font-weight: 600;opacity: 0.8;" (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
+                          ID is required
+                        </mat-error>
+                        <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                     && identificationFormGroup.get('IDNumber').hasError('pattern')">
+                          Invalid Value
+                        </mat-error>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                     &&!identificationFormGroup.get('IDNumber').hasError('pattern')&& identificationFormGroup.get('IDNumber').hasError('gstStateCodeError')">
+                          GST Number not matched with selected StateCode
+                        </mat-error>
+                      </mat-form-field>
+                      <div class="ValidityError" *ngIf="IdentityValidity">
+                        Invalid ID
+                      </div>
+                    </div> -->
+                    <!-- <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="25">
+                      <mat-form-field class="pl-20 pr-16" *ngIf="isDisabledDate" style="width: 100%;">
+                        <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
+                          style="font-weight: 600;opacity: 0.8;" #validUntil
+                          (keydown.enter)="IdentificationEnterKeyDown()">
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('ValidUntil').touched && identificationFormGroup.get('ValidUntil').hasError('required')">
+                          Valid Until is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div> -->
+                    <!-- <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30" fxLayout="row" fxLayoutAlign="space-between center">
+                      <div fxLayoutAlign="center center">
+                        <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput1.click()">
+                        <span class="attachClass" (click)="fileInput1.click()">
+                          Add Attachment
+                        </span>
+                        <input hidden type="file" #fileInput1 id="file" (change)="handleFileInput($event)" />
+                      </div>
+                      <div>
+                        <span fxFlex> {{fileToUpload?.name}}</span>
+                      </div>
+                    </div>
+                  </div> -->
+                  <!-- <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="5" fxLayoutAlign="end">
+                    <img class="addIcon" src="assets/images/logos/add-button.png"
+                      (click)="AddIdentificationToTableDataSource()">
+                  </div> -->
+                  <!-- </div> -->
+                  <div fxFlex fxLayout="row" fxLayout.sm="row wrap" fxLayout.xs="row wrap" fxLayoutAlign="start"
+                    fxLayoutGap="15px" style="width: 100%">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30">
+                      <mat-form-field class="px-20" fxFlex style="width: fit-content !important;">
+                        <mat-select matInput placeholder="Type" formControlName="Type"
+                          (keyup.enter)="keytab('iDNumber')" (selectionChange)="IdentityTypeSelected()"
+                          (selectionChange)="OptionSelected($event)" style="font-weight: 600;opacity: 0.8;">
+                          <mat-option *ngFor="let type of AllIdentityTypes" [value]="type.Key" [matTooltip]="type.Key">
+                            {{type.Key}}</mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('Type').touched && identificationFormGroup.get('Type').hasError('required')">
+                          Type is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <!-- <div fxFlex="25">
+                      <mat-form-field class="px-40" style="width: 100%;"  *ngIf="hiddenoption">
+                      <mat-select matInput  placeholder="Option"
+                         formControlName="Option" style="font-weight: 600;opacity: 0.8;">
+                        <mat-option *ngFor="let option of AllOption" [value]="option">{{option}}</mat-option>
                       </mat-select>
                       <mat-error
-                        *ngIf="identificationFormGroup.get('Type').touched && identificationFormGroup.get('Type').hasError('required')">
-                        Type is required
+                        *ngIf="identificationFormGroup.get('Option').touched && identificationFormGroup.get('Option').hasError('required')">
+                        Option is required
                       </mat-error>
-                    </mat-form-field>
-                  </div>
-                  <div fxFlex="25">
-                    <mat-form-field style="width: 100%;">
-                      <input matInput placeholder="ID" formControlName="IDNumber"
-                        (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber>
-                      <mat-error
-                        *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
-                        ID is required
-                      </mat-error>
-                      <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                      </mat-form-field>
+                    </div> -->
+
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30" fxLayoutAlign="space-between center">
+                      <mat-form-field class="px-20" style="width: 100%;">
+                        <input matInput placeholder="ID" formControlName="IDNumber"
+                          (keyup.enter)="OnIdentityKeyEnter($event)" #iDNumber style="font-weight: 600;opacity: 0.8;">
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('IDNumber').touched && identificationFormGroup.get('IDNumber').hasError('required')">
+                          ID is required
+                        </mat-error>
+                        <mat-error *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
                      && identificationFormGroup.get('IDNumber').hasError('pattern')">
-                        Invalid Value
-                      </mat-error>
-                      <mat-error
-                        *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
+                          Invalid Value
+                        </mat-error>
+                        <mat-error
+                          *ngIf="identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')
                      &&!identificationFormGroup.get('IDNumber').hasError('pattern')&& identificationFormGroup.get('IDNumber').hasError('gstStateCodeError')">
-                        GST Number not matched with selected StateCode
-                      </mat-error>
-                    </mat-form-field>
-                    <div class="ValidityError" *ngIf="IdentityValidity">
-                      Invalid ID
+                          GST Number not matched with selected StateCode
+                        </mat-error>
+                      </mat-form-field>
+                      <div class="ValidityError"
+                        *ngIf="IdentityValidity && identificationFormGroup.get('IDNumber').touched && !identificationFormGroup.get('IDNumber').hasError('required')">
+                        Invalid ID
+                      </div>
                     </div>
-                  </div>
-                  <div fxFlex="25">
-                    <mat-form-field *ngIf="isDisabledDate" style="width: 100%;">
+
+                    <!-- <div fxFlex="25">
+                    <mat-form-field class="px-40" *ngIf="isDisabledDate" style="width: 100%;">
                       <input matInput placeholder="Valid Until" [matDatepicker]="picker1" formControlName="ValidUntil"
-                        #validUntil (keydown.enter)="IdentificationEnterKeyDown()">
+                        #validUntil (keydown.enter)="IdentificationEnterKeyDown()" style="font-weight: 600;opacity: 0.8;">
                       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                       <mat-datepicker #picker1></mat-datepicker>
                       <mat-error
@@ -413,36 +723,69 @@
                         Valid Until is required
                       </mat-error>
                     </mat-form-field>
-                  </div>
-                  <div fxFlex="20" fxLayoutAlign="start center">
-                    <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput1.click()">
-                    <span class="attachClass" (click)="fileInput1.click()">
-                      Add Attachment
-                    </span>
-                    <input hidden type="file" #fileInput1 id="file" (change)="handleFileInput($event)" />
-                  </div>
-                  <div fxFlex="5" fxLayoutAlign="end">
-                    <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddIdentificationToTable()">
+                  </div> -->
+
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30" class="ml-20" fxLayout="row" fxLayoutAlign="space-between center">
+                      <div fxLayoutAlign="center center">
+                        <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput1.click()">
+                        <span class="attachClass" (click)="fileInput1.click()">
+                          Add Attachment
+                        </span>
+                        <input hidden type="file" #fileInput1 id="file" (change)="handleFileInput($event)" />
+                      </div>
+                      <div *ngIf="fileToUpload?.name">
+                        <span> {{fileToUpload?.name}}</span>
+                      </div>
+                    </div>
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30" fxLayoutAlign="end">
+                      <img class="addIcon" src="assets/images/logos/add-button.png"
+                        (click)="AddIdentificationToTableDataSource()">
+                    </div>
                   </div>
                 </form>
               </div>
-              <div style="margin-left: 8px;margin-top: 10px;">
+              <!-- <div fxLayout *ngIf="fileToUpload?.name" style="margin-top: -12px;padding-left: 8px;">
+                <div fxFlex="75"></div>
+                <div fxFlex="25" class="pl-20">
+                  {{fileToUpload?.name}}
+                </div>
+              </div> -->
+              <div style="margin-left: 8px;margin-top: 10px;overflow-x:auto">
                 <table *ngIf="IdentificationsByVOB?.length" class="table" mat-table
                   [dataSource]="identificationDataSource" matSort>
 
+                  <ng-container matColumnDef="firstcolumn">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 2%;text-align: center;"> </th>
+                    <td mat-cell *matCellDef="let element"
+                      style="width: 3%;text-align: center;background-color: #d6d6d6;" class="tableLeftBorder">
+                    </td>
+                  </ng-container>
+
                   <ng-container matColumnDef="Type">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> Type </th>
-                    <td mat-cell *matCellDef="let element" style="width: 25%;" class="tableLeftBorder">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;text-align: center;"> Type
+                    </th>
+                    <td mat-cell *matCellDef="let element" style="width: 15%;" class="tableLeftBorder">
                       {{element.Type}} </td>
                   </ng-container>
 
+                  <ng-container matColumnDef="Option">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;text-align: center;"> Option
+                    </th>
+                    <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;"
+                      class="tableLeftBorder">
+                      {{element.Option}} </td>
+                  </ng-container>
+
+
                   <ng-container matColumnDef="IDNumber">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> ID Number </th>
-                    <td mat-cell *matCellDef="let element" style="width: 25%;"> {{element.IDNumber}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;text-align: center;"> ID
+                      Number </th>
+                    <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.IDNumber}} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="ValidUntil">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;" [style.display]="'none'">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;text-align: center;"
+                      [style.display]="'none'">
                       Valid Until </th>
                     <td mat-cell *matCellDef="let element" style="width: 25%;" [style.display]="'none'">
                       {{element.ValidUntil | date}} </td>
@@ -456,7 +799,7 @@
                   </ng-container> -->
                   <ng-container matColumnDef="Attachment">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Attachment </th>
-                    <td mat-cell *matCellDef="let element" style="width: 20%;">
+                    <td mat-cell *matCellDef="let element;let index=index" style="width: 20%;">
                       <div fxLayout *ngIf="element.AttachmentName">
                         <div fxFlex (click)="GetIdentAttachment(element)" class="pdfLinkClass pl-8">
                           {{element.AttachmentName}}</div>
@@ -466,8 +809,8 @@
                         </div>
                       </div>
                       <div fxLayout *ngIf="!element.AttachmentName">
-                        <img class="addBlueIcon" src="assets/images/addBlue.png"
-                          (click)="ReplaceIdentificationAttachment(element)">
+                        <img *ngIf="element?.Type" class="addBlueIcon" style="margin-left: 5px !important"
+                          src="assets/images/clip.png" (click)="ReplaceIdentificationAttachment(element)">
                       </div>
                     </td>
                   </ng-container>
@@ -475,43 +818,47 @@
                   <ng-container matColumnDef="Action">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
                     <td mat-cell *matCellDef="let element" style="width: 5%;text-align: center;">
-                      <img class="removeIcon" src="assets/images/remove-button.png"
-                        (click)="RemoveIdentificationFromTable(element)">
+                      <!-- <img class="removeIcon" src="assets/images/remove-button.png"
+                        (click)="RemoveIdentificationFromTable(element)"> -->
+                      <button *ngIf="element?.Type" class="SaveAsDraftBtn" mat-raised-button
+                        (click)="RemoveIdentificationFromTable(element)">Delete</button>
                     </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="identificationDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;" style=" cursor: pointer;">
+                  <tr mat-row *matRowDef="let row; columns: identificationDisplayedColumns;" (click)="InsertData(row)"
+                    style=" cursor: pointer;">
                   </tr>
                 </table>
-                <div flex *ngIf="IdentificationsByVOB?.length">
+                <!-- <div flex *ngIf="IdentificationsByVOB?.length">
                   <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
                   </mat-paginator>
-                </div>
+                </div> -->
               </div>
             </div>
 
-            <div fxFlex fxLayout="column">
+            <div fxFlex fxLayout="column" style="margin-top: 30px;">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">
-                  <strong>Bank Table</strong>
+                  <strong>Bank Details</strong>
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup">
-                  <div fxFlex fxLayout="row" fxLayoutGap="30px">
-                    <div fxFlex="25" class="ml-12">
-                      <mat-form-field style="width: 100%;">
+                <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup"
+                  style="width: -webkit-fill-available;">
+                  <div fxFlex fxLayout="row wrap" fxLayoutAlign="start" fxLayoutGap="15px" style="width: 100%">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="IFSC" formControlName="IFSC" #ifsc (blur)="GetBankByIFSC($event)"
-                          (keyup.enter)="OnIFSCKeyEnter($event)">
+                          (keyup.enter)="OnIFSCKeyEnter($event)" style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('IFSC').touched && bankDetailsFormGroup.get('IFSC').hasError('required')">
                           IFSC is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="25">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="Acc No" formControlName="AccountNo" #accountNo
                           (keyup.enter)="keytab('accHolderName')">
                         <mat-error
@@ -520,99 +867,137 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="25">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="Acc Holders name" formControlName="Name" #accHolderName
-                          (keyup.enter)="keytab('bankName')">
+                          (keyup.enter)="keytab('bankName')" style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('Name').touched && bankDetailsFormGroup.get('Name').hasError('required')">
                           Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="25">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="Bank Name" formControlName="BankName" #bankName
-                          (keyup.enter)="keytab('bankCity')">
+                          (keyup.enter)="keytab('bankCity')" style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('BankName').touched && bankDetailsFormGroup.get('BankName').hasError('required')">
                           Bank Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                  </div>
-                  <div fxFlex fxLayout="row" fxLayoutGap="30px">
-                    <div fxFlex="25" class="ml-12">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="City" formControlName="City" #bankCity
-                          (keyup.enter)="keytab('branch')">
+                          (keyup.enter)="keytab('branch')" style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('City').touched && bankDetailsFormGroup.get('City').hasError('required')">
                           City is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="25">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12">
+                      <mat-form-field class="pl-20 pr-16" style="width: 100%;">
                         <input matInput placeholder="Branch" formControlName="Branch" #branch
-                          (keydown.enter)="BankEnterKeyDown()">
+                          (keydown.enter)="BankEnterKeyDown()" style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="bankDetailsFormGroup.get('Branch').touched && bankDetailsFormGroup.get('Branch').hasError('required')">
                           Branch is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="25" fxLayoutAlign="start center">
-                      <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput2.click()">
-                      <span class="attachClass" (click)="fileInput2.click()">
-                        Add Attachment
-                      </span>
-                      <input hidden type="file" #fileInput2 id="file1" (change)="handleFileInput2($event)" />
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12" fxLayout="row" fxLayoutAlign="space-between center">
+                      <div fxLayoutAlign="center center">
+                        <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput2.click()">
+                        <span class="attachClass" (click)="fileInput2.click()">
+                          Add Attachment
+                        </span>
+                        <input hidden type="file" #fileInput2 id="file2" (change)="handleFileInput2($event)" />
+                      </div>
+                      <div>
+                        <div>
+                          <span fxFlex>{{fileToUpload1?.name}}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div fxFlex="25" fxLayoutAlign="end">
-                      <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddBankToTable()">
+                    <div fxFlex fxLayoutAlign="end">
+                      <!-- <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddBankToTable()"> -->
+                      <img class="addIcon" src="assets/images/logos/add-button.png"
+                        (click)="AddBankToTableDataSource()">
                     </div>
                   </div>
                 </form>
               </div>
+              <!-- <div fxLayout *ngIf="fileToUpload1?.name" style="margin-top: -12px;padding-left: 8px;">
+            <div fxFlex="85"></div>
+            <div fxFlex="15" class="pl-20">
+              {{fileToUpload1?.name}}
+            </div>
+          </div> -->
+              <!-- <div fxLayout *ngIf="fileToUpload1?.name" style="margin-top: -12px;padding-left: 8px;">
+                <div fxFlex="85"></div>
+                <div fxFlex="15" class="pl-20">
+                  {{fileToUpload1?.name}}
+                </div>
+              </div> -->
+
               <div style="margin-left: 8px;margin-top: 10px;">
                 <div style="overflow-x:auto;">
                   <table *ngIf="BanksByVOB?.length" class="table" mat-table [dataSource]="bankDetailsDataSource"
                     matSort>
 
+                    <ng-container matColumnDef="firstcolumn">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 3%;text-align: center;"> </th>
+                      <td mat-cell *matCellDef="let element"
+                        style="width: 3%;text-align: center;background-color: #d6d6d6;" class="tableLeftBorder">
+                      </td>
+                    </ng-container>
+
                     <ng-container matColumnDef="IFSC">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> IFSC </th>
-                      <td mat-cell *matCellDef="let element" class="tableLeftBorder" style="width: 10%;">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 7%;text-align: center;"> IFSC
+                      </th>
+                      <td mat-cell *matCellDef="let element" class="tableLeftBorder"
+                        style="width: 10%;text-align: center;">
                         {{element.IFSC}} </td>
                     </ng-container>
 
 
                     <ng-container matColumnDef="AccountNo">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> AccountNo </th>
-                      <td mat-cell *matCellDef="let element" style="width: 15%;">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;text-align: center;">
+                        Account No </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;font-weight: 600;">
                         {{element.AccountNo}} </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Name">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Acc Holders name </th>
-                      <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Name}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;text-align: center;"> Acc
+                        Holders name </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;"> {{element.Name}}
+                      </td>
                     </ng-container>
 
 
                     <ng-container matColumnDef="BankName">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> BankName </th>
-                      <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.BankName}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;text-align: center;"> Bank
+                        Name </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;">
+                        {{element.BankName}} </td>
                     </ng-container>
 
 
                     <ng-container matColumnDef="City">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;"> City </th>
-                      <td mat-cell *matCellDef="let element" style="width: 10%;"> {{element.City}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;text-align: center;"> City
+                      </th>
+                      <td mat-cell *matCellDef="let element" style="width: 10%;text-align: center;"> {{element.City}}
+                      </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Branch">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> Branch </th>
-                      <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.Branch}} </td>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;text-align: center;">
+                        Branch </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;"> {{element.Branch}}
+                      </td>
                     </ng-container>
 
 
@@ -634,66 +1019,67 @@
                               (click)="ReplaceBankAttachment(element)">
                           </div>
                         </div>
-                        <div fxLayout *ngIf="!element.AttachmentName">
-                          <img *ngIf="element?.AccountNo" class="addBlueIcon" src="assets/images/addBlue.png"
+                        <div fxLayout *ngIf="!element.AttachmentName" fxLayoutAlign="end">
+                          <img *ngIf="element?.AccountNo" class="addBlueIcon" src="assets/images/clip.png"
                             (click)="ReplaceBankAttachment(element)">
                         </div>
                       </td>
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header> </th>
-                      <td mat-cell *matCellDef="let element" style="text-align: center;">
-                        <img class="removeIcon" src="assets/images/remove-button.png"
-                          (click)="RemoveBankFromTable(element)">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style=" width: 5%;"> </th>
+                      <td mat-cell *matCellDef="let element;let index=index" style="text-align: center; width: 5%;">
+                        <button *ngIf="element?.AccountNo" class="SaveAsDraftBtn" mat-raised-button
+                          (click)="RemoveBankFromTable(element)">Delete</button>
                       </td>
                     </ng-container>
 
                     <tr mat-header-row *matHeaderRowDef="bankDetailsDisplayedColumns;sticky: true"></tr>
-                    <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;" style=" cursor: pointer;">
+                    <tr mat-row *matRowDef="let row; columns: bankDetailsDisplayedColumns;let i=index"
+                      (click)="BankRowClicked(row,i)" style=" cursor: pointer;">
                     </tr>
                   </table>
                 </div>
-                <div flex *ngIf="BanksByVOB?.length">
+                <!-- <div flex *ngIf="BanksByVOB?.length">
                   <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
                   </mat-paginator>
-                </div>
+                </div> -->
                 <!-- </div> -->
               </div>
             </div>
-
-            <div fxFlex fxLayout="column">
+            <div fxFlex fxLayout="column" style="margin-top: 30px;">
               <div style="margin-left: 7px">
+                <!-- <span><strong>Contact Table</strong></span> -->
                 <div class="SectionTitle">
-                  <strong>Contact Table</strong>
+                  <strong>Contact Persons</strong>
                 </div>
               </div>
               <div class="mt-8">
-                <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form"
-                  novalidate [formGroup]="contactFormGroup">
-
-                  <div fxFlex fxLayout="row" fxLayoutGap="50px">
-                    <div fxFlex="33" class="ml-12">
-                      <mat-form-field style="width: 100%;">
-                        <input matInput placeholder="Name" formControlName="Name" (keyup.enter)="keytab('department')">
+                <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
+                  [formGroup]="contactFormGroup" style="width: -webkit-fill-available;">
+                  <div fxFlex fxLayout="row wrap" fxLayoutGap="15px" style="width: -webkit-fill-available;">
+                    <div fxFlex>
+                      <mat-form-field class="px-28" style="width: 100%;">
+                        <input matInput placeholder="Name" formControlName="Name" (keyup.enter)="keytab('department')"
+                          style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="contactFormGroup.get('Name').touched && contactFormGroup.get('Name').hasError('required')">
                           Name is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="33">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex>
+                      <mat-form-field class="px-28" style="width: 100%;">
                         <input matInput placeholder="Department" formControlName="Department"
-                          (keyup.enter)="keytab('title')" #department>
+                          (keyup.enter)="keytab('title')" #department style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="contactFormGroup.get('Department').touched && contactFormGroup.get('Department').hasError('required')">
                           Department is required
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="33">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex>
+                      <mat-form-field class="px-28" style="width: 100%;">
                         <input matInput placeholder="Title" formControlName="Title" (keyup.enter)="keytab('mobile')"
                           #title>
                         <mat-error
@@ -702,32 +1088,30 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                  </div>
-                  <div fxFlex fxLayout="row" fxLayoutGap="50px">
-                    <div fxFlex="33" class="ml-12">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex>
+                      <mat-form-field class="px-28" style="width: 100%;">
                         <input matInput placeholder="Mobile" formControlName="Mobile" (keyup.enter)="keytab('email')"
-                          #mobile>
+                          #mobile style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="contactFormGroup.get('Mobile').touched && contactFormGroup.get('Mobile').hasError('required')">
                           Mobile is required
                         </mat-error>
                         <mat-error *ngIf="contactFormGroup.get('Mobile').touched && !contactFormGroup.get('Mobile').hasError('required') &&
-                        contactFormGroup.get('Mobile').hasError('pattern')">
+                      contactFormGroup.get('Mobile').hasError('pattern')">
                           Please enter a valid Mobile Number
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="33">
-                      <mat-form-field style="width: 100%;">
+                    <div fxFlex>
+                      <mat-form-field class="px-28" style="width: 100%;">
                         <input matInput placeholder="Email" formControlName="Email"
-                          (keydown.enter)="ContactEnterKeyDown()" #email>
+                          (keydown.enter)="ContactEnterKeyDown()" #email style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="contactFormGroup.get('Email').touched && contactFormGroup.get('Email').hasError('required')">
                           Email is required
                         </mat-error>
                         <mat-error *ngIf="contactFormGroup.get('Email').touched && !contactFormGroup.get('Email').hasError('required') &&
-                        contactFormGroup.get('Email').hasError('email')">
+                      contactFormGroup.get('Email').hasError('email')">
                           Please enter a valid email address
                         </mat-error>
                         <mat-error
@@ -737,59 +1121,202 @@
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="33" fxLayoutAlign="end">
-                      <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddContactToTable()">
+                    <div fxFlex fxLayoutAlign="end">
+                      <!-- <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddContactToTable()"> -->
+                      <img class="addIcon" src="assets/images/logos/add-button.png"
+                        (click)="AddContactToTableDataSource()">
+
                     </div>
                   </div>
                 </form>
               </div>
+              <div style="margin-left: 8px;margin-top: 10px;overflow-x:auto">
+                <div style="overflow-x: auto;overflow-y: unset;">
+                  <table *ngIf="ContactsByVOB?.length" class="table" mat-table [dataSource]="contactDataSource" matSort>
+
+                    <ng-container matColumnDef="firstcolumn">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 3%;text-align: center;"> </th>
+                      <td mat-cell *matCellDef="let element"
+                        style="width: 3%;text-align: center;background-color: #d6d6d6;" class="tableLeftBorder">
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Name">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;text-align: center;"> Name
+                      </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;"
+                        class="tableLeftBorder">
+                        {{element.Name}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Department">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;text-align: center;">
+                        Department </th>
+                      <td mat-cell *matCellDef="let element" style="width: 20%;text-align: center;">
+                        {{element.Department}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Title">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;text-align: center;">
+                        Title
+                      </th>
+                      <td mat-cell *matCellDef="let element" style="width: 20%;text-align: center;"> {{element.Title}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Mobile">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;text-align: center;">
+                        Mobile
+                      </th>
+                      <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;"> {{element.Mobile}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Email">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;text-align: center;">
+                        Email
+                      </th>
+                      <td mat-cell *matCellDef="let element" style="width: 20%;text-align: center;"> {{element.Email}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Action">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
+                      <td mat-cell *matCellDef="let element;let i = index;" style="width: 5%;text-align: center;">
+                        <button *ngIf="element?.Name" class="SaveAsDraftBtn" mat-raised-button
+                          (click)="RemoveContactFromTable(element)">Delete</button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="contactDisplayedColumns;sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;let i=index"
+                      (click)="ContactPersonsClicked(row,i)" style=" cursor: pointer;">
+                    </tr>
+                  </table>
+                </div>
+                <!-- <div flex *ngIf="ContactsByVOB?.length">
+                  <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
+                  </mat-paginator>
+                </div> -->
+              </div>
+            </div>
+            <!-- <div fxFlex fxLayout="column" *ngIf="ActivityLogsByVOB?.length">
+              <div style="margin-left: 7px;margin-top: 30px;">
+                <div class="SectionTitle">
+                  <strong>Activity Table</strong>
+                </div>
+              </div>
+              <div class="mt-8">
+                <form autocomplete="off" fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
+                  [formGroup]="activityLogFormGroup">
+                  <div fxFlex="25">
+                    <mat-form-field class="px-32" style="width: 100%;">
+                      <input matInput placeholder="Activity" formControlName="Activity"
+                        (keyup.enter)="keytab('activityDate')">
+                      <mat-error
+                        *ngIf="activityLogFormGroup.get('Activity').touched && activityLogFormGroup.get('Activity').hasError('required')">
+                        Activity is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div fxFlex="25">
+                    <mat-form-field class="px-32" style="width: 100%;">
+                      <input matInput placeholder="Date" [matDatepicker]="picker2" formControlName="Date" #activityDate
+                        (keyup.enter)="keytab('activityTime')">
+                      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                      <mat-datepicker #picker2></mat-datepicker>
+                      <mat-error
+                        *ngIf="activityLogFormGroup.get('Date').touched && activityLogFormGroup.get('Date').hasError('required')">
+                        Date is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="20">
+                    <mat-form-field class="px-32" style="width: 100%;">
+                      <input matInput placeholder="Time" [ngxTimepicker]="picker" formControlName="Time"
+                        (keyup.enter)="keytab('activityText')">
+                      <ngx-material-timepicker #picker></ngx-material-timepicker>
+                      <mat-error
+                        *ngIf="activityLogFormGroup.get('Time').touched && activityLogFormGroup.get('Time').hasError('required')">
+                        Time is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div fxFlex="25">
+                    <mat-form-field class="px-32" style="width: 100%;">
+                      <input matInput placeholder="Text" formControlName="Text"
+                        (keydown.enter)="ActivityLogEnterKeyDown()" #activityText>
+                      <mat-error
+                        *ngIf="activityLogFormGroup.get('Text').touched && activityLogFormGroup.get('Text').hasError('required')">
+                        Text is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div> -->
+
+            <!-- <div fxFlex="5" fxLayoutAlign="center"> -->
+            <!-- <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddActivityLogToTable()"> -->
+            <!-- <img class="addIcon" src="assets/images/logos/add-button.png" (click)="AddActivityLogToTableDataSource()">
+
+                  </div>
+                </form>
+              </div>
+
               <div style="margin-left: 8px;margin-top: 10px;">
-                <table *ngIf="ContactsByVOB?.length" class="table" mat-table [dataSource]="contactDataSource" matSort>
+                <table *ngIf="ActivityLogsByVOB?.length" class="table" mat-table [dataSource]="activityLogDataSource"
+                  matSort>
 
-                  <ng-container matColumnDef="Name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Name </th>
-                    <td mat-cell *matCellDef="let element" style="width: 20%;" class="tableLeftBorder">
-                      {{element.Name}} </td>
+                  <ng-container matColumnDef="firstcolumn">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 3%;"> </th>
+                    <td mat-cell *matCellDef="let element"
+                      style="width: 3%;text-align: center;background-color: #d6d6d6;" class="tableLeftBorder">
+                    </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Department">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Department </th>
-                    <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Department}} </td>
+                  <ng-container matColumnDef="Activity">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Activity </th>
+                    <td mat-cell *matCellDef="let element" style="width: 20%;text-align: center;"
+                      class="tableLeftBorder">
+                      {{element.Activity}} </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Title">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Title </th>
-                    <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Title}} </td>
+                  <ng-container matColumnDef="Date">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> Date </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;text-align: center;">
+                      {{element.Date | date}} </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Mobile">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 15%;"> Mobile </th>
-                    <td mat-cell *matCellDef="let element" style="width: 15%;"> {{element.Mobile}} </td>
+                  <ng-container matColumnDef="Time">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Time </th>
+                    <td mat-cell *matCellDef="let element" style="width: 20%;text-align: center;"> {{element.Time}}
+                    </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Email">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 20%;"> Email </th>
-                    <td mat-cell *matCellDef="let element" style="width: 20%;"> {{element.Email}} </td>
+                  <ng-container matColumnDef="Text">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 25%;"> Text </th>
+                    <td mat-cell *matCellDef="let element" style="width: 25%;text-align: center;"> {{element.Text}}
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="Action">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
-                    <td mat-cell *matCellDef="let element" style="width: 5%;text-align: center;">
-                      <img class="removeIcon" src="assets/images/remove-button.png"
-                        (click)="RemoveContactFromTable(element)">
+                    <td mat-cell *matCellDef="let element;let i = index;" style="width: 5%;text-align: center;">
+                      <button class="SaveAsDraftBtn" *ngIf="element?.Activity" mat-raised-button
+                        (click)="RemoveActivityLogFromTable(element)">Delete</button>
                     </td>
                   </ng-container>
 
-                  <tr mat-header-row *matHeaderRowDef="contactDisplayedColumns;sticky: true"></tr>
-                  <tr mat-row *matRowDef="let row; columns: contactDisplayedColumns;" style=" cursor: pointer;">
+                  <tr mat-header-row *matHeaderRowDef="activityLogDisplayedColumns;sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: activityLogDisplayedColumns;let i=index" (click)="ActivityClicked(row,i)" style=" cursor: pointer;">
                   </tr>
-                </table>
-                <div flex *ngIf="ContactsByVOB?.length">
+                </table> -->
+            <!--  <div flex *ngIf="ActivityLogsByVOB?.length">
                   <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
-                  </mat-paginator>
-                </div>
-              </div>
-            </div>
+                  </mat-paginator> 
+                </div> -->
+            <!-- </div>
+            </div> -->
             <div fxFlex fxLayout="column" *ngIf="AllQuestionAnswersView?.length">
               <div style="margin-left: 7px">
                 <!-- <span><strong>Contact Table</strong></span> -->
@@ -1093,9 +1620,13 @@
         </div>
       </div>
       <div fxLayout id="footerCard">
-        <div fxLayout fxFlex class="my-8 px-24" fxLayoutAlign="end">
+        <!-- <div fxLayout fxFlex class="my-8 px-24" fxLayoutAlign="end">
           <button (click)="SaveClicked()" *ngIf="SelectedBPVendorOnBoarding?.TransID" class="SaveBtn mr-40"
             mat-raised-button>
+            Update</button>
+        </div> -->
+        <div fxLayout fxFlex class="my-8 px-24" fxLayoutAlign="end">
+          <button (click)="SaveClicked()" class="SaveBtn mr-40" mat-raised-button>
             Update</button>
         </div>
       </div>

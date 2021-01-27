@@ -23,10 +23,17 @@ export class VendorMasterService {
 
   // Location
   GetLocationByPincode(Pincode: string): Observable<CBPLocation | string> {
-    return this._httpClient.get<CBPLocation>(`${this.baseAddress}vendormasterapi/Master/GetLocationByPincode?Pincode=${Pincode}`)
+    return this._httpClient.get<any>(`${this.baseAddress}vendormasterapi/Master/GetLocationByPincode?Pincode=${Pincode}`)
       .pipe(catchError(this.errorHandler));
   }
-
+  GetLocation(Pincode: string): Observable<any[]> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendormasterapi/Master/GetLocation?Pincode=${Pincode}`)
+      .pipe(catchError(this.errorHandler));
+  }
+  SearchTaxPayer(GSTNumber: string): Observable<TaxPayerDetails | string> {
+    return this._httpClient.get<TaxPayerDetails>(`${this.baseAddress}vendormasterapi/Master/SearchTaxPayer?GSTNumber=${GSTNumber}`)
+      .pipe(catchError(this.errorHandler));
+  }
   GetStateDetails(): Observable<StateDetails[] | string> {
     return this._httpClient.get<StateDetails[]>(`${this.baseAddress}vendormasterapi/Master/GetStateDetails`)
       .pipe(catchError(this.errorHandler));
@@ -46,7 +53,10 @@ export class VendorMasterService {
     return this._httpClient.get<any>(`${this.baseAddress}vendormasterapi/Master/GetAllIdentityTypes`)
       .pipe(catchError(this.errorHandler));
   }
-
+  GetAllIdentityFields(): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendormasterapi/Master/GetAllIdentityFields`)
+      .pipe(catchError(this.errorHandler));
+  }
   ValidateIdentityByType(IdentityType: string, ID: string): Observable<CBPIdentity | string> {
     return this._httpClient.get<CBPIdentity>(`${this.baseAddress}vendormasterapi/Master/ValidateIdentityByType?IdentityType=${IdentityType}&ID=${ID}`)
       .pipe(catchError(this.errorHandler));

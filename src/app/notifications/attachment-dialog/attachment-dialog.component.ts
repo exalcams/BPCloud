@@ -31,6 +31,7 @@ export class AttachmentDialogComponent implements OnInit {
     this.matDialogRef.close(null);
   }
   downloadFile(): void {
+    console.log('download click')
     saveAs(this.attachmentDetails.blob, this.attachmentDetails.FileName);
   }
 

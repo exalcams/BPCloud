@@ -1,0 +1,24 @@
+<div class="dialog-content-wrapper">
+  <mat-toolbar class="toolBg">
+    <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center" style="background-color: #121214;color: white;">
+      <span class="title dialog-title" style="font-size:16px">Contact</span>
+      <button mat-icon-button (click)="dialogRef.close()" aria-label="Close dialog">
+        <mat-icon svgIcon="closeIcon" style="font-size:12px"></mat-icon>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <div mat-dialog-content class="p-24 m-0" fusePerfectScrollbar>
+    <p style="margin-top:-10px">Choose the mode of number</p>
+    <mat-radio-group
+  aria-labelledby="example-radio-group-label"
+  class="example-radio-group"   style=" flex-direction: column !important;margin-top:10px"
+  >
+  <mat-radio-button value="1" (change)="select_mob($event)" >Mobile </mat-radio-button>
+  <mat-radio-button value="2" style="margin-left:20px" (change)="select_mob($event)" >Landline</mat-radio-button>
+</mat-radio-group>
+
+  </div>
+  <button mat-button type="button" class="btnBg" (click)="confrimClicked()" style="  background-color: #efb577 !important;
+color: white !important;margin-top: 8px;
+    margin-bottom: 32px;
+    margin-left: 71px;" >confrim</button>

@@ -15,8 +15,11 @@ import { navigation } from 'app/navigation/navigation';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationTurkish } from 'app/navigation/i18n/tr';
 import { MenuUpdataionService } from './services/menu-update.service';
-import { MatIconRegistry } from '@angular/material';
+import { MatDialogConfig, MatIconRegistry, MatSnackBar } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NotificationDialogComponent } from './notifications/notification-dialog/notification-dialog.component';
+import { AuthenticationDetails ,SessionMaster} from './models/master';
+import { NotificationSnackBarComponent } from './notifications/notification-snack-bar/notification-snack-bar.component';
 
 @Component({
     selector: 'app',
@@ -29,6 +32,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Private
     private _unsubscribeAll: Subject<any>;
+    private _authService: any;
+    authenticationDetails: any;
+    private _router: any;
+    private _compiler: any;
+    dialog: any;
+    sessionMaster: SessionMaster;
+    notificationSnackBarComponent: NotificationSnackBarComponent;
+    sessionTimeOut: number;
+    snackBar: MatSnackBar;
+    isShowPopup: boolean;
+    bnIdle: any;
 
     /**
      * Constructor
@@ -55,6 +69,11 @@ export class AppComponent implements OnInit, OnDestroy {
         mdIconRegistry: MatIconRegistry,
         sanitizer: DomSanitizer
     ) {
+        this.authenticationDetails = new AuthenticationDetails();
+        this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
+        this.sessionTimeOut = 300;
+        this.isShowPopup = true;
+        // this.GetSessionMasterByProject();
         // Get default navigation
         this.navigation = navigation;
 
@@ -137,6 +156,75 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // Set the private defaults
         this._unsubscribeAll = new Subject();
+    }
+
+    // GetSessionMasterByProject(): void {
+    //     this._authService.GetSessionMasterByProject('BPCloud').subscribe(
+    //         (data) => {
+    //             this.sessionMaster = data as SessionMaster;
+    //             if (this.sessionMaster && this.sessionMaster.SessionTimeOut) {
+    //                 this.sessionTimeOut = this.sessionMaster.SessionTimeOut * 60;
+    //                 this.InitializeNgIdleService();
+    //             } else {
+    //                 this.InitializeNgIdleService();
+    //             }
+    //         },
+    //         (err) => {
+    //             this.InitializeNgIdleService();
+    //         }
+    //     );
+    // }
+
+    InitializeNgIdleService(): void {
+        this.bnIdle.startWatching(this.sessionTimeOut).subscribe((res) => {
+            if (res) {
+                // Retrive authorizationData
+                const retrievedObject = localStorage.getItem('authorizationData');
+                if (retrievedObject) {
+                    this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
+                    this.SignoutAndExit();
+                }
+            }
+        });
+    }
+    OpenInformationDialog(): void {
+        const dialogConfig: MatDialogConfig = {
+            data: 'Your session has expired! Please login again',
+            panelClass: 'information-dialog'
+        };
+        const dialogRef = this.dialog.open(NotificationDialogComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(
+            result => {
+                this._router.navigate(['auth/login']);
+            },
+            err => {
+                this._router.navigate(['auth/login']);
+            });
+    }
+
+    SignoutAndExit(): void {
+        this._authService.SignOut(this.authenticationDetails.UserID).subscribe(
+            (data) => {
+                localStorage.removeItem('authorizationData');
+                localStorage.removeItem('menuItemsData');
+                this._compiler.clearCache();
+                // this._router.navigate(['auth/login']);
+                console.error('Your session has expired! Please login again');
+                this.OpenInformationDialog();
+                // this.notificationSnackBarComponent.openSnackBar('Idle timout occurred , please login again', SnackBarStatus.danger);
+            },
+            (err) => {
+                console.error(err);
+                // this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+                localStorage.removeItem('authorizationData');
+                localStorage.removeItem('menuItemsData');
+                this._compiler.clearCache();
+                // this._router.navigate(['auth/login']);
+                console.error('Your session has expired! Please login again');
+                this.OpenInformationDialog();
+                // this.notificationSnackBarComponent.openSnackBar('Idle timout occurred , please login again', SnackBarStatus.danger);
+            }
+        );
     }
 
     // -----------------------------------------------------------------------------------------------------

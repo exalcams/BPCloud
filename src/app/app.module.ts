@@ -22,6 +22,7 @@ import { NotificationDialogComponent } from './notifications/notification-dialog
 import { WINDOW_PROVIDERS } from './window.providers';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { AttachmentDialogComponent } from './notifications/attachment-dialog/attachment-dialog.component';
+import { InformationDialogComponent } from './notifications/information-dialog/information-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 
@@ -57,7 +58,8 @@ const appRoutes: Routes = [
         AppComponent,
         NotificationSnackBarComponent,
         NotificationDialogComponent,
-        AttachmentDialogComponent
+        AttachmentDialogComponent,
+        InformationDialogComponent
     ],
     imports: [
         BrowserModule,
@@ -100,7 +102,8 @@ const appRoutes: Routes = [
     ],
     entryComponents: [
         NotificationDialogComponent,
-        AttachmentDialogComponent
+        AttachmentDialogComponent,
+        InformationDialogComponent
     ]
 })
 export class AppModule {

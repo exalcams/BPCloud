@@ -101,6 +101,16 @@
     padding: 5px;
     padding-left: 10px;
   }
+  .GSTNBtn {
+    background-color: #efb577;
+    color: white;
+    // height: -webkit-fit-content;
+    // height: -moz-fit-content;
+    height: fit-content;
+    border: 1px;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
+    margin-top: 20px;
+  }
   .search {
     height: 36px;
     line-height: 36px;
@@ -179,19 +189,49 @@
     font-size: 15px;
     font-weight: 400;
   }
+  .mat-width {
+    width: 74% !important;
+    margin-left: 56px !important;
+  }
+
+  .mat-width1 {
+    width: 88% !important;
+    // margin-left: 56px !important;
+  }
   .borderRightClass {
     border-right: 1px solid #dce1e9;
+    border-right: 1px solid #dce1e9;
+    // border-bottom-style: solid;
+    // border-bottom-width: thin;
+  }
+  .borderRightClass1 {
+    border-right: 1px solid #dce1e9;
+    border-right: 1px solid #dce1e9;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
   }
   .round1 {
     @extend .roundCommon;
     background-color: #2ecc71;
     border: 2px solid #2ecc71;
   }
+  .country {
+    // body.theme-default .mat-error {
+    color: #f44336;
+    margin-top: 51px;
+    margin-left: -353px;
+  }
   .highLight {
     // background: lightgray;
     border-left: 5px solid #efb577;
     margin-left: 20px;
     margin-top: 8px;
+  }
+  .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+    width: 100% !important;
+  }
+  .mat-form-field-wrapper {
+    width: 100% !important;
   }
   .unselecthighLight {
     // background: lightgray;
@@ -278,6 +318,12 @@
     margin-left: 10px !important;
     // margin-right: 840px !important
   }
+  .country {
+    // body.theme-default .mat-error {
+    color: #f44336;
+    margin-top: 51px;
+    margin-left: -353px;
+  }
   .task-sub-group {
     margin-top: 20px !important;
     display: block !important;
@@ -306,6 +352,13 @@
   .SaveAsDraftBtn {
     background-color: white;
     color: #efb577;
+    border: 1px solid #efb577;
+  }
+  .country {
+    // body.theme-default .mat-error {
+    color: #f44336;
+    margin-top: 51px;
+    margin-left: -353px;
   }
   .leftCard {
     @include mat-elevation(2);
@@ -320,7 +373,8 @@
   .addIcon {
     height: 20px;
     margin-top: 25px;
-    padding-left: 4px;
+    // padding-left: 4px;
+    margin-left: -24px !important;
     cursor: pointer !important;
   }
   .removeIcon {
@@ -428,5 +482,30 @@
     @extend .addIcon;
     margin-top: 0px;
     height: 15px;
+  }
+  h1{
+    font-size: 21px !important;
+  }
+  @media screen and (max-width: 600px) {
+    .logo {
+      height: 37px !important;
+      margin-top: 24px !important;
+      margin-left: 15px !important;
+      padding: 4px 15px 2px 0px !important;
+    }
+    .btn_text{
+    //   flex: 1 1 0%;
+    // box-sizing: border-box;
+    // flex-flow: row wrap;
+    // display: flex;
+    font-size: 9px;
+    margin-left: -5px;
+    }
+    .GSTNBtn{
+      margin-right: 7px !important;
+    }
+    h1{
+      font-size: 20px;
+    }
   }
 }

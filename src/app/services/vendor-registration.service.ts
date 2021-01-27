@@ -3,7 +3,7 @@ import { Subject, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView, QuestionnaireResultSet, Answers, QuestionAnswersView, AnswerList } from 'app/models/vendor-registration';
+import { BPVendorOnBoarding, BPIdentity, BPBank, BPContact, BPActivityLog, BPVendorOnBoardingView, QuestionnaireResultSet, Answers, QuestionAnswersView, AnswerList, VendorTokenCheck } from 'app/models/vendor-registration';
 import { Guid } from 'guid-typescript';
 
 @Injectable({
@@ -17,7 +17,16 @@ export class VendorRegistrationService {
     this.baseAddress = _authService.baseAddress;
     this.questionnaireBaseAddress = _authService.questionnaireBaseAddress;
   }
-
+  CheckTokenValidity(VendorToken: VendorTokenCheck): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Registration/ChectTokenValidity`,
+      VendorToken,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
   // Error Handler
   errorHandler(error: HttpErrorResponse): Observable<string> {
     return throwError(error.error || error.message || 'Server Error');
@@ -33,7 +42,10 @@ export class VendorRegistrationService {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardings`)
       .pipe(catchError(this.errorHandler));
   }
-
+  GetAllOpenVendorOnBoardingsByPlant(Plants:string[]): Observable<any | string> {
+    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsByPlant`,Plants)
+      .pipe(catchError(this.errorHandler));
+  }
   GetAllApprovedVendorOnBoardings(): Observable<any | string> {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardings`)
       .pipe(catchError(this.errorHandler));
@@ -58,7 +70,14 @@ export class VendorRegistrationService {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsCount`)
       .pipe(catchError(this.errorHandler));
   }
-
+  GetAllRejectedVendorOnBoardingsByPlant(plants:string[]): Observable<BPVendorOnBoarding[] | string> {
+    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsByPlant`,plants)
+      .pipe(catchError(this.errorHandler));
+  }
+  GetAllApprovedVendorOnBoardingsByPlant(plants:string[]): Observable<BPVendorOnBoarding[] | string> {
+    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardingsByPlant`,plants)
+      .pipe(catchError(this.errorHandler));
+  }
   GetVendorOnBoardingsByID(TransID: number): Observable<any | string> {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetVendorOnBoardingsByID?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));
@@ -128,6 +147,7 @@ export class VendorRegistrationService {
       .pipe(catchError(this.errorHandler));
   }
 
+
   GetIdentificationsByVOB(TransID: number): Observable<BPIdentity[] | string> {
     return this._httpClient.get<BPIdentity[]>(`${this.baseAddress}vendorregisterapi/Registration/GetIdentitiesByVOB?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));
@@ -146,14 +166,13 @@ export class VendorRegistrationService {
       .pipe(catchError(this.errorHandler));
   }
 
-  AddUserAttachment(TransID: number, CreatedBy: string, selectedFiles: File[]): Observable<any> {
+  AddUserAttachment(TransID: number, CreatedBy: string, selectedFiles: File,perviousFileName=null): Observable<any> {
     const formData: FormData = new FormData();
-    if (selectedFiles && selectedFiles.length) {
-      selectedFiles.forEach(x => {
-        formData.append(x.name, x, x.name);
-      });
-    }
-    formData.append('TransID', TransID.toString());
+    formData.append(selectedFiles.name,selectedFiles,selectedFiles.name);
+    console.log("TransID",TransID.toString());
+    const id=TransID.toString();
+    formData.append('TransID', id);
+    formData.append('PerviousFileName', perviousFileName);
     formData.append('CreatedBy', CreatedBy.toString());
 
     return this._httpClient.post<any>(`${this.baseAddress}vendorregisterapi/Attachment/AddUserAttachment`,
@@ -175,6 +194,13 @@ export class VendorRegistrationService {
   }
   GetIdentityAttachment(AppNumber: string, HeaderNumber: string, AttachmentName: string): Observable<Blob | string> {
     return this._httpClient.get(`${this.baseAddress}vendorregisterapi/Attachment/GetIdentityAttachment?AppNumber=${AppNumber}&HeaderNumber=${HeaderNumber}&AttachmentName=${AttachmentName}`, {
+      responseType: 'blob',
+      headers: new HttpHeaders().append('Content-Type', 'application/json')
+    })
+      .pipe(catchError(this.errorHandler));
+  }
+  DowloandAttachmentByIDAndName(AttachmentId: string, AttachmentName: string): Observable<Blob | string> {
+    return this._httpClient.get(`${this.baseAddress}vendorregisterapi/Attachment/DowloandAttachmentByIDAndName?HeaderNumber=${AttachmentId}&AttachmentName=${AttachmentName}`, {
       responseType: 'blob',
       headers: new HttpHeaders().append('Content-Type', 'application/json')
     })

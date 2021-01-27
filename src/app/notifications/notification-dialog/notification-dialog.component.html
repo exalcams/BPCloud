@@ -11,8 +11,18 @@
     <mat-dialog-content class="p-24 m-0" fusePerfectScrollbar>
         <p> Are you sure you want to {{dialogData.Actiontype}} the {{dialogData.Catagory}} ?</p>
     </mat-dialog-content>
+    <!-- <form autocomplete="off" fxLayout="column" fxLayoutAlign="start" fxFlex="1 0 auto" name="form" novalidate
+    [formGroup]="RemarkFormGroup">
+    <mat-form-field class="pl-8 pr-40" style="width: 100%;"> -->
+        <input matInput style="margin-left: 40px;width: min-content;border-bottom: 1px solid grey;" placeholder="Remarks" formControlName="Remark" fxFlex (keyup.enter)="handleFileInput1($event)"  *ngIf="hiddeninput">
+        <!-- <mat-error
+          *ngIf="vendorRegistrationFormGroup.get('Remark').touched && vendorRegistrationFormGroup.get('Remark').hasError('required')">
+          Remark is required
+        </mat-error> -->
+      <!-- </mat-form-field>
+    </form> -->
     <mat-dialog-actions class="m-0 p-16" fxLayoutAlign="space-between center" align="end">
-        <button mat-button type="button" (click)="CloseClicked()">Cancel</button>
+        <button mat-button type="button" class="SaveBtn"(click)="CloseClicked()">Cancel</button>
         <button mat-button type="button" class="btnBg" (click)="YesClicked()">Yes</button>
     </mat-dialog-actions>
 </div>

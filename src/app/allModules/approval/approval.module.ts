@@ -53,6 +53,7 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { VendorApprovalComponent } from './vendor-approval/vendor-approval.component';
+import { PhoneDilaogComponent } from './phone-dilaog/phone-dilaog.component';
 
 const routes = [
     {
@@ -124,11 +125,11 @@ const routes = [
 
         FormsModule
     ],
-    declarations: [VendorApprovalComponent],
+    declarations: [VendorApprovalComponent, PhoneDilaogComponent],
     providers: [
         DecimalPipe
     ],
-    entryComponents: []
+    entryComponents: [PhoneDilaogComponent]
 })
 
 export class ApprovalModule { }
