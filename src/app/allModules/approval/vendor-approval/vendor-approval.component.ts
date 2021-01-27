@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MenuApp, AuthenticationDetails } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { BPVendorOnBoarding, BPVendorOnBoardingView, BPIdentity, BPBank, BPContact, BPActivityLog } from 'app/models/vendor-registration';
 import { MatTableDataSource, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -16,6 +16,11 @@ import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notific
 import { Guid } from 'guid-typescript';
 import { AttachmentDetails } from 'app/models/attachment';
 import { AttachmentDialogComponent } from 'app/notifications/attachment-dialog/attachment-dialog.component';
+import { map, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import {FormControl} from '@angular/forms';
+import { PhoneDilaogComponent } from '../phone-dilaog/phone-dilaog.component';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-vendor-approval',
@@ -49,6 +54,7 @@ export class VendorApprovalComponent implements OnInit {
   ContactsByVOB: BPContact[] = [];
   // ActivityLogsByVOB: BPActivityLog[] = [];
   identificationDisplayedColumns: string[] = [
+    'firstcolumn',
     'Type',
     'IDNumber',
     'ValidUntil',
@@ -56,17 +62,19 @@ export class VendorApprovalComponent implements OnInit {
     // 'Action'
   ];
   bankDetailsDisplayedColumns: string[] = [
+    'firstcolumn',
     'AccountNo',
     'Name',
     'IFSC',
     'BankName',
     'Branch',
     'City',
-    'Attachment',
+    // 'Attachment',
     // 'Action'
   ];
 
   contactDisplayedColumns: string[] = [
+    'firstcolumn',
     'Name',
     'Department',
     'Title',
@@ -106,11 +114,47 @@ export class VendorApprovalComponent implements OnInit {
   math = Math;
   BPVendorOnBoarding: BPVendorOnBoarding;
   AllIdentityTypes: string[] = [];
+  lanline:any[]=[]
   AllRoles: string[] = [];
   AllTypes: any[] = [];
   AllCountries: any[] = [];
   AllStates: StateDetails[] = [];
+
   AllOnBoardingFieldMaster: CBPFieldMaster[] = [];
+  inputvalue = '';
+  codeselected='';
+  myControl = new FormControl();
+  myControl1=new FormControl();
+  myControl2=new FormControl();
+  emailvalue ='';
+  Phone1_ng:any;
+  Phone2_ng:any;
+  titlevalue='';
+  land_num1:any;
+  type_option: any;
+  len: any;
+  phone1: any;
+  phone1_error: string;
+  i: any;
+  pin_first: any;
+  pin_first1: any=[];
+  pincode:any[]=[];
+  n: number;
+  j: any;
+  n1: any;
+  Country:string;
+  result: any;
+  result2:any;
+  dialogRef: any;
+  result1: any;
+  filteredlandline: Observable<any[]>;
+  filteredlandline1: Observable<any[]>;
+  land_num: any;
+  count1: any=0;
+  country_india: any;
+  country_india_lower: any;
+  VendorType: string;
+  Industrytype: string;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -120,6 +164,7 @@ export class VendorApprovalComponent implements OnInit {
     private _activatedRoute: ActivatedRoute,
     public snackBar: MatSnackBar,
     private dialog: MatDialog,
+    private dialog1: MatDialog,
     private _formBuilder: FormBuilder
   ) {
     // this._fuseConfigService.config = {
@@ -153,291 +198,6 @@ export class VendorApprovalComponent implements OnInit {
       { Key: 'Domestic Service', Value: '2' },
       { Key: 'Import vendor', Value: '3' },
     ];
-    // this.AllCountries = ['India'];
-    this.AllCountries = [
-      { name: 'Afghanistan', code: 'AF' },
-      { name: 'Åland Islands', code: 'AX' },
-      { name: 'Albania', code: 'AL' },
-      { name: 'Algeria', code: 'DZ' },
-      { name: 'American Samoa', code: 'AS' },
-      { name: 'AndorrA', code: 'AD' },
-      { name: 'Angola', code: 'AO' },
-      { name: 'Anguilla', code: 'AI' },
-      { name: 'Antarctica', code: 'AQ' },
-      { name: 'Antigua and Barbuda', code: 'AG' },
-      { name: 'Argentina', code: 'AR' },
-      { name: 'Armenia', code: 'AM' },
-      { name: 'Aruba', code: 'AW' },
-      { name: 'Australia', code: 'AU' },
-      { name: 'Austria', code: 'AT' },
-      { name: 'Azerbaijan', code: 'AZ' },
-      { name: 'Bahamas', code: 'BS' },
-      { name: 'Bahrain', code: 'BH' },
-      { name: 'Bangladesh', code: 'BD' },
-      { name: 'Barbados', code: 'BB' },
-      { name: 'Belarus', code: 'BY' },
-      { name: 'Belgium', code: 'BE' },
-      { name: 'Belize', code: 'BZ' },
-      { name: 'Benin', code: 'BJ' },
-      { name: 'Bermuda', code: 'BM' },
-      { name: 'Bhutan', code: 'BT' },
-      { name: 'Bolivia', code: 'BO' },
-      { name: 'Bosnia and Herzegovina', code: 'BA' },
-      { name: 'Botswana', code: 'BW' },
-      { name: 'Bouvet Island', code: 'BV' },
-      { name: 'Brazil', code: 'BR' },
-      { name: 'British Indian Ocean Territory', code: 'IO' },
-      { name: 'Brunei Darussalam', code: 'BN' },
-      { name: 'Bulgaria', code: 'BG' },
-      { name: 'Burkina Faso', code: 'BF' },
-      { name: 'Burundi', code: 'BI' },
-      { name: 'Cambodia', code: 'KH' },
-      { name: 'Cameroon', code: 'CM' },
-      { name: 'Canada', code: 'CA' },
-      { name: 'Cape Verde', code: 'CV' },
-      { name: 'Cayman Islands', code: 'KY' },
-      { name: 'Central African Republic', code: 'CF' },
-      { name: 'Chad', code: 'TD' },
-      { name: 'Chile', code: 'CL' },
-      { name: 'China', code: 'CN' },
-      { name: 'Christmas Island', code: 'CX' },
-      { name: 'Cocos (Keeling) Islands', code: 'CC' },
-      { name: 'Colombia', code: 'CO' },
-      { name: 'Comoros', code: 'KM' },
-      { name: 'Congo', code: 'CG' },
-      { name: 'Congo, The Democratic Republic of the', code: 'CD' },
-      { name: 'Cook Islands', code: 'CK' },
-      { name: 'Costa Rica', code: 'CR' },
-      { name: 'Cote D\'Ivoire', code: 'CI' },
-      { name: 'Croatia', code: 'HR' },
-      { name: 'Cuba', code: 'CU' },
-      { name: 'Cyprus', code: 'CY' },
-      { name: 'Czech Republic', code: 'CZ' },
-      { name: 'Denmark', code: 'DK' },
-      { name: 'Djibouti', code: 'DJ' },
-      { name: 'Dominica', code: 'DM' },
-      { name: 'Dominican Republic', code: 'DO' },
-      { name: 'Ecuador', code: 'EC' },
-      { name: 'Egypt', code: 'EG' },
-      { name: 'El Salvador', code: 'SV' },
-      { name: 'Equatorial Guinea', code: 'GQ' },
-      { name: 'Eritrea', code: 'ER' },
-      { name: 'Estonia', code: 'EE' },
-      { name: 'Ethiopia', code: 'ET' },
-      { name: 'Falkland Islands (Malvinas)', code: 'FK' },
-      { name: 'Faroe Islands', code: 'FO' },
-      { name: 'Fiji', code: 'FJ' },
-      { name: 'Finland', code: 'FI' },
-      { name: 'France', code: 'FR' },
-      { name: 'French Guiana', code: 'GF' },
-      { name: 'French Polynesia', code: 'PF' },
-      { name: 'French Southern Territories', code: 'TF' },
-      { name: 'Gabon', code: 'GA' },
-      { name: 'Gambia', code: 'GM' },
-      { name: 'Georgia', code: 'GE' },
-      { name: 'Germany', code: 'DE' },
-      { name: 'Ghana', code: 'GH' },
-      { name: 'Gibraltar', code: 'GI' },
-      { name: 'Greece', code: 'GR' },
-      { name: 'Greenland', code: 'GL' },
-      { name: 'Grenada', code: 'GD' },
-      { name: 'Guadeloupe', code: 'GP' },
-      { name: 'Guam', code: 'GU' },
-      { name: 'Guatemala', code: 'GT' },
-      { name: 'Guernsey', code: 'GG' },
-      { name: 'Guinea', code: 'GN' },
-      { name: 'Guinea-Bissau', code: 'GW' },
-      { name: 'Guyana', code: 'GY' },
-      { name: 'Haiti', code: 'HT' },
-      { name: 'Heard Island and Mcdonald Islands', code: 'HM' },
-      { name: 'Holy See (Vatican City State)', code: 'VA' },
-      { name: 'Honduras', code: 'HN' },
-      { name: 'Hong Kong', code: 'HK' },
-      { name: 'Hungary', code: 'HU' },
-      { name: 'Iceland', code: 'IS' },
-      { name: 'India', code: 'IN' },
-      { name: 'Indonesia', code: 'ID' },
-      { name: 'Iran, Islamic Republic Of', code: 'IR' },
-      { name: 'Iraq', code: 'IQ' },
-      { name: 'Ireland', code: 'IE' },
-      { name: 'Isle of Man', code: 'IM' },
-      { name: 'Israel', code: 'IL' },
-      { name: 'Italy', code: 'IT' },
-      { name: 'Jamaica', code: 'JM' },
-      { name: 'Japan', code: 'JP' },
-      { name: 'Jersey', code: 'JE' },
-      { name: 'Jordan', code: 'JO' },
-      { name: 'Kazakhstan', code: 'KZ' },
-      { name: 'Kenya', code: 'KE' },
-      { name: 'Kiribati', code: 'KI' },
-      { name: 'Korea, Democratic People\'S Republic of', code: 'KP' },
-      { name: 'Korea, Republic of', code: 'KR' },
-      { name: 'Kuwait', code: 'KW' },
-      { name: 'Kyrgyzstan', code: 'KG' },
-      { name: 'Lao People\'S Democratic Republic', code: 'LA' },
-      { name: 'Latvia', code: 'LV' },
-      { name: 'Lebanon', code: 'LB' },
-      { name: 'Lesotho', code: 'LS' },
-      { name: 'Liberia', code: 'LR' },
-      { name: 'Libyan Arab Jamahiriya', code: 'LY' },
-      { name: 'Liechtenstein', code: 'LI' },
-      { name: 'Lithuania', code: 'LT' },
-      { name: 'Luxembourg', code: 'LU' },
-      { name: 'Macao', code: 'MO' },
-      { name: 'Macedonia, The Former Yugoslav Republic of', code: 'MK' },
-      { name: 'Madagascar', code: 'MG' },
-      { name: 'Malawi', code: 'MW' },
-      { name: 'Malaysia', code: 'MY' },
-      { name: 'Maldives', code: 'MV' },
-      { name: 'Mali', code: 'ML' },
-      { name: 'Malta', code: 'MT' },
-      { name: 'Marshall Islands', code: 'MH' },
-      { name: 'Martinique', code: 'MQ' },
-      { name: 'Mauritania', code: 'MR' },
-      { name: 'Mauritius', code: 'MU' },
-      { name: 'Mayotte', code: 'YT' },
-      { name: 'Mexico', code: 'MX' },
-      { name: 'Micronesia, Federated States of', code: 'FM' },
-      { name: 'Moldova, Republic of', code: 'MD' },
-      { name: 'Monaco', code: 'MC' },
-      { name: 'Mongolia', code: 'MN' },
-      { name: 'Montserrat', code: 'MS' },
-      { name: 'Morocco', code: 'MA' },
-      { name: 'Mozambique', code: 'MZ' },
-      { name: 'Myanmar', code: 'MM' },
-      { name: 'Namibia', code: 'NA' },
-      { name: 'Nauru', code: 'NR' },
-      { name: 'Nepal', code: 'NP' },
-      { name: 'Netherlands', code: 'NL' },
-      { name: 'Netherlands Antilles', code: 'AN' },
-      { name: 'New Caledonia', code: 'NC' },
-      { name: 'New Zealand', code: 'NZ' },
-      { name: 'Nicaragua', code: 'NI' },
-      { name: 'Niger', code: 'NE' },
-      { name: 'Nigeria', code: 'NG' },
-      { name: 'Niue', code: 'NU' },
-      { name: 'Norfolk Island', code: 'NF' },
-      { name: 'Northern Mariana Islands', code: 'MP' },
-      { name: 'Norway', code: 'NO' },
-      { name: 'Oman', code: 'OM' },
-      { name: 'Pakistan', code: 'PK' },
-      { name: 'Palau', code: 'PW' },
-      { name: 'Palestinian Territory, Occupied', code: 'PS' },
-      { name: 'Panama', code: 'PA' },
-      { name: 'Papua New Guinea', code: 'PG' },
-      { name: 'Paraguay', code: 'PY' },
-      { name: 'Peru', code: 'PE' },
-      { name: 'Philippines', code: 'PH' },
-      { name: 'Pitcairn', code: 'PN' },
-      { name: 'Poland', code: 'PL' },
-      { name: 'Portugal', code: 'PT' },
-      { name: 'Puerto Rico', code: 'PR' },
-      { name: 'Qatar', code: 'QA' },
-      { name: 'Reunion', code: 'RE' },
-      { name: 'Romania', code: 'RO' },
-      { name: 'Russian Federation', code: 'RU' },
-      { name: 'RWANDA', code: 'RW' },
-      { name: 'Saint Helena', code: 'SH' },
-      { name: 'Saint Kitts and Nevis', code: 'KN' },
-      { name: 'Saint Lucia', code: 'LC' },
-      { name: 'Saint Pierre and Miquelon', code: 'PM' },
-      { name: 'Saint Vincent and the Grenadines', code: 'VC' },
-      { name: 'Samoa', code: 'WS' },
-      { name: 'San Marino', code: 'SM' },
-      { name: 'Sao Tome and Principe', code: 'ST' },
-      { name: 'Saudi Arabia', code: 'SA' },
-      { name: 'Senegal', code: 'SN' },
-      { name: 'Serbia and Montenegro', code: 'CS' },
-      { name: 'Seychelles', code: 'SC' },
-      { name: 'Sierra Leone', code: 'SL' },
-      { name: 'Singapore', code: 'SG' },
-      { name: 'Slovakia', code: 'SK' },
-      { name: 'Slovenia', code: 'SI' },
-      { name: 'Solomon Islands', code: 'SB' },
-      { name: 'Somalia', code: 'SO' },
-      { name: 'South Africa', code: 'ZA' },
-      { name: 'South Georgia and the South Sandwich Islands', code: 'GS' },
-      { name: 'Spain', code: 'ES' },
-      { name: 'Sri Lanka', code: 'LK' },
-      { name: 'Sudan', code: 'SD' },
-      { name: 'Suriname', code: 'SR' },
-      { name: 'Svalbard and Jan Mayen', code: 'SJ' },
-      { name: 'Swaziland', code: 'SZ' },
-      { name: 'Sweden', code: 'SE' },
-      { name: 'Switzerland', code: 'CH' },
-      { name: 'Syrian Arab Republic', code: 'SY' },
-      { name: 'Taiwan, Province of China', code: 'TW' },
-      { name: 'Tajikistan', code: 'TJ' },
-      { name: 'Tanzania, United Republic of', code: 'TZ' },
-      { name: 'Thailand', code: 'TH' },
-      { name: 'Timor-Leste', code: 'TL' },
-      { name: 'Togo', code: 'TG' },
-      { name: 'Tokelau', code: 'TK' },
-      { name: 'Tonga', code: 'TO' },
-      { name: 'Trinidad and Tobago', code: 'TT' },
-      { name: 'Tunisia', code: 'TN' },
-      { name: 'Turkey', code: 'TR' },
-      { name: 'Turkmenistan', code: 'TM' },
-      { name: 'Turks and Caicos Islands', code: 'TC' },
-      { name: 'Tuvalu', code: 'TV' },
-      { name: 'Uganda', code: 'UG' },
-      { name: 'Ukraine', code: 'UA' },
-      { name: 'United Arab Emirates', code: 'AE' },
-      { name: 'United Kingdom', code: 'GB' },
-      { name: 'United States', code: 'US' },
-      { name: 'United States Minor Outlying Islands', code: 'UM' },
-      { name: 'Uruguay', code: 'UY' },
-      { name: 'Uzbekistan', code: 'UZ' },
-      { name: 'Vanuatu', code: 'VU' },
-      { name: 'Venezuela', code: 'VE' },
-      { name: 'Viet Nam', code: 'VN' },
-      { name: 'Virgin Islands, British', code: 'VG' },
-      { name: 'Virgin Islands, U.S.', code: 'VI' },
-      { name: 'Wallis and Futuna', code: 'WF' },
-      { name: 'Western Sahara', code: 'EH' },
-      { name: 'Yemen', code: 'YE' },
-      { name: 'Zambia', code: 'ZM' },
-      { name: 'Zimbabwe', code: 'ZW' }
-    ];
-    // this.AllStates = [
-    //   'ANDAMAN AND NICOBAR ISLANDS',
-    //   'ANDHRA PRADESH',
-    //   'ARUNACHAL PRADESH',
-    //   'ASSAM',
-    //   'BIHAR',
-    //   'CHANDIGARH',
-    //   'CHHATTISGARH',
-    //   'DADRA AND NAGAR HAVELI',
-    //   'DAMAN AND DIU',
-    //   'DELHI',
-    //   'GOA',
-    //   'GUJARAT',
-    //   'HARYANA',
-    //   'HIMACHAL PRADESH',
-    //   'JAMMU AND KASHMIR',
-    //   'JHARKHAND',
-    //   'KARNATAKA',
-    //   'KERALA',
-    //   'LAKSHADWEEP',
-    //   'MADHYA PRADESH',
-    //   'MAHARASHTRA',
-    //   'MANIPUR',
-    //   'MEGHALAYA',
-    //   'MIZORAM',
-    //   'NAGALAND',
-    //   'ORISSA',
-    //   'PONDICHERRY',
-    //   'PUNJAB',
-    //   'RAJASTHAN',
-    //   'SIKKIM',
-    //   'TAMIL NADU',
-    //   'TELANGANA',
-    //   'TRIPURA',
-    //   'UTTARANCHAL',
-    //   'UTTAR PRADESH',
-    //   'WEST BENGAL',
-    //   'UTTARAKHAND'
-    // ];
   }
 
   ngOnInit(): void {
@@ -461,6 +221,16 @@ export class VendorApprovalComponent implements OnInit {
       // console.log(this.SelectedID);
       this.GetVendorOnBoardingsByID();
     }
+    this.filteredlandline = this.myControl1.valueChanges
+    .pipe(
+      startWith(''),
+      map(value => this._filterlandline(value))
+    );
+    this.filteredlandline1 = this.myControl2.valueChanges
+    .pipe(
+      startWith(''),
+      map(value => this._filterlandline1(value))
+    );
     this.GetAllOnBoardingFieldMaster();
     this.GetAllIdentityTypes();
     this.GetStateDetails();
@@ -468,13 +238,51 @@ export class VendorApprovalComponent implements OnInit {
     this.InitializeIdentificationFormGroup();
     this.InitializeBankDetailsFormGroup();
     this.InitializeContactFormGroup();
+ 
+
     // this.InitializeActivityLogFormGroup();
     // this.GetRegisteredVendorOnBoardings();
     // } else {
     //   this._router.navigate(['/auth/login']);
     // }
   }
+  private _filterlandline(value: string): any {
+    const filterValue1 = value.toLowerCase();
+console.log("landline below")
+    console.log(this.lanline.filter( landline => landline.num.indexOf(filterValue1) === 0))
+    return this.lanline.filter(landline => landline.num.indexOf(filterValue1) === 0);
+    
+  }
+  private _filterlandline1(value: string): any {
+    const filterValue2 = value.toLowerCase();
+// console.log("landline below")
+    console.log(this.lanline.filter( landline => landline.num.indexOf(filterValue2) === 0))
+    return this.lanline.filter(landline => landline.num.indexOf(filterValue2) === 0);
+    
+  }
+  phonelandline(){
 
+  }
+  private _filterstate(value: any): any[] {
+    const filterValuestate = value.toLowerCase();
+
+    return this.AllStates.filter(sta => sta.State.toLowerCase().indexOf(filterValuestate) === 0);
+  }
+  landlinefunc(num){
+    console.log("num"+num)
+   console.log("mycontrol" +this.myControl1.get("landline.num"));
+
+   this.land_num=num;
+  //  this.vendorRegistrationFormGroup.get('Phone1').markAsTouched();
+  }
+  landlinefunc1(num){
+    console.log("num"+num)
+   console.log("mycontrol2" +this.myControl2.get("landline.num"));
+
+   this.land_num1=num;
+  //  this.vendorRegistrationFormGroup.get('Phone1').markAsTouched();
+  }
+ 
   onArrowBackClick(): void {
     this._router.navigate(['/pages/dashboard']);
   }
@@ -484,8 +292,12 @@ export class VendorApprovalComponent implements OnInit {
     this._vendorRegistrationService.GetVendorOnBoardingsByID(this.SelectedID).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
+        // const type=data.
         this.BPVendorOnBoarding = <BPVendorOnBoarding>data;
+        this.Industrytype=data.TypeofIndustry;
+        console.log('this.BPVendorOnBoarding',this.BPVendorOnBoarding,this.BPVendorOnBoarding.TypeofIndustry);
         if (this.BPVendorOnBoarding) {
+          this.VendorType=this.BPVendorOnBoarding.Type;
           this.loadSelectedBPVendorOnBoarding(this.BPVendorOnBoarding);
         }
       },
@@ -526,12 +338,16 @@ export class VendorApprovalComponent implements OnInit {
       AddressLine2: ['', Validators.required],
       City: ['', Validators.required],
       State: ['', Validators.required],
-      Country: ['India', Validators.required],
-      PinCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(10)]],
+      MSMEType: ['', Validators.required],
+      TypeOfIndustry: ['', Validators.required],
+      Country: ['India', [Validators.required]],
+      // ,this.countryDomain
+      PinCode: ['', [Validators.required, Validators.pattern('^\\d{4,10}$')]],
       Type: [''],
-      Phone1: ['', [Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]],
-      Phone2: ['', [Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]],
-      Email1: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      // Invoice:[''],
+      Phone1: ['',  [Validators.required,Validators.maxLength(15),Validators.pattern("^[0-9]{7,15}$")]],
+      Phone2: ['', [Validators.maxLength(15),Validators.pattern("^[0-9]{7,15}$")]], 
+          Email1: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       Email2: ['', [Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       Field1: [''],
       Field2: [''],
@@ -548,6 +364,117 @@ export class VendorApprovalComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('State').disable();
     this.vendorRegistrationFormGroup.get('Country').disable();
   }
+  phoneDomain1(control: AbstractControl): { [key: string]: any } | null {
+    const phone:any=control.value.toString();//to find the length converted as string
+    if (phone && phone.length > 15) {
+      return { 'phoneNumberInvalid': true };
+  }
+  else{
+  return null;}
+  }
+  phone1_dialog(){
+    if(this.count1 ==0){
+   this.dialogRef= this.dialog1.open(PhoneDilaogComponent);
+   this.dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      // this.GetTaxPayerDetails(result);
+      console.log("result final"+result)
+     if(result==1){
+       this.result1="Moblile"
+     }
+     else if(result==2){
+      this.result1="Landline"
+     }
+    }
+    else if(!result){
+
+      // this.notificationSnackBarComponent.openSnackBar(`Please enter Valid GSTIN`, SnackBarStatus.danger, 5000);
+    }
+  });
+// console.log("hii");
+    }
+  }
+  phone1_dialog1(){
+    if(this.count1 ==0){
+   this.dialogRef= this.dialog1.open(PhoneDilaogComponent);
+   this.dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      // this.GetTaxPayerDetails(result);
+      console.log("result final"+result)
+     if(result==1){
+       this.result2="Moblile"
+     }
+     else if(result==2){
+      this.result2="Landline"
+     }
+    }
+    else if(!result){
+
+      // this.notificationSnackBarComponent.openSnackBar(`Please enter Valid GSTIN`, SnackBarStatus.danger, 5000);
+    }
+  });
+// console.log("hii");
+    }
+  }
+  pinfunc(){
+    this.j=0
+      this.n1=this.pincode.length
+      this.pin_first1=this.vendorRegistrationFormGroup.get('PinCode').value;
+  this.pin_first=this.pin_first1.slice(0,1)
+  this.pin_first=Number(this.pin_first)
+  // this.pin_first=this.pin_first
+  for(this.j;this.j<this.n1;this.j++){
+    if(this.pincode[this.j].num==this.pin_first1 && this.type_option=="Import vendor"){
+      this.vendorRegistrationFormGroup.get('PinCode').markAsTouched();
+      this.vendorRegistrationFormGroup.controls['PinCode'].setErrors({'incorrect': true});
+  
+    }
+  }
+    } 
+    countryDomain(control: AbstractControl): { [key: string]: any } | null {
+      // this.countryfunc();
+      const country:any=control.value;
+      
+      if (country && country =="India") {
+     
+        return { 'countryInvalid': true };
+     
+    }
+    else{
+    return null;}
+    }
+    countryfunc(){
+      // console.log(event);
+      // console.log("country:"+this.Country)
+      const country=this.Country.toLocaleLowerCase()
+      
+      if(country=="india" && this.type_option=="Import vendor"){
+  
+       this.vendorRegistrationFormGroup.get("Country").markAsTouched();
+       this.vendorRegistrationFormGroup.controls['Country'].setErrors({'incorrect': true});
+      // this.vendorRegistrationFormGroup.get('Country').patchValue("");
+      }
+    }
+    phoneDomain() {
+      // const phone:any=this.Phone1_ng.value;//to find the length converted as string
+      // const phone:any=this.Phone1_ng.value.toString();//to find the length converted as string
+    // =
+  this.len=this.Phone1_ng.length;
+  console.log(this.len)
+      if (this.Phone1_ng && this.len> 15)
+       {
+        // this.vendorRegistrationFormGroup.get("Phone1").markAsTouched();
+        this.vendorRegistrationFormGroup.controls['Phone1'].setErrors({'incorrect': true});
+        this.phone1_error="only 15 number is allowed";
+    }
+  }
+Countrycodefunc(country){
+
+
+  console.log("country:"+country);
+  this.codeselected=country.countycode
+  console.log(this.codeselected)
+  }
 
   InitializeIdentificationFormGroup(): void {
     this.identificationFormGroup = this._formBuilder.group({
@@ -556,7 +483,13 @@ export class VendorApprovalComponent implements OnInit {
       ValidUntil: ['', Validators.required],
     });
   }
-
+  typefunc(type){
+    console.log(type);
+    this.type_option=type.Key;
+    if((type.Key=="Domestic Supply") || (type.Key=="Domestic Service")){
+     this.codeselected="+91"
+    }
+      }
   InitializeBankDetailsFormGroup(): void {
     this.bankDetailsFormGroup = this._formBuilder.group({
       AccountNo: ['', Validators.required],
@@ -661,10 +594,22 @@ export class VendorApprovalComponent implements OnInit {
       const selecteType = event.value as string;
       if (selecteType && selecteType === '3') {
         this.vendorRegistrationFormGroup.get('Country').enable();
+        this.count1="1";
+        this.result1="Moblile";
+        this.result2="Moblile";
       } else {
         this.vendorRegistrationFormGroup.get('Country').disable();
       }
+      if(selecteType && selecteType === '2'){
+        this.codeselected="+91";
+        this.count1="0"
+      }
+      if(selecteType && selecteType === '1'){
+        this.count1="0"
+      }
     }
+    
+
   }
   CountrySelected(val: string): void {
     if (val) {
@@ -715,7 +660,7 @@ export class VendorApprovalComponent implements OnInit {
   }
 
   DisplayPhone2(): void {
-    this.vendorRegistrationFormGroup.get('Phone2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+    // this.vendorRegistrationFormGroup.get('Phone2').setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
     this.vendorRegistrationFormGroup.get('Phone2').updateValueAndValidity();
     this.IsDisplayPhone2 = true;
   }
@@ -771,6 +716,7 @@ export class VendorApprovalComponent implements OnInit {
   // }
 
   SetBPVendorOnBoardingValues(): void {
+    console.log('SelectedBPVendorOnBoarding',this.SelectedBPVendorOnBoarding);
     this.vendorRegistrationFormGroup.get('Name').patchValue(this.SelectedBPVendorOnBoarding.Name);
     this.vendorRegistrationFormGroup.get('Type').patchValue(this.SelectedBPVendorOnBoarding.Type);
     this.vendorRegistrationFormGroup.get('Role').patchValue(this.SelectedBPVendorOnBoarding.Role);
@@ -785,16 +731,23 @@ export class VendorApprovalComponent implements OnInit {
     this.vendorRegistrationFormGroup.get('Phone2').patchValue(this.SelectedBPVendorOnBoarding.Phone2);
     this.vendorRegistrationFormGroup.get('Email1').patchValue(this.SelectedBPVendorOnBoarding.Email1);
     this.vendorRegistrationFormGroup.get('Email2').patchValue(this.SelectedBPVendorOnBoarding.Email2);
-    this.vendorRegistrationFormGroup.get('Field1').patchValue(this.SelectedBPVendorOnBoarding.Field1);
-    this.vendorRegistrationFormGroup.get('Field2').patchValue(this.SelectedBPVendorOnBoarding.Field2);
-    this.vendorRegistrationFormGroup.get('Field3').patchValue(this.SelectedBPVendorOnBoarding.Field3);
-    this.vendorRegistrationFormGroup.get('Field4').patchValue(this.SelectedBPVendorOnBoarding.Field4);
-    this.vendorRegistrationFormGroup.get('Field5').patchValue(this.SelectedBPVendorOnBoarding.Field5);
-    this.vendorRegistrationFormGroup.get('Field6').patchValue(this.SelectedBPVendorOnBoarding.Field6);
-    this.vendorRegistrationFormGroup.get('Field7').patchValue(this.SelectedBPVendorOnBoarding.Field7);
-    this.vendorRegistrationFormGroup.get('Field8').patchValue(this.SelectedBPVendorOnBoarding.Field8);
-    this.vendorRegistrationFormGroup.get('Field9').patchValue(this.SelectedBPVendorOnBoarding.Field9);
-    this.vendorRegistrationFormGroup.get('Field10').patchValue(this.SelectedBPVendorOnBoarding.Field10);
+    
+    let MSMEType=this.SelectedBPVendorOnBoarding.MSME_TYPE;
+    if (MSMEType ==="MIC") {
+      this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Micro Enterprise");
+    } else if (MSMEType ===  "SML") {
+      this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Small Enterprise");
+    } else if (MSMEType ==="MID") {
+      this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Medium Enterprise");
+    } else if (MSMEType === "MSME") {
+      this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Micro,Small & Medium");
+    }
+    else {
+      this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Not Applicable");
+    }
+    // this.vendorRegistrationFormGroup.get('MSMEType').patchValue(this.SelectedBPVendorOnBoarding.MSME_TYPE);
+
+    this.vendorRegistrationFormGroup.get('TypeOfIndustry').patchValue(this.BPVendorOnBoarding.TypeofIndustry);
     // this.contactFormGroup.get('Email').validator({}as AbstractControl);
   }
 
@@ -1372,7 +1325,8 @@ export class VendorApprovalComponent implements OnInit {
     const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
     if (file && file.size) {
       const blob = new Blob([file], { type: file.type });
-      this.OpenAttachmentDialog(fileName, blob);
+        saveAs(blob,fileName);
+      // this.OpenAttachmentDialog(fileName, blob);
     } else {
       this.IsProgressBarVisibile = true;
       this._vendorRegistrationService.GetIdentityAttachment(element.Type, element.TransID.toString(), fileName).subscribe(
@@ -1382,9 +1336,11 @@ export class VendorApprovalComponent implements OnInit {
             fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
               fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
                 fileName.toLowerCase().includes('.png') ? 'image/png' :
-                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : 
+                  fileName.toLowerCase().includes('.pdf') ? 'application/pdf' :  '';
             const blob = new Blob([data], { type: fileType });
-            this.OpenAttachmentDialog(fileName, blob);
+            saveAs(blob,fileName);
+            // this.OpenAttachmentDialog(fileName, blob);
           }
           this.IsProgressBarVisibile = false;
         },
@@ -1400,19 +1356,23 @@ export class VendorApprovalComponent implements OnInit {
     const file = this.fileToUploadList.filter(x => x.name === fileName)[0];
     if (file && file.size) {
       const blob = new Blob([file], { type: file.type });
-      this.OpenAttachmentDialog(fileName, blob);
+      saveAs(blob,fileName);
+      // this.OpenAttachmentDialog(fileName, blob);
     } else {
       this.IsProgressBarVisibile = true;
-      this._vendorRegistrationService.GetIdentityAttachment(element.AccountNo, element.TransID.toString(), fileName).subscribe(
+      this._vendorRegistrationService.DowloandAttachmentByIDAndName( element.TransID.toString(), fileName).subscribe(
         data => {
           if (data) {
             let fileType = 'image/jpg';
             fileType = fileName.toLowerCase().includes('.jpg') ? 'image/jpg' :
               fileName.toLowerCase().includes('.jpeg') ? 'image/jpeg' :
                 fileName.toLowerCase().includes('.png') ? 'image/png' :
-                  fileName.toLowerCase().includes('.gif') ? 'image/gif' : '';
+                  fileName.toLowerCase().includes('.gif') ? 'image/gif' :
+                  fileName.toLowerCase().includes('.pdf') ? 'application/pdf' :  '';
             const blob = new Blob([data], { type: fileType });
-            this.OpenAttachmentDialog(fileName, blob);
+            saveAs(blob,fileName);
+
+            // this.OpenAttachmentDialog(fileName, blob);
           }
           this.IsProgressBarVisibile = false;
         },
@@ -1492,9 +1452,9 @@ export class VendorApprovalComponent implements OnInit {
           }
           if (fieldMaster.Mandatory) {
             if (key === 'Phone1') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
+              // this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
             } else if (key === 'Phone2') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+              // this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
             } else if (key === 'Email1') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]);
             } else if (key === 'Email2') {
@@ -1504,7 +1464,7 @@ export class VendorApprovalComponent implements OnInit {
             } else if (key === 'LegalName') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.maxLength(40)]);
             } else if (key === 'PinCode') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.minLength(6), Validators.maxLength(10)]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^\\d{6,10}$')]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).setValidators(Validators.required);
@@ -1512,9 +1472,9 @@ export class VendorApprovalComponent implements OnInit {
             this.vendorRegistrationFormGroup.get(key).updateValueAndValidity();
           } else {
             if (key === 'Phone1') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
+              // this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^[0-9]{2,5}([- ]*)[0-9]{6,8}$')]);
             } else if (key === 'Phone2') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
+              // this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^(\\+91[\\-\\s]?)?[0]?(91)?[6789]\\d{9}$')]);
             } else if (key === 'Email1') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]);
             } else if (key === 'Email2') {
@@ -1524,7 +1484,7 @@ export class VendorApprovalComponent implements OnInit {
             } else if (key === 'LegalName') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.maxLength(40)]);
             } else if (key === 'PinCode') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.minLength(6), Validators.maxLength(10)]);
+              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^\\d{6,10}$')]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).clearValidators();

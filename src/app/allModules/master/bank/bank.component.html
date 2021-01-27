@@ -117,13 +117,22 @@
                       </mat-error>
                     </mat-form-field>
                   </div>
+                  <div fxFlex="50">
+                    <mat-form-field class="pl-8 pr-32" style="width: 100%;">
+                      <input matInput placeholder="Pin Code" formControlName="pincode">
+                      <mat-error
+                        *ngIf="BankFormGroup.get('pincode').touched && BankFormGroup.get('pincode').hasError('required')">
+                        Bank Branch is required
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
                 </div>
 
               </form>
               <div fxLayout>
                 <div fxFlex fxLayoutAlign="end">
                   <button class="floatBtn" mat-fab style="background-color: #f6b570" (click)="ResetControl()">
-                    <mat-icon style="color: white;">add</mat-icon>
+                    <mat-icon style="color: white;width: 45px;height: 45px;">add</mat-icon>
                   </button>
                 </div>
               </div>

@@ -61,6 +61,8 @@ import { ChartsModule } from 'ng2-charts';
 // import 'chartjs-plugin-labels';
 // import 'chartjs-plugin-annotation';
 import { CompanyDetailsComponent } from './company-details/company-details.component';
+import { SelectGstinDialogComponent } from './select-gstin-dialog/select-gstin-dialog.component';
+import { PhoneDilaogComponent } from './phone-dilaog/phone-dilaog.component';
 // import 'chart.piecelabel.js';
 
 const routes = [
@@ -133,6 +135,8 @@ const routes = [
         FuseHighlightModule,
         FuseMaterialColorPickerModule,
         FuseWidgetModule,
+
+        
         // NgMultiSelectDropDownModule,
 
         FormsModule,
@@ -145,14 +149,14 @@ const routes = [
             innerStrokeColor: '#f3705a',
             showInnerStroke: true,
             animationDuration: 300,
-        })
-
+        }),
+        
     ],
-    declarations: [DashboardComponent, CompanyDetailsComponent],
+    declarations: [DashboardComponent, CompanyDetailsComponent, PhoneDilaogComponent,SelectGstinDialogComponent],
     providers: [
         DecimalPipe
     ],
-    entryComponents: [
-    ]
+    entryComponents: [PhoneDilaogComponent,SelectGstinDialogComponent],
+    // exports:[SelectGstinDialogComponent]
 })
 export class PagesModule { }

@@ -93,4 +93,16 @@ export class UserNotification {
 export class VendorUser {
     Email: string;
     Phone: string;
-}
+}    
+
+export class SessionMaster {​​​​​​​​
+    ID: number;
+    ProjectName: string;
+    SessionTimeOut: number;
+    IsActive: boolean;
+    CreatedOn: Date | string;
+    CreatedBy: string;
+    ModifiedOn: Date | string | null;
+    ModifiedBy: string;
+}​​​​​​​​
+

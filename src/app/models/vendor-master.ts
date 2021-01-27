@@ -103,3 +103,17 @@ export class CBPFieldMaster extends CommonClass {
     Mandatory: boolean;
     Invisible: boolean;
 }
+export class CBPIdentityFieldMaster extends CommonClass {
+
+    ID: number;
+    Type: string;
+    Text: string;
+    RegexFormat: string;
+    Mandatory: boolean;
+    FileFormat: string;
+    MaxSizeInKB: number;
+}
+
+export interface CBPIdentity extends CommonClass {
+    
+}

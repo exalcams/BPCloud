@@ -3,7 +3,7 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Guid } from 'guid-typescript';
-import { ChangePassword, ForgotPassword, EMailModel, LoginModel } from 'app/models/master';
+import { ChangePassword, ForgotPassword, EMailModel, LoginModel, SessionMaster } from 'app/models/master';
 import { environment } from 'environments/environment';
 
 
@@ -16,7 +16,7 @@ export class AuthService {
   clientId: string;
   constructor(private _httpClient: HttpClient) {
     this.baseAddress = environment.baseAddress;
-    this.questionnaireBaseAddress = environment.questionnaireBaseAddress;
+    // this.questionnaireBaseAddress = environment.questionnaireBaseAddress;
     this.clientId = environment.clientId;
   }
 
@@ -55,7 +55,13 @@ export class AuthService {
       );
   }
 
-
+  GetSessionMasterByProject( ProjectName: string): Observable<SessionMaster | string> {
+    return this._httpClient
+        .get<SessionMaster>(
+            `${this.baseAddress}authenticationapi/Master/GetSessionMasterByProject?ProjectName=${ProjectName}`
+        )
+        .pipe(catchError(this.errorHandler1));
+}
   SignOut(UserID: Guid): Observable<any> {
     return this._httpClient.get<any>(`${this.baseAddress}authenticationapi/Master/SignOut?UserID=${UserID}`,
     ).pipe(catchError(this.errorHandler1));

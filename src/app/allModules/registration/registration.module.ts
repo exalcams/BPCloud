@@ -56,6 +56,9 @@ import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { VendorRegistrationComponent } from './vendor-registration/vendor-registration.component';
 import { SelectGstinDialogComponent } from './select-gstin-dialog/select-gstin-dialog.component';
+import { PhoneDilaogComponent } from './phone-dilaog/phone-dilaog.component';
+// import { PhoneDialogComponent } from './phone-dialog/phone-dialog.component';
+
 
 const routes = [
     {
@@ -123,10 +126,10 @@ const routes = [
 
         FormsModule
     ],
-    declarations: [VendorRegistrationComponent, SelectGstinDialogComponent],
+    declarations: [VendorRegistrationComponent, SelectGstinDialogComponent, PhoneDilaogComponent],
     providers: [
         DecimalPipe
     ],
-    entryComponents: [SelectGstinDialogComponent]
+    entryComponents: [SelectGstinDialogComponent,PhoneDilaogComponent]
 })
 export class RegistrationModule { }

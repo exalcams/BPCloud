@@ -17,12 +17,18 @@
         padding-left: 5px;
         max-height: 80vh;
     }
+    
     .toolBg {
-        background-color: #121214 !important;
+        background-color: #446ce6 !important;
         color: white !important;
     }
     .btnBg {
         background-color: #efb577 !important;
         color: white !important;
     }
+    .SaveBtn {
+        color: #efb577 !important;
+        background-color: white !important;
+        border: 1px solid #efb577 !important;
+      }
 }

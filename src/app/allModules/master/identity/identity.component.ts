@@ -37,13 +37,16 @@ export class IdentityComponent implements OnInit {
     searchText = '';
     IsProgressBarVisibile: boolean;
     MenuItems: string[];
+    AllDOC: any[] = [];
     AllUserWithRoles: UserWithRole[] = [];
     AllIdentitities: CBPIdentity[] = [];
     IdentityFormGroup: FormGroup;
     SelectedIdentity: CBPIdentity;
     SelectedIdentityID: number;
     SelectedIdentityView: CBPIdentityView;
-    AllCountries: Country[] = [];
+    AllCountries: any[] = [];
+    Format:any[]=[];
+    buttonhidden:boolean=true;
 
     constructor(
         private _masterService: MasterService,
@@ -59,10 +62,15 @@ export class IdentityComponent implements OnInit {
         this.SelectedIdentity = new CBPIdentity();
         this.SelectedIdentityView = new CBPIdentityView();
         this.SelectedIdentityID = 0;
-        this.AllCountries = [{
-            'CountryCode': '20',
-            'CountryName': 'INDIA'
-        }];
+        this.AllCountries = [ { name: 'India', code: 'IN',countrycode:'+91' },];
+        this.Format=['.Doc',
+            '.Txt',
+            '.PDF',
+            '.XLS or .XLSX'];
+            this.AllDOC = [
+                { Key: 'Yes', Value: '1' },
+                { Key: 'No', Value: '2' }
+              ];
     }
 
     ngOnInit(): void {
@@ -86,6 +94,17 @@ export class IdentityComponent implements OnInit {
         this.InitializeIdentityFormGroup();
         this.GetAllIdentities();
     }
+    TypeSelected(event): void {
+        if (event.value) {
+          const selecteType = event.value as string;
+          if (selecteType && selecteType === '1') {
+              this.IdentityFormGroup.get('ExpDateReq').enable();
+
+          }else{
+            this.IdentityFormGroup.get('ExpDateReq').disable();
+          }
+        }
+    }
 
     InitializeIdentityFormGroup(): void {
         this.IdentityFormGroup = this._formBuilder.group({
@@ -95,6 +114,7 @@ export class IdentityComponent implements OnInit {
             Country: ['IND', Validators.required],
             DocReq: [''],
         });
+        this.IdentityFormGroup.get('ExpDateReq').disable();
     }
 
     ResetControl(): void {
@@ -102,6 +122,8 @@ export class IdentityComponent implements OnInit {
         this.SelectedIdentityView = new CBPIdentityView();
         this.SelectedIdentityID = 0;
         this.ResetIdentityFormGroup();
+        this.buttonhidden=false;
+        this.IdentityFormGroup.get('ExpDateReq').disable();
     }
 
     ResetIdentityFormGroup(): void {
@@ -157,6 +179,7 @@ export class IdentityComponent implements OnInit {
         if (this.IdentityFormGroup.valid) {
             this.GetIdentityValues();
             this.SetActionToOpenConfirmation('Save');
+            this.buttonhidden=true;
         } else {
             this.ShowValidationErrors(this.IdentityFormGroup);
         }
@@ -199,11 +222,13 @@ export class IdentityComponent implements OnInit {
                     if (Actiontype === 'Save' || Actiontype === 'Update') {
                         if (this.SelectedIdentity.ID) {
                             this.UpdateIdentity(Actiontype);
+                            this.buttonhidden=true;
                         } else {
                             this.CreateIdentity(Actiontype);
                         }
                     } else if (Actiontype === 'Delete') {
                         this.DeleteIdentity();
+                        this.buttonhidden=true;
                     }
                 }
             });
@@ -217,6 +242,7 @@ export class IdentityComponent implements OnInit {
                 this.ResetControl();
                 this.notificationSnackBarComponent.openSnackBar(`Identity ${Actiontype === 'Update' ? 'updated' : 'saved'} successfully`, SnackBarStatus.success);
                 this.IsProgressBarVisibile = false;
+                this.buttonhidden=true;
                 this.GetAllIdentities();
             },
             (err) => {
@@ -233,6 +259,7 @@ export class IdentityComponent implements OnInit {
                 this.ResetControl();
                 this.notificationSnackBarComponent.openSnackBar(`Identity ${Actiontype === 'Update' ? 'updated' : 'saved'} successfully`, SnackBarStatus.success);
                 this.IsProgressBarVisibile = false;
+                this.buttonhidden=true;
                 this.GetAllIdentities();
             },
             (err) => {
@@ -251,6 +278,7 @@ export class IdentityComponent implements OnInit {
                 this.ResetControl();
                 this.notificationSnackBarComponent.openSnackBar('Identity deleted successfully', SnackBarStatus.success);
                 this.IsProgressBarVisibile = false;
+                this.buttonhidden=true;
                 this.GetAllIdentities();
             },
             (err) => {
@@ -261,7 +289,13 @@ export class IdentityComponent implements OnInit {
         );
     }
 
-    CountrySelected(): void {
+    CountrySelected(event): void {
+        if (event.value) {
+            const selecteType = event.value as string;
+            if (selecteType && selecteType === 'India') {
+        
+        }
+    }
 
     }
 

@@ -25,7 +25,7 @@
     }
     width: 100%;
     object-fit: contain;
-    line-height: 50px;
+    line-height: 30px;
     display: inline-block;
     vertical-align: middle;
   }
@@ -179,9 +179,27 @@
     font-size: 15px;
     font-weight: 400;
   }
-  .borderRightClass {
-    border-right: 1px solid #dce1e9;
-  }
+  .mat-width  {
+    width: 74% !important;
+    margin-left: 56px !important;
+    }
+    
+    .mat-width1  {
+      width: 88% !important;
+      // margin-left: 56px !important;
+      }
+      .borderRightClass {
+        border-right: 1px solid #dce1e9;
+        border-right: 1px solid #dce1e9;
+        // border-bottom-style: solid;
+        // border-bottom-width: thin;
+      }
+      .borderRightClass1 {
+        border-right: 1px solid #dce1e9;
+        border-right: 1px solid #dce1e9;
+        border-bottom-style: solid;
+        border-bottom-width: thin;
+      }
   .round1 {
     @extend .roundCommon;
     background-color: #2ecc71;
@@ -228,6 +246,7 @@
       @extend .TablePadFont;
       color: white;
       background-color: #121214;
+      text-align: left !important;
     }
 
     td {
@@ -243,7 +262,7 @@
 
     .mat-sort-header-container {
       display: flex;
-      justify-content: center;
+      justify-content: left !important;
     }
 
     .tableLeftBorder {
@@ -372,10 +391,10 @@
     font-size: $size;
     height: $size;
     width: $size;
-    line-height: $size;
+    line-height: 12px;
   }
   .mat-icon {
-    @include md-icon-size(12px);
+    @include md-icon-size(24px);
   }
   .mat-input-element:disabled {
     color: gray !important;

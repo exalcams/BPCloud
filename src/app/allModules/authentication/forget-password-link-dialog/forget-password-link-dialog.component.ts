@@ -19,6 +19,7 @@ export class ForgetPasswordLinkDialogComponent implements OnInit {
   Origin: string;
   emailModel: EMailModel;
   notificationSnackBarComponent: NotificationSnackBarComponent;
+  private _router: any;
 
   constructor(
     public matDialogRef: MatDialogRef<ForgetPasswordLinkDialogComponent>,
@@ -49,7 +50,9 @@ export class ForgetPasswordLinkDialogComponent implements OnInit {
       // this.emailModel.UserName = this.forgotPasswordForm.get('UserName').value;
       // const Origin = (this._platformLocation as any).location.origin;
       this.emailModel.siteURL = `${this.Origin}/#/auth/forgotPassword`;
+      
       this.matDialogRef.close(this.emailModel);
+      
 
     } else {
       Object.keys(this.forgotPasswordForm.controls).forEach(key => {

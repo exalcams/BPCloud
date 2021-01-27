@@ -1,12 +1,34 @@
 @import "src/@fuse/scss/fuse";
 
 #reg {
+  background-color: white;
   .progressBarPostion {
     position: absolute !important;
     bottom: 50%;
     z-index: 1;
     left: 55%;
   }
+  .bg {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: url("assets/images/header_2.png");
+    opacity: 0.1;
+    background-repeat: no-repeat;
+    border: 1px solid #e3e3e3;
+  }
+  .outer {
+    border-bottom: 2px solid #e3e3e3;
+
+    // opacity: 0.1;
+    // background-repeat: no-repeat;
+    // position: absolute;
+    // z-index: -1;
+  }
+
   .center {
     padding: 32px !important;
     max-width: 2000px;
@@ -58,8 +80,17 @@
   .mat-form-field-wrapper {
     width: 100% !important;
   }
-  .mat-form-field {
-    width: 100% !important;
+  // .mat-form-field {
+  //   width: 100% !important;
+  // }
+  .mat-width {
+    width: 80% !important;
+    margin-left: 56px !important;
+  }
+
+  .mat-width1 {
+    width: 88% !important;
+    // margin-left: 56px !important;
   }
   .borderRight1 {
     border-left: 1px solid black;
@@ -173,6 +204,16 @@
   }
   .borderRightClass {
     border-right: 1px solid #dce1e9;
+    border-right: 1px solid #dce1e9;
+    // border-bottom-style: solid;
+    // border-bottom-width: thin;
+  }
+  .borderRightClass1 {
+    border-right: 1px solid #dce1e9;
+    border-right: 1px solid #dce1e9;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+    position: absolute !important;
   }
   .highLight {
     // background: lightgray;
@@ -217,12 +258,14 @@
       @extend .TablePadFont;
       color: white;
       background-color: #121214;
+      text-align: left !important;
     }
 
     td {
       @include TableBorderRight(rgba(0, 0, 0, 0.12));
       @extend .TablePadFont;
       min-width: max-content !important;
+      text-align: left !important;
     }
 
     tr {
@@ -231,7 +274,7 @@
 
     .mat-sort-header-container {
       display: flex;
-      justify-content: center;
+      // justify-content: center;
     }
 
     .tableLeftBorder {
@@ -294,6 +337,7 @@
   .SaveAsDraftBtn {
     background-color: white;
     color: #efb577;
+    border: 1px solid #efb577;
   }
   .roundCommon {
     height: 20px;
@@ -335,8 +379,14 @@
   //   margin-top: 4px;
   // }
   .GSTNBtn {
-    background-color: #fffdf4;
-    color: #efb577;
+    border: 1px;
+    background-color: #efb577;
+    color: white;
+    // height: -webkit-fit-content;
+    // height: -moz-fit-content;
+    height: fit-content;
+    margin-top: 12px;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   }
   .hrl {
     height: 1px;
@@ -358,7 +408,10 @@
   .addIcon {
     height: 20px;
     margin-top: 26px;
-    padding-left: 4px;
+    // padding-left: 4px;
+
+    margin-left: -16px;
+
     cursor: pointer !important;
   }
   .addAttachmentClass {
@@ -411,8 +464,33 @@
   .SectionTitle {
     display: inline-block;
     position: relative;
+    top: -6px;
   }
+  .SectionTitle1 {
+    display: inline-block;
+    position: relative;
+    top: 10px;
+  }
+  .SectionTitle1 strong:after {
+    content: "";
+    height: 3px;
+    width: 90%;
+    background-color: #efb577;
+    position: absolute;
+    bottom: -0.2em;
+    left: 52%;
+    transform: translate(-50%);
+  }
+  .GSTBtn{
+    background-color: #efb577 !important;
+    color: white;
+    margin-top: 18px;
+    height: 29px;
 
+  }
+  .example-spacer {
+    flex: 1 1 auto;
+  }
   .SectionTitle strong:after {
     content: "";
     height: 3px;
@@ -430,7 +508,7 @@
     line-height: $size;
   }
   .mat-icon {
-    @include md-icon-size(12px);
+    @include md-icon-size(24px);
   }
   .mat-input-element:disabled {
     color: gray !important;
@@ -448,6 +526,11 @@
     margin-bottom: 0px;
     z-index: 100;
   }
+  .EmamiContactPerson{
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
   .ValidityError {
     color: #f44336;
     font-size: 12px;
@@ -460,5 +543,43 @@
   }
   .mat-tooltip {
     font-size: 12px !important;
+  }
+  .country {
+    // body.theme-default .mat-error {
+    color: #f44336;
+    margin-top: 51px;
+    margin-left: -353px;
+  }
+  h1{
+    font-size: 21px;
+  }
+  @media screen and (max-width: 600px) {
+    .logo {
+      height: 37px !important;
+      margin-top: 24px !important;
+      margin-left: 15px !important;
+      padding: 4px 15px 2px 0px !important;
+    }
+    .btn_text{
+    //   flex: 1 1 0%;
+    // box-sizing: border-box;
+    // flex-flow: row wrap;
+    // display: flex;
+    font-size: 9px;
+    margin-left: -5px;
+    }
+    .GSTNBtn{
+      margin-right: 7px !important;
+    }
+    h1{
+      font-size: 16px;
+    }
+  }
+}
+
+@media screen and (max-width: 1450px) and (min-width: 1400px) {
+  .ScreenResolution {
+    width: 98%;
+    display: flex;
   }
 }

@@ -95,6 +95,7 @@ export class BankComponent implements OnInit {
             // ExpDateReq: [new Date(), Validators.required],
             BankCountry: ['', Validators.required],
             BankBranch: [''],
+            pincode:['']
         });
     }
 
@@ -146,6 +147,7 @@ export class BankComponent implements OnInit {
         // this.BankFormGroup.get('ExpDateReq').patchValue(this.SelectedBank.ExpDateReq);
         this.BankFormGroup.get('BankCountry').patchValue(this.SelectedBank.BankCountry);
         this.BankFormGroup.get('BankBranch').patchValue(this.SelectedBank.BankBranch);
+        this.BankFormGroup.get('pincode').patchValue(this.SelectedBank.BankBranch);
     }
 
     GetBankValues(): void {
@@ -156,6 +158,7 @@ export class BankComponent implements OnInit {
         // this.SelectedBank.ExpDateReq = this.SelectedBankView.ExpDateReq = this.BankFormGroup.get('ExpDateReq').value;
         this.SelectedBank.BankCountry = this.SelectedBankView.BankCountry = this.BankFormGroup.get('BankCountry').value;
         this.SelectedBank.BankBranch = this.SelectedBankView.BankBranch = this.BankFormGroup.get('BankBranch').value;
+        this.SelectedBank.BankBranch = this.SelectedBankView.BankBranch = this.BankFormGroup.get('pincode').value;
     }
 
     SaveClicked(): void {

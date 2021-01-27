@@ -5,6 +5,7 @@ import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
 import { MenuApp, RoleWithApp, UserWithRole, UserNotification, Reason, UserView, VendorUser } from 'app/models/master';
+import { Guid } from 'guid-typescript';
 
 @Injectable({
   providedIn: 'root'
@@ -196,7 +197,11 @@ export class MasterService {
     return this._httpClient.get<UserWithRole[]>(`${this.baseAddress}authenticationapi/Master/GetAllUsers`)
       .pipe(catchError(this.errorHandler));
   }
-
+  GetApproverPlants(Id:Guid): Observable<string[] | string> {
+    return this._httpClient.get<string[]>(`${this.baseAddress}authenticationapi/Master/GetApproverPlants?UserID=${Id}`)
+      .pipe(catchError(this.errorHandler));
+  }
+  
   GetAllDevelopers(): Observable<UserView[] | string> {
     return this._httpClient.get<UserView[]>(`${this.baseAddress}authenticationapi/Master/GetAllDevelopers`)
       .pipe(catchError(this.errorHandler));

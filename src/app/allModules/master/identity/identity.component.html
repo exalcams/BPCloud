@@ -70,6 +70,10 @@
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
                       <input matInput placeholder="Format" formControlName="Format">
+                      <mat-select matInput placeholder="Format"
+                           formControlName="Format">
+                          <mat-option *ngFor="let rol of Format" [value]="rol">{{rol}}</mat-option>
+                        </mat-select>
                       <mat-error
                         *ngIf="IdentityFormGroup.get('Format').touched && IdentityFormGroup.get('Format').hasError('required')">
                         Format is required
@@ -81,10 +85,10 @@
                 <div fxFlex fxLayout="row" fxLayoutGap="40px">
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <mat-select (selectionChange)="CountrySelected()" placeholder="Country"
+                      <mat-select (selectionChange)="CountrySelected($event)" placeholder="Country"
                         formControlName="Country">
-                        <mat-option *ngFor="let country of AllCountries" [value]="country.CountryCode">
-                          {{country.CountryName}}
+                        <mat-option *ngFor="let country of AllCountries" [value]="country.name">
+                          {{country.name}}
                         </mat-option>
                       </mat-select>
                       <mat-error
@@ -95,10 +99,12 @@
                   </div>
                   <div fxFlex="50">
                     <mat-form-field class="pl-8 pr-12" style="width: 100%;">
-                      <input matInput placeholder="Doc Req" formControlName="DocReq">
+                      <mat-select matInput placeholder="Document Required" formControlName="DocReq" (selectionChange)="TypeSelected($event)">
+                        <mat-option *ngFor="let type of AllDOC" [value]="type.Value">{{type.Key}}</mat-option>
+                      </mat-select>
                       <mat-error
                         *ngIf="IdentityFormGroup.get('DocReq').touched && IdentityFormGroup.get('DocReq').hasError('required')">
-                        Doc Req is required
+                        Document Required is required
                       </mat-error>
                     </mat-form-field>
                   </div>
@@ -124,8 +130,8 @@
               </form>
               <div fxLayout>
                 <div fxFlex fxLayoutAlign="end">
-                  <button class="floatBtn" mat-fab style="background-color: #f6b570" (click)="ResetControl()">
-                    <mat-icon style="color: white;">add</mat-icon>
+                  <button class="floatBtn" mat-fab style="background-color: #f6b570" (click)="ResetControl()" *ngIf="buttonhidden">
+                    <mat-icon style="color: white;width: 45px;height: 45px;">add</mat-icon>
                   </button>
                 </div>
               </div>

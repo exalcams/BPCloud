@@ -16,6 +16,7 @@ import { MenuUpdataionService } from 'app/services/menu-update.service';
 import { AuthenticationDetails, ChangePassword, EMailModel } from 'app/models/master';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { ForgetPasswordLinkDialogComponent } from '../forget-password-link-dialog/forget-password-link-dialog.component';
+import { CookieService } from 'angular2-cookie/services/cookies.service';
 
 @Component({
   selector: 'login',
@@ -41,6 +42,7 @@ export class LoginComponent implements OnInit {
   addExtraClass: false;
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
+  Username = "";
 
   constructor(
     private _fuseNavigationService: FuseNavigationService,
@@ -51,7 +53,8 @@ export class LoginComponent implements OnInit {
     private _menuUpdationService: MenuUpdataionService,
     // private _loginService: LoginService,
     public dialog: MatDialog,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private _cookieService: CookieService
   ) {
     this._fuseConfigService.config = {
       layout: {
@@ -79,6 +82,9 @@ export class LoginComponent implements OnInit {
       userName: ['', Validators.required],
       password: ['', Validators.required]
     });
+    if (undefined !== this._cookieService.get('OBDUsername')) {
+      this.Username = this._cookieService.get('OBDUsername');
+  }
   }
 
   LoginClicked(): void {
@@ -93,6 +99,7 @@ export class LoginComponent implements OnInit {
           } else {
             this.saveUserDetails(dat);
           }
+          this._cookieService.put('OBDUsername', this.Username);
         },
         (err) => {
           this.IsProgressBarVisibile = false;
@@ -118,6 +125,9 @@ export class LoginComponent implements OnInit {
     this.UpdateMenu();
     this.notificationSnackBarComponent.openSnackBar('Logged in successfully', SnackBarStatus.success);
     if (data.UserRole === 'Administrator') {
+      this._router.navigate(['master/obdfield']);
+    }
+    else if (data.UserRole === 'Approver') {
       this._router.navigate(['pages/dashboard']);
     } else if (data.UserRole === 'Vendor') {
       this._router.navigate(['pages/companydetails']);
