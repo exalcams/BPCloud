@@ -56,7 +56,7 @@ export class VendorApprovalComponent implements OnInit {
   identificationDisplayedColumns: string[] = [
     'firstcolumn',
     'Type',
-    'IDNumber',
+    // 'IDNumber',
     'ValidUntil',
     'Attachment',
     // 'Action'

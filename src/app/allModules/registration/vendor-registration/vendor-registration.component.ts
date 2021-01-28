@@ -86,7 +86,7 @@ export class VendorRegistrationComponent implements OnInit {
     'firstcolumn',
     'Type',
     // 'Option',
-    'IDNumber',
+    // 'IDNumber',
     'ValidUntil',
     'Attachment',
     // 'Action'
@@ -272,8 +272,7 @@ export class VendorRegistrationComponent implements OnInit {
       "Not Applicable",
       "Micro Enterprise",
       "Small Enterprise",
-      "Medium Enterprise",
-      "Micro,Small & Medium"
+      "Medium Enterprise"
     ]
   }
   isDisabledDate: boolean = false;
@@ -281,10 +280,12 @@ export class VendorRegistrationComponent implements OnInit {
   indeterminate = false;
   labelPosition = 'before';
   disabled = false;
+  MSMERow: BPIdentity;
   ngOnInit(): void {
     this.BPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoarding = new BPVendorOnBoarding();
     this.SelectedBPVendorOnBoardingView = new BPVendorOnBoardingView();
+    this.MSMERow = new BPIdentity();
     this.InitializeVendorRegistrationFormGroup();
     this.GetAllOnBoardingFieldMaster();
     this.InitializeIdentificationFormGroup();
@@ -343,8 +344,6 @@ export class VendorRegistrationComponent implements OnInit {
                 this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Small Enterprise");
               } else if (MSMEType === "MID") {
                 this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Medium Enterprise");
-              } else if (MSMEType === "MSME") {
-                this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Micro,Small & Medium");
               }
               else {
                 this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Not Applicable");
@@ -368,7 +367,7 @@ export class VendorRegistrationComponent implements OnInit {
               else if (Vendor.Type === 'Domestic Supply') {
                 this.VendorType = 'Domestic Supply';
               }
-              else if (Vendor.Type === 'Import vendor') {
+              else if (Vendor.Type === 'Import Vendor') {
                 this.VendorType = 'Import Vendor';
                 this.GSTDisable = true;
                 this.vendorRegistrationFormGroup.get('GSTNumber').disable();
@@ -388,6 +387,7 @@ export class VendorRegistrationComponent implements OnInit {
               this.vendorRegistrationFormGroup.get('GSTNumber').patchValue(Vendor.GSTNumber);
               this.contactFormGroup.get('Department').patchValue(Vendor.Department);
               this.contactFormGroup.get('Department').disable();
+
               if (Vendor.AddressLine1 != null) {
                 this.vendorRegistrationFormGroup.get('AddressLine1').disable();
 
@@ -406,11 +406,9 @@ export class VendorRegistrationComponent implements OnInit {
               }
               if (Vendor.State != null) {
                 this.vendorRegistrationFormGroup.get('State').disable();
-
               }
               if (Vendor.Country != null) {
                 this.vendorRegistrationFormGroup.get('Country').disable();
-
               }
               this._vendorRegistrationService.GetContactsByVOB(this.VendorTokenCheck.transID).subscribe(
                 (Contact) => {
@@ -693,7 +691,7 @@ export class VendorRegistrationComponent implements OnInit {
       // WebsiteAddress: [''],
       AddressLine1: ['', Validators.required],
       MSMEType: ['Not Applicable', Validators.required],
-      TypeOfIndustry: ['Manufacturing', Validators.required],
+      TypeOfIndustry: ['', Validators.required],
       AddressLine2: ['', Validators.required],
       City: ['', Validators.required],
       State: ['', Validators.required],
@@ -828,7 +826,7 @@ export class VendorRegistrationComponent implements OnInit {
     this.identificationFormGroup = this._formBuilder.group({
       Type: ['', Validators.required],
       Option: [''],
-      IDNumber: ['', [Validators.required]],
+      IDNumber: [''],
       ValidUntil: [''],
     });
     this.InitializeIdentificationTable();
@@ -1167,6 +1165,19 @@ export class VendorRegistrationComponent implements OnInit {
             Identity.Type = type;
             this.IdentificationsByVOB.push(Identity);
           });
+          this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+        }
+        if (this.vendorRegistrationFormGroup.get('MSMEType').value === "Not Applicable") {
+          this.AllIdentityTypes.forEach((type,index) => {
+            if(type === "MSME Certificate")
+            {
+              this.AllIdentityTypes.splice(index,1);
+            }
+          });
+          let index = this.IdentificationsByVOB.findIndex(x => x.Type === "MSME Certificate");
+          this.MSMERow = this.IdentificationsByVOB[index];
+          console.log('MSMERow', this.MSMERow);
+          this.IdentificationsByVOB.splice(index, 1);
           this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
         }
       },
@@ -1806,9 +1817,188 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedIdentity = row;
   }
   AddIdentificationToTableDataSource(): void {
-    if (this.identificationFormGroup.valid) {
-      if (this.fileToUpload) {
-        const Identity = new BPIdentity();
+    // if (this.identificationFormGroup.valid) {
+    //   if (this.fileToUpload) {
+    //     const Identity = new BPIdentity();
+    //     if (this.IdentityRowSelectedIndex !== null) {
+    //       const filesize = Math.round((this.fileToUpload.size / 1000));
+
+    //       const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationDataSource.data[this.IdentityRowSelectedIndex].Type);
+    //       if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
+    //         this.IsProgressBarVisibile = true;
+    //         this._vendorRegistrationService.AddUserAttachment(this.VendorTokenCheck.transID, this.VendorTokenCheck.emailAddress, this.fileToUpload, this.identificationDataSource.data[this.IdentityRowSelectedIndex].AttachmentName).subscribe(
+    //           (data) => {
+    //             console.log(data);
+    //             if (data !== null) {
+    //               this.identificationDataSource.data[this.IdentityRowSelectedIndex].Type = this.identificationFormGroup.get('Type').value;
+    //               this.identificationDataSource.data[this.IdentityRowSelectedIndex].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+    //               this.identificationDataSource.data[this.IdentityRowSelectedIndex].AttachmentName = this.fileToUpload.name;
+    //               //  this.identificationDataSource.data[this.IdentityRowSelectedIndex].AttachmentName = this.fileToUpload.name;
+    //               console.log('AttachmentName', this.identificationFormGroup.get('Type').value + "_" + this.fileToUpload.name);
+    //               if (this.fileToUpload) {
+    //                 const index = this.fileToUploadList.findIndex(x => x.name === this.fileToUpload.name);
+    //                 if (index >= 0) {
+    //                   this.fileToUploadList.splice(index, 1);
+    //                 }
+    //                 this.fileToUploadList.push(this.fileToUpload);
+
+    //               }
+    //               this.ClearIdentificationFormGroup();
+    //               this.IdentityRowSelectedIndex = null;
+    //               this.fileToUpload = null;
+    //               // this.ShowAddIdentityButton=false
+    //               this.identificationFormGroup.get('IDNumber').enable();
+    //               this.IsProgressBarVisibile = false;
+
+    //             }
+    //             else {
+    //               this.IsProgressBarVisibile = false;
+
+    //               this.openSnackBar('Duplicate attachment found', SnackBarStatus.danger);
+    //             }
+    //           },
+    //           (err) => {
+    //             this.IsProgressBarVisibile = false;
+
+    //             console.log("Error", err);
+    //           }
+    //         );
+    //       }
+    //       else {
+    //         let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB;
+    //         this.openSnackBar(error, SnackBarStatus.danger)
+    //       }
+    //     }
+    //     else {
+
+    //       let index = this.identificationDataSource.data.findIndex(x => x.Type == this.identificationFormGroup.get('Type').value);
+    //       const filesize = Math.round((this.fileToUpload.size / 1000));
+
+    //       const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationFormGroup.get('Type').value);
+    //       if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
+    //         this.IsProgressBarVisibile = true;
+
+    //         this._vendorRegistrationService.AddUserAttachment(this.VendorTokenCheck.transID, this.VendorTokenCheck.emailAddress, this.fileToUpload, this.identificationDataSource.data[index].AttachmentName).subscribe(
+    //           (data) => {
+    //             if (data !== null) {
+    //               this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
+    //               this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+    //               this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
+    //               if (this.fileToUploadList) {
+    //                 const index = this.fileToUploadList.findIndex(x => x.name === this.fileToUpload.name);
+    //                 if (index >= 0) {
+    //                   this.fileToUploadList.splice(index, 1);
+    //                 }
+    //                 this.fileToUploadList.push(this.fileToUpload);
+    //                 this.fileToUpload = null;
+    //               }
+    //               this.ClearIdentificationFormGroup();
+    //               this.fileToUpload = null;
+    //               // this.ShowAddIdentityButton=false
+    //               this.identificationFormGroup.get('IDNumber').enable();
+    //               this.IsProgressBarVisibile = false;
+
+    //             }
+    //             else {
+    //               this.IsProgressBarVisibile = false;
+
+    //               this.openSnackBar('Duplicate attachment found', SnackBarStatus.danger);
+    //             }
+    //           });
+    //       }
+    //       else {
+    //         this.IsProgressBarVisibile = false;
+
+    //         let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
+    //         this.openSnackBar(error, SnackBarStatus.danger)
+    //       }
+    //     }
+    //   }
+    //   else {
+    //     if (this.vendorRegistrationFormGroup.get('MSMEType').value === "Not Applicable" && this.identificationFormGroup.get('Type').value === "MSME") {
+    //       let index = this.identificationDataSource.data.findIndex(x => x.Type == this.identificationFormGroup.get('Type').value);
+    //       const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationFormGroup.get('Type').value);
+    //       if (this.fileToUpload) {
+    //         const filesize = Math.round((this.fileToUpload.size / 1000));
+    //         if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
+    //           this._vendorRegistrationService.AddUserAttachment(this.VendorTokenCheck.transID, this.VendorTokenCheck.emailAddress, this.fileToUpload, this.identificationDataSource.data[index].AttachmentName).subscribe(
+    //             (data) => {
+    //               if (data !== null) {
+    //                 this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
+    //                 this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+    //                 this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
+    //                 this.ClearIdentificationFormGroup();
+    //                 this.fileToUpload = null;
+    //                 // this.ShowAddIdentityButton=false
+    //                 this.identificationFormGroup.get('IDNumber').enable();
+    //               }
+    //               else {
+    //                 this.IsProgressBarVisibile = false;
+    //                 this.openSnackBar('Duplicate attachment found', SnackBarStatus.danger);
+    //               }
+    //             });
+    //         }
+    //         else {
+    //           let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
+
+    //           this.openSnackBar(error, SnackBarStatus.danger);
+    //         }
+    //       }
+    //       else {
+    //         this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
+    //         this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+    //         this.ClearIdentificationFormGroup();
+    //         this.fileToUpload = null;
+    //         // this.ShowAddIdentityButton=false
+    //         this.identificationFormGroup.get('IDNumber').enable();
+    //       }
+    //     }
+    //     else {
+    //       this.openSnackBar('Please Add Attachment', SnackBarStatus.danger);
+    //     }
+    //   }
+    // }
+    // else {
+    //   if (!this.MSMEMandatory && this.vendorRegistrationFormGroup.get('MSMEType').value === "Not Applicable" && this.identificationFormGroup.get('Type').value === "MSME") {
+    //     let index = this.identificationDataSource.data.findIndex(x => x.Type == this.identificationFormGroup.get('Type').value);
+    //     const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationFormGroup.get('Type').value);
+    //     if (this.fileToUpload) {
+    //       const filesize = Math.round((this.fileToUpload.size / 1000));
+    //       if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
+    //         this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
+    //         this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+    //         this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
+    //         this.ClearIdentificationFormGroup();
+    //         this.fileToUpload = null;
+    //         // this.ShowAddIdentityButton=false
+    //         this.identificationFormGroup.get('IDNumber').enable();
+    //       }
+    //       else {
+    //         let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
+
+    //         this.openSnackBar(error, SnackBarStatus.danger);
+    //       }
+    //     }
+    //     else {
+    //       this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
+    //       this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+    //       this.ClearIdentificationFormGroup();
+    //       this.fileToUpload = null;
+    //       // this.ShowAddIdentityButton=false
+    //       this.identificationFormGroup.get('IDNumber').enable();
+    //     }
+    //   }
+    //   else {
+    //     this.ShowValidationErrors(this.identificationFormGroup);
+    //   }
+    // }
+
+
+    //New Code
+    if(this.identificationFormGroup.valid)
+    {
+      if(this.fileToUpload)
+      {
         if (this.IdentityRowSelectedIndex !== null) {
           const filesize = Math.round((this.fileToUpload.size / 1000));
 
@@ -1820,7 +2010,7 @@ export class VendorRegistrationComponent implements OnInit {
                 console.log(data);
                 if (data !== null) {
                   this.identificationDataSource.data[this.IdentityRowSelectedIndex].Type = this.identificationFormGroup.get('Type').value;
-                  this.identificationDataSource.data[this.IdentityRowSelectedIndex].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+                  // this.identificationDataSource.data[this.IdentityRowSelectedIndex].IDNumber = this.identificationFormGroup.get('IDNumber').value;
                   this.identificationDataSource.data[this.IdentityRowSelectedIndex].AttachmentName = this.fileToUpload.name;
                   //  this.identificationDataSource.data[this.IdentityRowSelectedIndex].AttachmentName = this.fileToUpload.name;
                   console.log('AttachmentName', this.identificationFormGroup.get('Type').value + "_" + this.fileToUpload.name);
@@ -1871,7 +2061,7 @@ export class VendorRegistrationComponent implements OnInit {
               (data) => {
                 if (data !== null) {
                   this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
-                  this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+                  // this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
                   this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
                   if (this.fileToUploadList) {
                     const index = this.fileToUploadList.findIndex(x => x.name === this.fileToUpload.name);
@@ -1903,83 +2093,14 @@ export class VendorRegistrationComponent implements OnInit {
           }
         }
       }
-      else {
-        if (this.vendorRegistrationFormGroup.get('MSMEType').value === "Not Applicable" && this.identificationFormGroup.get('Type').value === "MSME") {
-          let index = this.identificationDataSource.data.findIndex(x => x.Type == this.identificationFormGroup.get('Type').value);
-          const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationFormGroup.get('Type').value);
-          if (this.fileToUpload) {
-            const filesize = Math.round((this.fileToUpload.size / 1000));
-            if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
-              this._vendorRegistrationService.AddUserAttachment(this.VendorTokenCheck.transID, this.VendorTokenCheck.emailAddress, this.fileToUpload, this.identificationDataSource.data[index].AttachmentName).subscribe(
-                (data) => {
-                  if (data !== null) {
-                    this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
-                    this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
-                    this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
-                    this.ClearIdentificationFormGroup();
-                    this.fileToUpload = null;
-                    // this.ShowAddIdentityButton=false
-                    this.identificationFormGroup.get('IDNumber').enable();
-                  }
-                  else {
-                    this.IsProgressBarVisibile = false;
-                    this.openSnackBar('Duplicate attachment found', SnackBarStatus.danger);
-                  }
-                });
-            }
-            else {
-              let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
-
-              this.openSnackBar(error, SnackBarStatus.danger);
-            }
-          }
-          else {
-            this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
-            this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
-            this.ClearIdentificationFormGroup();
-            this.fileToUpload = null;
-            // this.ShowAddIdentityButton=false
-            this.identificationFormGroup.get('IDNumber').enable();
-          }
-        }
-        else {
-          this.openSnackBar('Please Add Attachment', SnackBarStatus.danger);
-        }
+      else
+      {
+        this.openSnackBar('Please Add Attachment',SnackBarStatus.danger);
       }
     }
-    else {
-      if (!this.MSMEMandatory && this.vendorRegistrationFormGroup.get('MSMEType').value === "Not Applicable" && this.identificationFormGroup.get('Type').value === "MSME") {
-        let index = this.identificationDataSource.data.findIndex(x => x.Type == this.identificationFormGroup.get('Type').value);
-        const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationFormGroup.get('Type').value);
-        if (this.fileToUpload) {
-          const filesize = Math.round((this.fileToUpload.size / 1000));
-          if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
-            this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
-            this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
-            this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
-            this.ClearIdentificationFormGroup();
-            this.fileToUpload = null;
-            // this.ShowAddIdentityButton=false
-            this.identificationFormGroup.get('IDNumber').enable();
-          }
-          else {
-            let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
-
-            this.openSnackBar(error, SnackBarStatus.danger);
-          }
-        }
-        else {
-          this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
-          this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
-          this.ClearIdentificationFormGroup();
-          this.fileToUpload = null;
-          // this.ShowAddIdentityButton=false
-          this.identificationFormGroup.get('IDNumber').enable();
-        }
-      }
-      else {
-        this.ShowValidationErrors(this.identificationFormGroup);
-      }
+    else
+    {
+      this.ShowValidationErrors(this.identificationFormGroup);
     }
   }
   openSnackBar(Message: string, status: SnackBarStatus, duration = 2000): void {
@@ -2482,13 +2603,10 @@ export class VendorRegistrationComponent implements OnInit {
       this.SelectedBPVendorOnBoardingView.MSME_TYPE = this.SelectedBPVendorOnBoarding.MSME_TYPE = "SML"
     } else if (MSMEType === "Medium Enterprise") {
       this.SelectedBPVendorOnBoardingView.MSME_TYPE = this.SelectedBPVendorOnBoarding.MSME_TYPE = "MID"
-    } else if (MSMEType === "Micro,Small & Medium") {
-      this.SelectedBPVendorOnBoardingView.MSME_TYPE = this.SelectedBPVendorOnBoarding.MSME_TYPE = "MSME"
     }
     else {
       this.SelectedBPVendorOnBoardingView.MSME_TYPE = this.SelectedBPVendorOnBoarding.MSME_TYPE = "OTH"
     }
-    // this.SelectedBPVendorOnBoardingView.MSME_TYPE = this.SelectedBPVendorOnBoarding.MSME_TYPE = this.vendorRegistrationFormGroup.get('MSMEType').value;
     const PanIdex = this.identificationDataSource.data.findIndex(x => x.Type === "PAN");
     if (PanIdex >= 0) {
       this.SelectedBPVendorOnBoarding.PANNumber = this.SelectedBPVendorOnBoardingView.PANNumber = this.identificationDataSource.data[PanIdex].IDNumber;
@@ -2506,69 +2624,6 @@ export class VendorRegistrationComponent implements OnInit {
         if (ActionType === 'Register') {
           this._router.navigate(['/auth/login']);
         }
-        // this.SelectedBPVendorOnBoarding.TransID = +(data as BPVendorOnBoarding).TransID;
-        // if (this.fileToUploadList && this.fileToUploadList.length) {
-        //   this._vendorRegistrationService.AddUserAttachment(this.SelectedBPVendorOnBoarding.TransID, this.SelectedBPVendorOnBoarding.Email1, this.fileToUploadList).subscribe(
-        //     () => {
-        //       this.IsProgressBarVisibile = false;
-        //       this.openSnackBar('Save Succussfull', SnackBarStatus.success);
-        //       if (ActionType === 'Register') {
-        //         this._router.navigate(['/auth/login']);
-        //       }
-        //       // this._masterService.CreateVendorUser(vendorUser).subscribe(
-        //       //   (data1) => {
-        //       //     const ResultedVendorUser = data1 as UserWithRole;
-        //       //     this.GetQuestionsAnswers(ResultedVendorUser.UserID);
-        //       //     this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
-        //       //       () => {
-        //       //         this.ResetControl();
-        //       //         this.notificationSnackBarComponent.openSnackBar(`Vendor ${ActionType}d successfully`, SnackBarStatus.success);
-        //       //         this.IsProgressBarVisibile = false;
-        //       //         this._router.navigate(['/auth/login']);
-        //       //       },
-        //       //       (err) => {
-        //       //         this.showErrorNotificationSnackBar(err);
-        //       //       });
-
-        //       //     // this.ResetControl();
-        //       //     // this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-        //       //     // this.IsProgressBarVisibile = false;
-        //       //     // this._router.navigate(['/auth/login']);
-        //       //   },
-        //       //   (err) => {
-        //       //     this.showErrorNotificationSnackBar(err);
-        //       //   });
-        //     },
-        //     (err) => {
-        //       this.showErrorNotificationSnackBar(err);
-        //     }
-        //   );
-        // }
-        // else {
-        //   this.IsProgressBarVisibile = false;
-        //   this.openSnackBar('Save Succussfull', SnackBarStatus.success);
-
-        // }
-        // else {
-        //   this._masterService.CreateVendorUser(vendorUser).subscribe(
-        //     (data1) => {
-        //       const ResultedVendorUser = data1 as UserWithRole;
-        //       this.GetQuestionsAnswers(ResultedVendorUser.UserID);
-        //       this._vendorRegistrationService.SaveAnswers(this.answerList).subscribe(
-        //         () => {
-        //           this.ResetControl();
-        //           this.notificationSnackBarComponent.openSnackBar('Vendor registered successfully', SnackBarStatus.success);
-        //           this.IsProgressBarVisibile = false;
-        //           this._router.navigate(['/auth/login']);
-        //         },
-        //         (err) => {
-        //           this.showErrorNotificationSnackBar(err);
-        //         });
-        //     },
-        //     (err) => {
-        //       this.showErrorNotificationSnackBar(err);
-        //     });
-        // }
       },
       (err) => {
         this.showErrorNotificationSnackBar(err);
@@ -2712,7 +2767,7 @@ export class VendorRegistrationComponent implements OnInit {
 
           IdentityCheck.forEach((data, index) => {
 
-            if (data.Count < 3) {
+            if (data.Count < 2) {
               if (this.MSMEMandatory) {
                 this.openSnackBar('Please Fill Records For  All MSME Fields', SnackBarStatus.danger);
                 return;
@@ -2873,11 +2928,27 @@ export class VendorRegistrationComponent implements OnInit {
     }
   }
   MSMETypeChange(event): void {
+
     if (event.value === "Not Applicable") {
       this.MSMEMandatory = false;
+      let index = this.IdentificationsByVOB.findIndex(x => x.Type === "MSME Certificate");
+      this.AllIdentityTypes.forEach((type,index) => {
+        if(type === "MSME Certificate")
+        {
+          this.AllIdentityTypes.splice(index,1);
+        }
+      });
+      this.MSMERow = this.IdentificationsByVOB[index];
+      this.IdentificationsByVOB.splice(index, 1);
+      this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
     }
     else {
       this.MSMEMandatory = true;
+      if (this.IdentificationsByVOB.findIndex(x => x.Type === "MSME Certificate") < 0) {
+        this.IdentificationsByVOB.push(this.MSMERow);
+        this.AllIdentityTypes.push('MSME Certificate');
+        this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+      }
     }
     console.log("MSMETypeChange", event);
   }
