@@ -12,7 +12,7 @@
         </span>
       </div>
 
-      <div fxLayoutAlign="end" align="end"  fxFlex="30">
+      <div fxLayoutAlign="end" align="end" fxFlex="30">
         <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
           <div fxLayout="column" style="text-align: left;" fxLayoutAlign="center">
             <span>Contact Person </span>
@@ -29,7 +29,7 @@
         </div>
         <span><img src="assets/images/Emami.png" class="logo"
             style="height: 50px;padding: 4px 15px 2px 15px;cursor: pointer;margin-right: 15px !important;"></span>
-        </div>
+      </div>
       <!-- <div fxFlex="20" fxLayoutAlign="end" align="end">
         <button class="GSTNBtn mr-40" mat-stroked-button (click)="OpenSelectGstinDialog()">
           <span class="btn_text">Adopt from GSTIN</span></button>
@@ -145,23 +145,40 @@
                         <strong>Basic Details</strong>
                       </div>
                     </div>
-
-                    <div fxFlex="50" *ngIf="!GSTDisable">
+                    <div fxFlex="30" *ngIf="!GSTDisable">
+                      <mat-checkbox labelPosition="before" id="checkbox" [checked]="PanEnable" class="GSTCheck_Box"  (change)="GSTCheckBoxEvent($event)">
+                        Unregistred Vendor
+                      </mat-checkbox>
+                    </div>
+                    <div fxFlex="30" *ngIf="!GSTDisable && !PanEnable">
                       <mat-form-field class="pl-8 pr-20" style="width: 100%;">
                         <input matInput placeholder="Enter GST Number" formControlName="GSTNumber">
-                        <mat-error
+                        <!-- <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('GSTNumber').touched && vendorRegistrationFormGroup.get('GSTNumber').hasError('required')">
                           GSTNumber is required
-                        </mat-error>
-                        <mat-error *ngIf="vendorRegistrationFormGroup.get('GSTNumber').touched && !vendorRegistrationFormGroup.get('GSTNumber').hasError('required') &&
-                              vendorRegistrationFormGroup.get('GSTNumber').hasError('pattern')">
+                        </mat-error> -->
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('GSTNumber').hasError('pattern')">
                           Please Enter Valid GST Number
                         </mat-error>
                       </mat-form-field>
                     </div>
-                    <div fxFlex="50" *ngIf="!GSTDisable">
+                    <div fxFlex="20" *ngIf="!GSTDisable && !PanEnable">
                       <button type="button" mat-flat-button class="SaveAsDraftBtn mr-8" style="margin-top:15px;"
                         (click)="GetDataByGSTNumber()"><span>Get Details</span></button>
+                    </div>
+                    <div fxFlex="50" *ngIf="PanEnable">
+                      <mat-form-field class="pl-8 pr-20" style="width: 100%;">
+                        <input matInput placeholder="PAN Number" style="font-weight: 600;opacity: 0.8;"
+                          formControlName="PAN" maxlength="40">
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('PAN').touched && vendorRegistrationFormGroup.get('PAN').hasError('required')">
+                          PAN Number is required
+                        </mat-error>
+                        <mat-error *ngIf="vendorRegistrationFormGroup.get('PAN').touched && !vendorRegistrationFormGroup.get('PAN').hasError('required')
+                          &&vendorRegistrationFormGroup.get('PAN').hasError('pattern')">
+                          Please Enter Valid PAN Number
+                        </mat-error>
+                      </mat-form-field>
                     </div>
                     <!-- <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Role')">
                       <mat-form-field class="pl-8 pr-20" style="width: 100%;">
@@ -538,15 +555,14 @@
                     </div>
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('AddressLine1')">
                       <mat-form-field class="pl-8 pr-20" style="width: 100%;">
-                        <input matInput *ngIf="addressline1.length === 0?true:false"
-                          [placeholder]="GetOBDFieldLabel('Address Line1')" formControlName="AddressLine1"
+                        <input matInput [placeholder]="GetOBDFieldLabel('Address Line1')" formControlName="AddressLine1"
                           style="font-weight: 600;opacity: 0.8;">
 
-                        <mat-select *ngIf="addressline1.length >= 1?true:false" matNativeControl matInput
+                        <!-- <mat-select *ngIf="addressline1.length >= 1?true:false" matNativeControl matInput
                           [placeholder]="GetOBDFieldLabel('AddressLine1')" formControlName="AddressLine1"
                           style="font-weight: 600;opacity: 0.8;">
                           <mat-option *ngFor="let address of addressline1" [value]="address">{{address}}</mat-option>
-                        </mat-select>
+                        </mat-select> -->
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('AddressLine1').touched && vendorRegistrationFormGroup.get('AddressLine1').hasError('required')">
                           {{GetOBDFieldLabel('Address Line1')}} is required
@@ -611,6 +627,7 @@
                   <strong>Identification Table</strong>
                 </div>
               </div>
+              <!-- Identification Form -->
               <div class="mt-8">
                 <form autocomplete="off" name="form" novalidate [formGroup]="identificationFormGroup">
                   <div fxFlex fxLayout="row" fxLayout.sm="row wrap" fxLayout.xs="row wrap" fxLayoutAlign="start"
@@ -619,7 +636,7 @@
                       <mat-form-field class="px-20" style="width: 100%;">
                         <mat-select matInput placeholder="Type" formControlName="Type"
                           (keyup.enter)="keytab('iDNumber')" (selectionChange)="IdentityTypeSelected()"
-                           style="font-weight: 600;opacity: 0.8;">
+                          style="font-weight: 600;opacity: 0.8;">
                           <mat-option *ngFor="let type of AllIdentityTypes" [value]="type" [matTooltip]="type">
                             {{type}}</mat-option>
                         </mat-select>
@@ -667,7 +684,7 @@
                         <span> {{fileToUpload?.name}}</span>
                       </div>
                     </div> -->
-                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="12" fxLayout="row" fxLayoutAlign="space-between center">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="20" fxLayout="row" fxLayoutAlign="space-between center">
                       <div fxLayoutAlign="center center">
                         <img class="addBlueIcon" src="assets/images/addBlue.png" (click)="fileInput2.click()">
                         <span class="attachClass" (click)="fileInput2.click()">
@@ -679,7 +696,7 @@
                         <span fxFlex>{{fileToUpload?.name}}</span>
                       </div>
                     </div>
-                    <div fxFlex.md fxFlex.sm fxFlex.xs fxFlex="30" fxLayoutAlign="end">
+                    <div fxFlex.md fxFlex.sm fxFlex.xs fxLayoutAlign="end">
                       <!-- <img class="addIcon" src="assets/images/logos/add-button.png"
                         (click)="AddIdentificationToTableDataSource()"> -->
                       <!-- <button (click)="AddIdentificationToTableDataSource()" class="SaveAsDraftBtn mr-8"
@@ -696,9 +713,11 @@
                 </form>
               </div>
               <div style="margin-left: 8px;margin-top: 10px;" fxFlex>
+
+                <!-- Identification Table -->
                 <div style="overflow-x: auto;">
-                  <table *ngIf="IdentificationsByVOB?.length" class="table" mat-table
-                    [dataSource]="identificationDataSource" matSort>
+
+                  <table class="table" mat-table [dataSource]="identificationDataSource" matSort>
 
                     <ng-container matColumnDef="firstcolumn">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 3%;"> </th>
@@ -712,7 +731,8 @@
                       <td mat-cell *matCellDef="let element" style="width: 15%;text-align: center;"
                         class="tableLeftBorder">
                         {{element.Type}}
-                        <span *ngIf="element.Type === 'MSME'?MSMEMandatory?true:false:true" style="color: red;">*</span></td>
+                        <span *ngIf="element.Type !== 'Others'?true:false" style="color: red;">*</span>
+                      </td>
                     </ng-container>
 
                     <!-- <ng-container matColumnDef="Option">
@@ -768,16 +788,18 @@
                       (click)="SelectIdentityRow(row,i)" style=" cursor: pointer;">
                     </tr>
                   </table>
+                  <div flex fxLayoutAlign="center center" class="TableFooter" style="margin-top: 20px;"
+                    *ngIf="!IdentificationsByVOB?.length">
+                    <mat-icon svgIcon="infoIcon" style="color: #1b56ca;">
+                    </mat-icon>
+                    <span style="margin-left: 10px;">The table does not contain any records</span>
+                  </div>
                   <!-- <div *ngIf="IdentificationsByVOB?.length">
                     <span class="example-spacer"></span>
                     <span>No Records Found</span>
                     <span class="example-spacer"></span>
                   </div> -->
                 </div>
-                <!-- <div flex *ngIf="IdentificationsByVOB?.length">
-                  <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
-                  </mat-paginator>
-                </div> -->
               </div>
             </div>
 
@@ -788,6 +810,8 @@
                   <strong>Bank Details</strong>
                 </div>
               </div>
+
+              <!-- Bank Form -->
               <div class="mt-8">
                 <form autocomplete="off" fxLayout="column" name="form" novalidate [formGroup]="bankDetailsFormGroup">
                   <div fxFlex fxLayout="row wrap" fxLayoutAlign="start" fxLayoutGap="15px" style="width: 100%">
@@ -881,17 +905,11 @@
                   </div>
                 </form>
               </div>
-              <!-- <div fxLayout *ngIf="fileToUpload1?.name" style="margin-top: -12px;padding-left: 8px;">
-                <div fxFlex="85"></div>
-                <div fxFlex="15" class="pl-20">
-                  {{fileToUpload1?.name}}
-                </div>
-              </div> -->
 
               <div style="margin-left: 8px;margin-top: 10px;" fxFlex>
+                <!-- Bank Table -->
                 <div style="overflow-x:auto;">
-                  <table *ngIf="BanksByVOB?.length" class="table" mat-table [dataSource]="bankDetailsDataSource"
-                    matSort>
+                  <table class="table" mat-table [dataSource]="bankDetailsDataSource" matSort>
 
                     <ng-container matColumnDef="firstcolumn">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 3%;"> </th>
@@ -967,7 +985,7 @@
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style=" width: 5%;"> </th>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style=" width: 5%;">Action</th>
                       <td mat-cell *matCellDef="let element;let index=index" style="text-align: center; width: 5%;">
                         <button *ngIf="element?.AccountNo" class="SaveAsDraftBtn" mat-raised-button
                           (click)="RemoveBankFromTable(element)">Delete</button>
@@ -979,6 +997,11 @@
                       (click)="BankRowClicked(row,i)" style=" cursor: pointer;">
                     </tr>
                   </table>
+                  <div flex fxLayoutAlign="center center" style="margin-top: 20px;" class="TableFooter" *ngIf="!BanksByVOB?.length">
+                    <mat-icon svgIcon="infoIcon" style="color: #1b56ca;">
+                    </mat-icon>
+                    <span style="margin-left: 10px;">The table does not contain any records</span>
+                  </div>
                 </div>
                 <!-- <div flex *ngIf="BanksByVOB?.length">
                   <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
@@ -996,7 +1019,9 @@
                   <strong>Contact Persons</strong>
                 </div>
               </div>
-              <div class="mt-8" fxLayoutGap="20px">-
+
+              <!-- Contact Form -->
+              <div class="mt-8" fxLayoutGap="20px">
                 <form autocomplete="off" name="form" novalidate [formGroup]="contactFormGroup">
                   <div fxFlex fxLayout="row wrap" fxLayoutGap="15px" style="width: -webkit-fill-available;">
                     <div fxFlex>
@@ -1011,8 +1036,12 @@
                     </div>
                     <div fxFlex>
                       <mat-form-field class="px-28" style="width: 100%;">
-                        <input matInput placeholder="Department" formControlName="Department"
-                          (keyup.enter)="keytab('title')" #department style="font-weight: 600;opacity: 0.8;">
+                        <!-- <input matInput placeholder="Department" formControlName="Department"
+                          (keyup.enter)="keytab('title')" #department style="font-weight: 600;opacity: 0.8;"> -->
+                        <mat-select matNativeControl matInput placeholder="Department" formControlName="Department"
+                          style="font-weight: 600;opacity: 0.8;">
+                          <mat-option *ngFor="let types of Departments" [value]="types">{{types}}</mat-option>
+                        </mat-select>
                         <mat-error
                           *ngIf="contactFormGroup.get('Department').touched && contactFormGroup.get('Department').hasError('required')">
                           Department is required
@@ -1077,8 +1106,10 @@
                 </form>
               </div>
               <div style="margin-left: 8px;margin-top: 10px;" fxFlex>
+
+                <!-- Contact Table -->
                 <div style="overflow-x: auto;">
-                  <table *ngIf="ContactsByVOB?.length" class="table" mat-table [dataSource]="contactDataSource" matSort>
+                  <table  class="table" mat-table [dataSource]="contactDataSource" matSort>
 
                     <ng-container matColumnDef="firstcolumn">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 3%;"> </th>
@@ -1119,7 +1150,7 @@
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
-                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;"> </th>
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 5%;">Action</th>
                       <td mat-cell *matCellDef="let element;let i = index;" style="width: 5%;text-align: center;">
                         <button *ngIf="element?.Name" class="SaveAsDraftBtn" mat-raised-button
                           (click)="RemoveContactFromTable(element)">Delete</button>
@@ -1131,13 +1162,16 @@
                       (click)="ContactPersonsClicked(row,i)" style=" cursor: pointer;">
                     </tr>
                   </table>
+                  <div flex fxLayoutAlign="center center" class="TableFooter" style="margin-top: 20px;" *ngIf="!ContactsByVOB?.length">
+                    <mat-icon svgIcon="infoIcon" style="color: #1b56ca;">
+                    </mat-icon>
+                    <span style="margin-left: 10px;">The table does not contain any records</span>
+                  </div>
                 </div>
-                <!-- <div flex *ngIf="ContactsByVOB?.length">
-                  <mat-paginator [pageSizeOptions]="[10, 20, 30, 50, 75, 100]" showFirstLastButtons>
-                  </mat-paginator>
-                </div> -->
               </div>
             </div>
+
+            
             <!-- <div fxFlex fxLayout="column" style="margin-top: 30px;">
               <div style="margin-left: 7px">
                 <div class="SectionTitle">

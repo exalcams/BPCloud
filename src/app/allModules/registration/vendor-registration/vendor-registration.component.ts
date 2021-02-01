@@ -15,7 +15,7 @@ import {
 } from 'app/models/vendor-registration';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { VendorMasterService } from 'app/services/vendor-master.service';
-import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails, StateDetails, CBPFieldMaster, CBPIdentityFieldMaster } from 'app/models/vendor-master';
+import { CBPLocation, CBPIdentity, CBPBank, TaxPayerDetails, StateDetails, CBPFieldMaster, CBPIdentityFieldMaster, CBPDepartment } from 'app/models/vendor-master';
 import { SelectGstinDialogComponent } from '../select-gstin-dialog/select-gstin-dialog.component';
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
@@ -29,6 +29,7 @@ import { remove } from 'lodash';
 import { PhoneDilaogComponent } from '../phone-dilaog/phone-dilaog.component';
 import { InformationDialogComponent } from 'app/notifications/information-dialog/information-dialog.component';
 import { saveAs } from 'file-saver';
+import { element } from 'protractor';
 
 @Component({
   selector: 'vendor-registration',
@@ -40,9 +41,11 @@ import { saveAs } from 'file-saver';
 export class VendorRegistrationComponent implements OnInit {
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
+  Departments: any[] = [];
   SelectedMenuApp: MenuApp;
   id: string;
   today: Date = new Date();
+  DeptValue="";
   // authenticationDetails: AuthenticationDetails;
   // CurrentUserID: Guid;
   // CurrentUserRole = '';
@@ -213,6 +216,10 @@ export class VendorRegistrationComponent implements OnInit {
   InitialContact: boolean;
   EmamiContactPerson: string;
   EmamiContactPersonMail: string;
+  GSTCheckBox = false;
+  PanEnable = false;
+  ProcessRequest = false;
+  AllDepartments: CBPDepartment[];
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -349,7 +356,6 @@ export class VendorRegistrationComponent implements OnInit {
                 this.vendorRegistrationFormGroup.get('MSMEType').patchValue("Not Applicable");
               }
               console.log('BPVendorOnBoardingView', Vendor);
-              // Vendor.Type = "01";
               if (Vendor.Type === '01') {
                 this.VendorType = 'Domestic Supply';
               }
@@ -360,6 +366,7 @@ export class VendorRegistrationComponent implements OnInit {
                 this.VendorType = 'Import Vendor';
                 this.GSTDisable = true;
                 this.vendorRegistrationFormGroup.get('GSTNumber').disable();
+                this.vendorRegistrationFormGroup.get('PAN').disable();
               }
               else if (Vendor.Type === 'Domestic Service') {
                 this.VendorType = 'Domestic Service';
@@ -371,6 +378,7 @@ export class VendorRegistrationComponent implements OnInit {
                 this.VendorType = 'Import Vendor';
                 this.GSTDisable = true;
                 this.vendorRegistrationFormGroup.get('GSTNumber').disable();
+                this.vendorRegistrationFormGroup.get('PAN').disable();
               }
               this.vendorRegistrationFormGroup.get('Name').patchValue(Vendor.Name);
               this.vendorRegistrationFormGroup.get('LegalName').patchValue(Vendor.LegalName);
@@ -385,16 +393,14 @@ export class VendorRegistrationComponent implements OnInit {
               this.vendorRegistrationFormGroup.get('Email1').patchValue(Vendor.Email1);
               this.vendorRegistrationFormGroup.get('Email2').patchValue(Vendor.Email2);
               this.vendorRegistrationFormGroup.get('GSTNumber').patchValue(Vendor.GSTNumber);
-              this.contactFormGroup.get('Department').patchValue(Vendor.Department);
-              this.contactFormGroup.get('Department').disable();
+
+              // this.contactFormGroup.get('Department').disable();
 
               if (Vendor.AddressLine1 != null) {
-                this.vendorRegistrationFormGroup.get('AddressLine1').disable();
-
+                // this.vendorRegistrationFormGroup.get('AddressLine1').disable();
               }
               if (Vendor.AddressLine2 != null) {
                 this.vendorRegistrationFormGroup.get('AddressLine2').disable();
-
               }
               if (Vendor.PinCode != null) {
                 this.vendorRegistrationFormGroup.get('PinCode').disable();
@@ -402,7 +408,6 @@ export class VendorRegistrationComponent implements OnInit {
               }
               if (Vendor.City != null) {
                 this.vendorRegistrationFormGroup.get('City').disable();
-
               }
               if (Vendor.State != null) {
                 this.vendorRegistrationFormGroup.get('State').disable();
@@ -410,12 +415,62 @@ export class VendorRegistrationComponent implements OnInit {
               if (Vendor.Country != null) {
                 this.vendorRegistrationFormGroup.get('Country').disable();
               }
+
+              if (Vendor.GSTStatus === "true") {
+                this.PanEnable = false;
+                this.vendorRegistrationFormGroup.get('PAN').disable();
+                this.vendorRegistrationFormGroup.get('GSTNumber').enable();
+
+              } else {
+                if (Vendor.GSTStatus != null) {
+                  this.PanEnable = true;
+                  this.vendorRegistrationFormGroup.get('PAN').enable();
+                  this.vendorRegistrationFormGroup.get('GSTNumber').disable();
+                }
+              }
+              let Department;
               this._vendorRegistrationService.GetContactsByVOB(this.VendorTokenCheck.transID).subscribe(
                 (Contact) => {
+                  this._vendorMasterService.GetAllDepartments().subscribe(
+                    (data) => {
+                      // this.contactFormGroup.get('Department').patchValue(Vendor.Department);
+
+                      Department = data as CBPDepartment[];
+                      this.AllDepartments = data as CBPDepartment[];
+                      this.AllDepartments.forEach(element => {
+                        let text = element.Department + " " + element.Text;
+                        this.Departments.push(text);
+                      });
+
+                      this.Departments.forEach(dept => {
+                        let text=dept as string;
+                        if(text.includes(Vendor.Department))
+                        {
+                          this.DeptValue=text;
+                          this.contactFormGroup.get('Department').patchValue(text);
+                        }
+                      });
+                    }
+                  );
                   let con = Contact as BPContact[];
                   if (con.length >= 1) {
                     this.InitialContact = false;
                     this.ContactsByVOB = Contact as BPContact[];
+                    this._vendorMasterService.GetAllDepartments().subscribe(
+                      (data) => {
+                        Department = data as CBPDepartment[];
+                        this.AllDepartments = data as CBPDepartment[];
+                        this.ContactsByVOB.forEach((contact, index) => {
+                          this.AllDepartments.forEach(Dept => {
+                            let text = Dept.Department + " " + Dept.Text;
+                            this.Departments.push(text);
+                            if (contact.Department === Dept.Department) {
+                              this.ContactsByVOB[index].Department = Dept.Department + " " + Dept.Text;
+                            }
+                          });
+                        });
+                      }
+                    );
                     this.contactDataSource = new MatTableDataSource<BPContact>(this.ContactsByVOB);
                   }
                 }
@@ -432,11 +487,12 @@ export class VendorRegistrationComponent implements OnInit {
               );
               this._vendorRegistrationService.GetIdentificationsByVOB(this.VendorTokenCheck.transID).subscribe(
                 (identity) => {
-                  let iden = identity as BPIdentity[];
-                  console.log('BPIdentity', iden, this.IdentificationsByVOB);
+                  let iden = identity;
+                  console.log('BPIdentity', iden);
                   if (iden.length >= 1) {
                     this.IdentificationsByVOB = identity as BPIdentity[];
-                    console.log('IdentificationsByVOB', this.IdentificationsByVOB)
+                    console.log("IdentificationsByVOB", this.IdentificationsByVOB);
+                    // console.log('IdentificationsByVOB', this.IdentificationsByVOB)
                     this.GetAllIdentityTypes();
                     this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
                   }
@@ -455,7 +511,7 @@ export class VendorRegistrationComponent implements OnInit {
           this.openSnackBar('Token might have already used or wrong token', SnackBarStatus.danger, 6000);
           this.IsProgressBarVisibile = false;
           console.log('Else');
-          this.router.navigate(['/auth/login']);
+          // this.router.navigate(['/auth/login']);
 
         }
       },
@@ -463,7 +519,7 @@ export class VendorRegistrationComponent implements OnInit {
         this.IsProgressBarVisibile = false;
         console.log('Err', err);
         this.openSnackBar('Token might have already used or wrong token', SnackBarStatus.danger, 6000);
-        this.router.navigate(['/auth/login']);
+        // this.router.navigate(['/auth/login']);
 
       }
     );
@@ -686,12 +742,13 @@ export class VendorRegistrationComponent implements OnInit {
     this.vendorRegistrationFormGroup = this._formBuilder.group({
       Name: ['', [Validators.required, Validators.maxLength(40)]],
       // Role: ['Vendor', Validators.required],
-      GSTNumber: ['', [Validators.required, Validators.pattern('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$')]],
+      PAN: ['', [Validators.required, Validators.pattern('[A-Z]{5}[0-9]{4}[A-Z]{1}')]],
+      GSTNumber: ['', [Validators.pattern('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$')]],
       LegalName: ['', [Validators.required, Validators.maxLength(40)]],
       // WebsiteAddress: [''],
       AddressLine1: ['', Validators.required],
       MSMEType: ['Not Applicable', Validators.required],
-      TypeOfIndustry: ['', Validators.required],
+      TypeOfIndustry: ['',],
       AddressLine2: ['', Validators.required],
       City: ['', Validators.required],
       State: ['', Validators.required],
@@ -837,8 +894,8 @@ export class VendorRegistrationComponent implements OnInit {
 
   InitializeIdentificationTable(): void {
     const bPIdentity = new BPIdentity();
-    // // this.IdentificationsByVOB.push(bPIdentity);
-    // // this.IdentificationsByVOB.push(bPIdentity);
+    // this.IdentificationsByVOB.push(bPIdentity);
+    // this.IdentificationsByVOB.push(bPIdentity);
     this.initialIdentity = true;
     this.identificationDataSource = new MatTableDataSource(this.IdentificationsByVOB);
   }
@@ -991,7 +1048,12 @@ export class VendorRegistrationComponent implements OnInit {
       this.contactFormGroup.get(key).markAsUntouched();
     });
   }
-
+  ClearVendorRegistrationFormGroup(): void {
+    this.vendorRegistrationFormGroup.reset();
+    Object.keys(this.vendorRegistrationFormGroup.controls).forEach(key => {
+      this.vendorRegistrationFormGroup.get(key).markAsUntouched();
+    });
+  }
   ClearActivityLogFormGroup(): void {
     this.activityLogFormGroup.reset();
     Object.keys(this.activityLogFormGroup.controls).forEach(key => {
@@ -1168,17 +1230,45 @@ export class VendorRegistrationComponent implements OnInit {
           this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
         }
         if (this.vendorRegistrationFormGroup.get('MSMEType').value === "Not Applicable") {
-          this.AllIdentityTypes.forEach((type,index) => {
-            if(type === "MSME Certificate")
-            {
-              this.AllIdentityTypes.splice(index,1);
+          this.AllIdentityTypes.forEach((type, index) => {
+            if (type === "MSME Certificate") {
+              this.AllIdentityTypes.splice(index, 1);
             }
           });
           let index = this.IdentificationsByVOB.findIndex(x => x.Type === "MSME Certificate");
-          this.MSMERow = this.IdentificationsByVOB[index];
-          console.log('MSMERow', this.MSMERow);
+          if (index >= 0) {
+            this.MSMERow = this.IdentificationsByVOB[index];
+            console.log('MSMERow', this.MSMERow);
+            this.IdentificationsByVOB.splice(index, 1);
+            this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+          }
+        }
+        this.AllIdentityTypes.forEach(types => {
+          let temp = -1;
+          this.IdentificationsByVOB.forEach(identity => {
+            if (identity.Type === types) {
+              temp = 0;
+            }
+          });
+          if (temp < 0) {
+            const Identity = new BPIdentity();
+            Identity.Type = types;
+            this.IdentificationsByVOB.push(Identity);
+          }
+        });
+        this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+
+        if (this.PanEnable) {
+
+          this.AllIdentityTypes.forEach((types, index) => {
+            if (types === "GST") {
+              this.AllIdentityTypes.splice(index, 1);
+            }
+          });
+          const index = this.IdentificationsByVOB.findIndex(x => x.Type === "GST");
           this.IdentificationsByVOB.splice(index, 1);
           this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+
         }
       },
       (err) => {
@@ -1338,24 +1428,31 @@ export class VendorRegistrationComponent implements OnInit {
     const Pincode = event.target.value;
     console.log('OnPincodeKeyEnter Pincode', Pincode);
     if (Pincode) {
-      this._vendorMasterService.GetLocation(Pincode).subscribe(
+      this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
         (data) => {
+          const postal = data as CBPLocation;
           this.addressline1 = [];
-          if (data[0].Status === 'Success') {
-            this.Postaldata = false;
-            for (let i = 0; i < data[0].PostOffice.length; i++) {
-              this.addressline1.push(data[0].PostOffice[i].Name);
-            }
-            this.vendorRegistrationFormGroup.get('City').patchValue(data[0].PostOffice[0].Division);
-            this.vendorRegistrationFormGroup.get('State').patchValue(data[0].PostOffice[0].State);
-            this.vendorRegistrationFormGroup.get('Country').patchValue(data[0].PostOffice[0].Country);
-            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(data[0].PostOffice[0].Division + ',' + data[0].PostOffice[0].Region);
-            // this.vendorRegistrationFormGroup.get('Country').patchValue(data[0].Country);
-            // tslint:disable-next-line:no-unused-expression
-            this.vendorRegistrationFormGroup.get('City').disable;
-            // tslint:disable-next-line: no-unused-expression
-            this.vendorRegistrationFormGroup.get('State').disable;
-            // this.vendorRegistrationFormGroupAddressLine2
+          // if (data[0].Status === 'Success') {
+          //   this.Postaldata = false;
+          //   for (let i = 0; i < data[0].PostOffice.length; i++) {
+          //     this.addressline1.push(data[0].PostOffice[i].Name);
+          //   }
+          //   this.vendorRegistrationFormGroup.get('City').patchValue(data[0].PostOffice[0].Division);
+          //   this.vendorRegistrationFormGroup.get('State').patchValue(data[0].PostOffice[0].State);
+          //   this.vendorRegistrationFormGroup.get('Country').patchValue(data[0].PostOffice[0].Country);
+          //   this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(data[0].PostOffice[0].Division + ',' + data[0].PostOffice[0].Region);
+          //   // this.vendorRegistrationFormGroup.get('Country').patchValue(data[0].Country);
+          //   // tslint:disable-next-line:no-unused-expression
+          //   this.vendorRegistrationFormGroup.get('City').disable;
+          //   // tslint:disable-next-line: no-unused-expression
+          //   this.vendorRegistrationFormGroup.get('State').disable;
+          //   // this.vendorRegistrationFormGroupAddressLine2
+          // }
+          if (postal) {
+            this.vendorRegistrationFormGroup.get('City').patchValue(postal.District);
+            this.vendorRegistrationFormGroup.get('State').patchValue(postal.State);
+            this.vendorRegistrationFormGroup.get('Country').patchValue(postal.Country);
+            this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(postal.Taluk + ',' + postal.State);
           }
           else {
             // this.vendorRegistrationFormGroup.get('PinCode').markAsDirty();
@@ -1766,6 +1863,7 @@ export class VendorRegistrationComponent implements OnInit {
             this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
             this.contactDetailsIndex = null;
             this.ClearContactFormGroup();
+            this.contactFormGroup.get('Department').patchValue(this.DeptValue);
           }
           else {
             this.notificationSnackBarComponent.openSnackBar(`Duplicate record , Mobile number Should be unique`, SnackBarStatus.danger, 8000);
@@ -1778,7 +1876,8 @@ export class VendorRegistrationComponent implements OnInit {
         this.contactDataSource.data[this.contactDetailsIndex].Email = this.contactFormGroup.get('Email').value;
         this.contactDetailsIndex = null;
         this.ClearContactFormGroup();
-        this.contactFormGroup.get('Department').patchValue(this.BPVendorOnBoarding.Department);
+        this.contactFormGroup.get('Department').patchValue(this.DeptValue);
+        // this.contactFormGroup.get('Department').patchValue(this.BPVendorOnBoarding.Department);
       }
       else {
         if (!this.ContactsByVOB || !this.ContactsByVOB.length || !this.ContactsByVOB[0].Name) {
@@ -1790,7 +1889,8 @@ export class VendorRegistrationComponent implements OnInit {
           this.contactDataSource = new MatTableDataSource(this.ContactsByVOB);
           this.contactDetailsIndex = null;
           this.ClearContactFormGroup();
-          this.contactFormGroup.get('Department').patchValue(this.BPVendorOnBoarding.Department);
+          this.contactFormGroup.get('Department').patchValue(this.DeptValue);
+          // this.contactFormGroup.get('Department').patchValue(this.BPVendorOnBoarding.Department);
         }
         else {
           this.notificationSnackBarComponent.openSnackBar(`Duplicate record , Mobile number Should be unique`, SnackBarStatus.danger, 8000);
@@ -1802,19 +1902,24 @@ export class VendorRegistrationComponent implements OnInit {
     }
   }
   SelectIdentityRow(row: any, index: any): void {
-    this.IdentityRowSelectedIndex = index;
-    this.identificationFormGroup.get('IDNumber').enable();
-    console.log("SelectIdentityRow", row)
-    this.identificationFormGroup.get('Type').patchValue(row.Type);
-    this.identificationFormGroup.get('IDNumber').patchValue(row.IDNumber);
-    if (this.identificationFormGroup.get('Type').value === "GST") {
-      this.identificationFormGroup.get('IDNumber').disable();
+    if (this.ProcessRequest) {
+      this.openSnackBar("Please Wait Request In Progress", SnackBarStatus.danger);
     }
-    if (this.identificationFormGroup.get('Type').value === "PAN") {
-      this.identificationFormGroup.get('IDNumber').disable();
+    else {
+      this.IdentityRowSelectedIndex = index;
+      this.identificationFormGroup.get('IDNumber').enable();
+      console.log("SelectIdentityRow", row)
+      this.identificationFormGroup.get('Type').patchValue(row.Type);
+      this.identificationFormGroup.get('IDNumber').patchValue(row.IDNumber);
+      if (this.identificationFormGroup.get('Type').value === "GST") {
+        this.identificationFormGroup.get('IDNumber').disable();
+      }
+      if (this.identificationFormGroup.get('Type').value === "PAN") {
+        this.identificationFormGroup.get('IDNumber').disable();
+      }
+      this.ShowAddIdentityButton = true;
+      this.SelectedIdentity = row;
     }
-    this.ShowAddIdentityButton = true;
-    this.SelectedIdentity = row;
   }
   AddIdentificationToTableDataSource(): void {
     // if (this.identificationFormGroup.valid) {
@@ -1995,16 +2100,21 @@ export class VendorRegistrationComponent implements OnInit {
 
 
     //New Code
-    if(this.identificationFormGroup.valid)
-    {
-      if(this.fileToUpload)
-      {
+    if (this.identificationFormGroup.valid) {
+      // if (this.initialIdentity) {
+      //   this.IdentificationsByVOB = [];
+      //   this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+      //   this.initialIdentity = false;
+      //   console.log('this.InitialBank = false', this.InitialBank);
+      // }
+      if (this.fileToUpload) {
         if (this.IdentityRowSelectedIndex !== null) {
           const filesize = Math.round((this.fileToUpload.size / 1000));
 
           const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationDataSource.data[this.IdentityRowSelectedIndex].Type);
           if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
             this.IsProgressBarVisibile = true;
+            this.ProcessRequest = true;
             this._vendorRegistrationService.AddUserAttachment(this.VendorTokenCheck.transID, this.VendorTokenCheck.emailAddress, this.fileToUpload, this.identificationDataSource.data[this.IdentityRowSelectedIndex].AttachmentName).subscribe(
               (data) => {
                 console.log(data);
@@ -2028,23 +2138,24 @@ export class VendorRegistrationComponent implements OnInit {
                   // this.ShowAddIdentityButton=false
                   this.identificationFormGroup.get('IDNumber').enable();
                   this.IsProgressBarVisibile = false;
+                  this.ProcessRequest = false;
 
                 }
                 else {
                   this.IsProgressBarVisibile = false;
-
+                  this.ProcessRequest = false;
                   this.openSnackBar('Duplicate attachment found', SnackBarStatus.danger);
                 }
               },
               (err) => {
                 this.IsProgressBarVisibile = false;
-
+                this.ProcessRequest = false;
                 console.log("Error", err);
               }
             );
           }
           else {
-            let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB;
+            let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
             this.openSnackBar(error, SnackBarStatus.danger)
           }
         }
@@ -2093,13 +2204,54 @@ export class VendorRegistrationComponent implements OnInit {
           }
         }
       }
-      else
-      {
-        this.openSnackBar('Please Add Attachment',SnackBarStatus.danger);
+      else {
+        if (this.identificationFormGroup.get('Type').value !== "Others") {
+          this.openSnackBar('Please Add Attachment', SnackBarStatus.danger);
+        }
+        else {
+          let index = this.identificationDataSource.data.findIndex(x => x.Type == this.identificationFormGroup.get('Type').value);
+          const filesize = Math.round((this.fileToUpload.size / 1000));
+
+          const IdentityFieldIndex = this.CBPIdentity.findIndex(x => x.Text === this.identificationFormGroup.get('Type').value);
+          if (filesize <= this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB) {
+            this._vendorRegistrationService.AddUserAttachment(this.VendorTokenCheck.transID, this.VendorTokenCheck.emailAddress, this.fileToUpload, this.identificationDataSource.data[index].AttachmentName).subscribe(
+              (data) => {
+                if (data !== null) {
+                  this.identificationDataSource.data[index].Type = this.identificationFormGroup.get('Type').value;
+                  // this.identificationDataSource.data[index].IDNumber = this.identificationFormGroup.get('IDNumber').value;
+                  this.identificationDataSource.data[index].AttachmentName = this.fileToUpload.name;
+                  if (this.fileToUploadList) {
+                    const index = this.fileToUploadList.findIndex(x => x.name === this.fileToUpload.name);
+                    if (index >= 0) {
+                      this.fileToUploadList.splice(index, 1);
+                    }
+                    this.fileToUploadList.push(this.fileToUpload);
+                    this.fileToUpload = null;
+                  }
+                  this.ClearIdentificationFormGroup();
+                  this.fileToUpload = null;
+                  // this.ShowAddIdentityButton=false
+                  this.identificationFormGroup.get('IDNumber').enable();
+                  this.IsProgressBarVisibile = false;
+
+                }
+                else {
+                  this.IsProgressBarVisibile = false;
+
+                  this.openSnackBar('Duplicate attachment found', SnackBarStatus.danger);
+                }
+              });
+          }
+          else {
+            this.IsProgressBarVisibile = false;
+
+            let error = "File Size Should be less than " + this.CBPIdentity[IdentityFieldIndex].MaxSizeInKB + "KB";
+            this.openSnackBar(error, SnackBarStatus.danger)
+          }
+        }
       }
     }
-    else
-    {
+    else {
       this.ShowValidationErrors(this.identificationFormGroup);
     }
   }
@@ -2451,6 +2603,12 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoarding.Type = this.SelectedBPVendorOnBoardingView.Type = this.VendorType;
     this.SelectedBPVendorOnBoarding.Role = this.SelectedBPVendorOnBoardingView.Role = 'Vendor';
 
+    if (this.PanEnable) {
+      this.SelectedBPVendorOnBoarding.GSTStatus = this.SelectedBPVendorOnBoardingView.GSTStatus = "false";
+    }
+    else {
+      this.SelectedBPVendorOnBoarding.GSTStatus = this.SelectedBPVendorOnBoardingView.GSTStatus = "true";
+    }
     this.SelectedBPVendorOnBoardingView.TypeofIndustry = this.SelectedBPVendorOnBoarding.TypeofIndustry = this.vendorRegistrationFormGroup.get('TypeOfIndustry').value;
     this.SelectedBPVendorOnBoarding.AccountGroup = this.SelectedBPVendorOnBoardingView.AccountGroup = this.BPVendorOnBoarding.AccountGroup;
     this.SelectedBPVendorOnBoarding.Department = this.SelectedBPVendorOnBoardingView.Department = this.BPVendorOnBoarding.Department;
@@ -2473,19 +2631,6 @@ export class VendorRegistrationComponent implements OnInit {
     this.SelectedBPVendorOnBoarding.Token = this.SelectedBPVendorOnBoardingView.Token = this.VendorTokenCheck.token;
     this.SelectedBPVendorOnBoarding.TransID = this.SelectedBPVendorOnBoardingView.TransID = this.VendorTokenCheck.transID;
     this.SelectedBPVendorOnBoarding.GSTNumber = this.SelectedBPVendorOnBoardingView.GSTNumber = this.vendorRegistrationFormGroup.get('GSTNumber').value;
-    // this.SelectedBPVendorOnBoarding.VendorCode = this.SelectedBPVendorOnBoardingView.VendorCode = this.vendorRegistrationFormGroup.get('VendorCode').value;
-    // this.SelectedBPVendorOnBoarding.ParentVendor = this.SelectedBPVendorOnBoardingView.ParentVendor = this.vendorRegistrationFormGroup.get('ParentVendor').value;
-    // this.SelectedBPVendorOnBoarding.Status = this.SelectedBPVendorOnBoardingView.Status = this.vendorRegistrationFormGroup.get('Status').value;
-    // this.SelectedBPVendorOnBoarding.Field1 = this.SelectedBPVendorOnBoardingView.Field1 = this.vendorRegistrationFormGroup.get('Field1').value;
-    // this.SelectedBPVendorOnBoarding.Field2 = this.SelectedBPVendorOnBoardingView.Field2 = this.vendorRegistrationFormGroup.get('Field2').value;
-    // this.SelectedBPVendorOnBoarding.Field3 = this.SelectedBPVendorOnBoardingView.Field3 = this.vendorRegistrationFormGroup.get('Field3').value;
-    // this.SelectedBPVendorOnBoarding.Field4 = this.SelectedBPVendorOnBoardingView.Field4 = this.vendorRegistrationFormGroup.get('Field4').value;
-    // this.SelectedBPVendorOnBoarding.Field5 = this.SelectedBPVendorOnBoardingView.Field5 = this.vendorRegistrationFormGroup.get('Field5').value;
-    // this.SelectedBPVendorOnBoarding.Field6 = this.SelectedBPVendorOnBoardingView.Field6 = this.vendorRegistrationFormGroup.get('Field6').value;
-    // this.SelectedBPVendorOnBoarding.Field7 = this.SelectedBPVendorOnBoardingView.Field7 = this.vendorRegistrationFormGroup.get('Field7').value;
-    // this.SelectedBPVendorOnBoarding.Field8 = this.SelectedBPVendorOnBoardingView.Field8 = this.vendorRegistrationFormGroup.get('Field8').value;
-    // this.SelectedBPVendorOnBoarding.Field9 = this.SelectedBPVendorOnBoardingView.Field9 = this.vendorRegistrationFormGroup.get('Field9').value;
-    // this.SelectedBPVendorOnBoarding.Field10 = this.SelectedBPVendorOnBoardingView.Field10 = this.vendorRegistrationFormGroup.get('Field10').value;
   }
 
   GetBPVendorOnBoardingSubItemValues(): void {
@@ -2570,6 +2715,9 @@ export class VendorRegistrationComponent implements OnInit {
     // this.SelectedBPVendorOnBoardingView.bPIdentities.push(...this.IdentificationsByVOB);
     this.ContactsByVOB.forEach(x => {
       if (x.Name) {
+        let string = x.Department.split(" ");
+        console.log("GetBPContactValues", string[0]);
+        x.Department = string[0];
         this.SelectedBPVendorOnBoardingView.bPContacts.push(x);
       }
     });
@@ -2607,22 +2755,29 @@ export class VendorRegistrationComponent implements OnInit {
     else {
       this.SelectedBPVendorOnBoardingView.MSME_TYPE = this.SelectedBPVendorOnBoarding.MSME_TYPE = "OTH"
     }
-    const PanIdex = this.identificationDataSource.data.findIndex(x => x.Type === "PAN");
-    if (PanIdex >= 0) {
-      this.SelectedBPVendorOnBoarding.PANNumber = this.SelectedBPVendorOnBoardingView.PANNumber = this.identificationDataSource.data[PanIdex].IDNumber;
-    }
-    else {
-      this.SelectedBPVendorOnBoarding.PANNumber = this.SelectedBPVendorOnBoardingView.PANNumber = null;
-    }
+
+    this.SelectedBPVendorOnBoarding.PANNumber = this.SelectedBPVendorOnBoardingView.PANNumber = this.vendorRegistrationFormGroup.get('PAN').value;
     this.SelectedBPVendorOnBoardingView.Status = ActionType === 'Save' ? ActionType : 'Registered';
     console.log('Save As Draft', this.SelectedBPVendorOnBoardingView, this.fileToUploadList);
+
     this.IsProgressBarVisibile = true;
     this._vendorRegistrationService.UpdateVendorOnBoarding(this.SelectedBPVendorOnBoardingView).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.openSnackBar('Save Succussfull', SnackBarStatus.success);
+        this.openSnackBar('Save Succussfully', SnackBarStatus.success);
         if (ActionType === 'Register') {
-          this._router.navigate(['/auth/login']);
+          this.ClearVendorRegistrationFormGroup();
+          this.ClearIdentificationFormGroup();
+          this.ClearBankDetailsFormGroup();
+          this.IdentificationsByVOB = [];
+          this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+
+          this.BanksByVOB = [];
+          this.bankDetailsDataSource = new MatTableDataSource<BPBank>(this.BanksByVOB);
+
+          this.ContactsByVOB = [];
+          this.contactDataSource = new MatTableDataSource<BPContact>(this.ContactsByVOB);
+          // this._router.navigate(['/auth/login']);
         }
       },
       (err) => {
@@ -2740,65 +2895,90 @@ export class VendorRegistrationComponent implements OnInit {
           this.ContactsByVOB.length > 0 && this.ContactsByVOB[0].Name) {
 
 
-          this.identificationDataSource.data.forEach(identity => {
-            let array = [];
-            for (let key in identity) {
-              if (identity.hasOwnProperty(key)) {
-                array.push(identity[key]);
-              }
-
-            }
-            // console.log(array)
-            // array.findIndex(x=>x.)
+          this.IdentificationsByVOB.forEach(identity => {
+            console.log("SaveClicked-identity", identity);
+            let arrayData = [];
             let Datacount = 0;
-            array.forEach((element, index) => {
-              if (element != null && index <= 6) {
-                Datacount++;
-              }
-            });
+            // for (let key in identity) {
+            //   if (identity.hasOwnProperty(key)) {
+            //     arrayData.push(identity[key]);
+            //   }
+            // }
+            // console.log('arrayData',arrayData);
+            // 
+            // arrayData.forEach((element, index) => {
+            //   if (element != null && index <= 6) {
+            //     Datacount++;
+            //   }
+            // });
+            if (identity.Type !== null) {
+              Datacount++;
+            }
+            if (identity.AttachmentName !== null && identity.AttachmentName) {
+              Datacount++;
+            }
             let data = {
-              'Type': array[0],
+              'Type': identity.Type,
               'Count': Datacount
             }
             IdentityCheck.push(data);
             // }
           });
           console.log('IdentityCheck', IdentityCheck);
-
-          IdentityCheck.forEach((data, index) => {
-
-            if (data.Count < 2) {
-              if (this.MSMEMandatory) {
-                this.openSnackBar('Please Fill Records For  All MSME Fields', SnackBarStatus.danger);
-                return;
-              }
-              else {
-                if (this.vendorRegistrationFormGroup.get('MSMEType').value !== "Not Applicable") {
-                  let error = "Please Fill Records For  All" + data.Type + "Fields";
-                  this.openSnackBar(error, SnackBarStatus.danger);
-                  return;
-                }
-              }
+          for (let i = 0; i < IdentityCheck.length; i++) {
+            if (IdentityCheck[i].Count < 2 && IdentityCheck[i].Type !== "Others") {
+              let error = "Please Fill Records For " + IdentityCheck[i].Type + " Fields";
+              this.openSnackBar(error, SnackBarStatus.danger);
+              break;
             }
-            // else if (this.MSMEMandatory) {
-            //   this.openSnackBar('Please Fill Records For  All MSME Fields', SnackBarStatus.danger);
-            //   return;
-            // }
             else {
               IdentityCount++;
             }
-          });
-          if (IdentityCount === this.identificationDataSource.data.length) {
-            this.OpenConfirmationDialog('Register', 'Vendor');
-            // this.SetActionToOpenConfirmation('Register');
-          }
-          else {
-            if (!this.MSMEMandatory) {
+            if (IdentityCount === this.identificationDataSource.data.length) {
               this.OpenConfirmationDialog('Register', 'Vendor');
+              // window.alert('Ok');
 
-              // this.SetActionToOpenConfirmation('Register');
             }
           }
+          // IdentityCheck.forEach((data, index) => {
+
+          //   if (data.Count < 2) {
+          //     // if (this.MSMEMandatory && data.Type === "MSME Certificate") {
+          //     //   this.openSnackBar('Please Fill Records For  All MSME Fields', SnackBarStatus.danger);
+          //     //   return;
+          //     // }
+          //     // else {
+          //     //   // if (this.vendorRegistrationFormGroup.get('MSMEType').value !== "Not Applicable") {
+          //     //   //   let error = "Please Fill Records For  All" + data.Type + "Fields";
+          //     //   //   this.openSnackBar(error, SnackBarStatus.danger);
+          //     //   //   return;
+          //     //   // }
+          //     //   // if (this.vendorRegistrationFormGroup.get('MSMEType').value !== "Not Applicable") {
+          //         let error = "Please Fill Records For  All " + data.Type + " Fields";
+          //         this.openSnackBar(error, SnackBarStatus.danger);
+          //         return;
+          //       // }
+          //     // }
+          //   }
+          //   // else if (this.MSMEMandatory) {
+          //   //   this.openSnackBar('Please Fill Records For  All MSME Fields', SnackBarStatus.danger);
+          //   //   return;
+          //   // }
+          //   else {
+          //     IdentityCount++;
+          //   }
+          // });
+          // if (IdentityCount === this.identificationDataSource.data.length) {
+          //   this.OpenConfirmationDialog('Register', 'Vendor');
+          //   // this.SetActionToOpenConfirmation('Register');
+          // }
+          // else {
+          //   if (!this.MSMEMandatory) {
+          //     this.OpenConfirmationDialog('Register', 'Vendor');
+
+          //     // this.SetActionToOpenConfirmation('Register');
+          //   }
+          // }
         }
         else {
           let errorMsg = 'Please add atleast one record for';
@@ -2928,29 +3108,36 @@ export class VendorRegistrationComponent implements OnInit {
     }
   }
   MSMETypeChange(event): void {
-
+    console.log("this.IdentificationsByVOB = ",this.IdentificationsByVOB);
     if (event.value === "Not Applicable") {
       this.MSMEMandatory = false;
       let index = this.IdentificationsByVOB.findIndex(x => x.Type === "MSME Certificate");
-      this.AllIdentityTypes.forEach((type,index) => {
-        if(type === "MSME Certificate")
-        {
-          this.AllIdentityTypes.splice(index,1);
-        }
-      });
-      this.MSMERow = this.IdentificationsByVOB[index];
-      this.IdentificationsByVOB.splice(index, 1);
-      this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+      if(index >=0)
+      {
+        this.AllIdentityTypes.forEach((type, indexs) => {
+          if (type === "MSME Certificate") {
+            this.AllIdentityTypes.splice(indexs, 1);
+          }
+        });
+        this.MSMERow = this.IdentificationsByVOB[index];
+        this.IdentificationsByVOB.splice(index, 1);
+        this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+      }
+      else
+      {
+        window.alert('Error'+ index);
+      }
     }
     else {
       this.MSMEMandatory = true;
       if (this.IdentificationsByVOB.findIndex(x => x.Type === "MSME Certificate") < 0) {
+        this.MSMERow.Type="MSME Certificate";
         this.IdentificationsByVOB.push(this.MSMERow);
         this.AllIdentityTypes.push('MSME Certificate');
         this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
       }
     }
-    console.log("MSMETypeChange", event);
+    // console.log("MSMETypeChange", event);
   }
   handleFileInput2(evt): void {
     if (evt.target.files && evt.target.files.length > 0) {
@@ -3248,6 +3435,10 @@ export class VendorRegistrationComponent implements OnInit {
         (data) => {
           console.log('Data from SearchTaxPayer', data);
           if (data) {
+
+            let pan = this.vendorRegistrationFormGroup.get('GSTNumber').value as string;
+            pan = pan.substring(2, 10);
+            this.vendorRegistrationFormGroup.get('PAN').patchValue(pan);
             const TaxPayer = data as TaxPayerDetails;
             // TaxPayer=data;
             console.log('TaxPayer', TaxPayer);
@@ -3259,14 +3450,16 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('PinCode').patchValue(TaxPayer.pinCode);
             this.GSTStatusCode = TaxPayer.stateCode;
             if (TaxPayer.pinCode !== null) {
-              this._vendorMasterService.GetLocation(TaxPayer.pinCode).subscribe(
+              this._vendorMasterService.GetLocationByPincode(TaxPayer.pinCode).subscribe(
                 (Loc) => {
-                  console.log('GetLocation', Loc);
+                  const postal = Loc as CBPLocation;
+
                   if (Loc != null) {
                     this.Postaldata = false;
-                    this.vendorRegistrationFormGroup.get('City').patchValue(Loc[0].PostOffice[0].Division);
-                    this.vendorRegistrationFormGroup.get('State').patchValue(Loc[0].PostOffice[0].State);
-                    this.vendorRegistrationFormGroup.get('Country').patchValue(Loc[0].PostOffice[0].Country);
+                    this.vendorRegistrationFormGroup.get('City').patchValue(postal.District);
+                    this.vendorRegistrationFormGroup.get('State').patchValue(postal.State);
+                    this.vendorRegistrationFormGroup.get('Country').patchValue(postal.Country);
+                    this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(postal.Taluk + ',' + postal.State);
                     this.IsProgressBarVisibile = false;
                   }
                 }
@@ -3274,7 +3467,7 @@ export class VendorRegistrationComponent implements OnInit {
             }
             this.vendorRegistrationFormGroup.get('Name').disable();
             this.vendorRegistrationFormGroup.get('LegalName').patchValue(TaxPayer.legalName);
-            this.vendorRegistrationFormGroup.get('AddressLine1').disable();
+            // this.vendorRegistrationFormGroup.get('AddressLine1').disable();
             // this.addressline1.push(TaxPayer.address1);
             this.vendorRegistrationFormGroup.get('AddressLine2').disable();
             this.vendorRegistrationFormGroup.get('PinCode').disable();
@@ -3282,17 +3475,20 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('State').disable();
             this.vendorRegistrationFormGroup.get('Country').disable();
 
-            const GSTIndex = this.IdentificationsByVOB.findIndex(x => x.Type === "GST");
-            if (GSTIndex >= 0) {
-              this.IdentificationsByVOB[GSTIndex].IDNumber = this.vendorRegistrationFormGroup.get('GSTNumber').value;
-            }
-            const PANIndex = this.IdentificationsByVOB.findIndex(x => x.Type === "PAN");
-            if (PANIndex >= 0) {
-              let Pan = this.vendorRegistrationFormGroup.get('GSTNumber').value;
-              Pan = Pan.substr(2, 10);
-              console.log('GST Number', Pan, 'Pan', Pan);
-              this.IdentificationsByVOB[PANIndex].IDNumber = Pan;
-            }
+            // const GSTIndex = this.IdentificationsByVOB.findIndex(x => x.Type === "GST");
+            // if (GSTIndex >= 0) {
+            //   this.IdentificationsByVOB[GSTIndex].IDNumber = this.vendorRegistrationFormGroup.get('GSTNumber').value;
+            // }
+            // const PANIndex = this.IdentificationsByVOB.findIndex(x => x.Type === "PAN");
+            // if (PANIndex >= 0) {
+            //   let Pan = this.vendorRegistrationFormGroup.get('GSTNumber').value;
+            //   Pan = Pan.substr(2, 10);
+            //   console.log('GST Number', Pan, 'Pan', Pan);
+            //   this.IdentificationsByVOB[PANIndex].IDNumber = Pan;
+            // }
+            let Pan = this.vendorRegistrationFormGroup.get('GSTNumber').value;
+            Pan = Pan.substr(2, 10);
+            this.vendorRegistrationFormGroup.get('PAN').patchValue(Pan);
             this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
           }
           else {
@@ -3352,9 +3548,6 @@ export class VendorRegistrationComponent implements OnInit {
       }
       else {
         //  console.log('---------',validToken<currentDate);
-
-
-
         const Plant = this._activatedRoute.snapshot.queryParamMap.get('Plant');
 
         const Name = this._activatedRoute.snapshot.queryParamMap.get('Name');
@@ -3378,11 +3571,66 @@ export class VendorRegistrationComponent implements OnInit {
       }
     }
   }
-  MSMECheckBox(event): void {
-    console.log(event);
+  GSTCheckBoxEvent(event = null): void {
+    if (event != null) {
+      this.PanEnable = event.checked;
+      // console.log('Event is not null');
+    }
+    if (this.PanEnable) {
+      this.GSTCheckBox = true;
+      console.log('GSTCheckBoxEvent', this.GSTCheckBox);
+      let name = this.vendorRegistrationFormGroup.get('Name').value;
+      let email1 = this.vendorRegistrationFormGroup.get('Email1').value;
+      this.ClearVendorRegistrationFormGroup();
+      this.vendorRegistrationFormGroup.get('GSTNumber').disable();
+      this.vendorRegistrationFormGroup.get('PAN').enable();
+      this.vendorRegistrationFormGroup.get('MSMEType').patchValue('Not Applicable');
+      this.vendorRegistrationFormGroup.get('Name').enable();
+      this.vendorRegistrationFormGroup.get('AddressLine2').enable();
+      this.vendorRegistrationFormGroup.get('PinCode').enable();
+      this.vendorRegistrationFormGroup.get('City').enable();
+      this.vendorRegistrationFormGroup.get('State').enable();
+      this.vendorRegistrationFormGroup.get('Country').enable();
+
+      this.vendorRegistrationFormGroup.get('Name').patchValue(name);
+      this.vendorRegistrationFormGroup.get('Email1').patchValue(email1);
+      this.AllIdentityTypes.forEach((types, index) => {
+        let StringType = types as string;
+        if (StringType.includes('GST')) {
+          this.AllIdentityTypes.splice(index, 1);
+        }
+      });
+      let IdentityTableIndex = this.IdentificationsByVOB.findIndex(x => x.Type === "GST");
+      if (IdentityTableIndex >= 0) {
+        this.IdentificationsByVOB.splice(IdentityTableIndex, 1);
+      }
+      this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+    }
+    else {
+      let temp = -1;
+      this.GSTCheckBox = false;
+      console.log('GSTCheckBoxEvent', this.GSTCheckBox);
+      this.vendorRegistrationFormGroup.get('GSTNumber').enable();
+      this.vendorRegistrationFormGroup.get('PAN').disable();
+      this.AllIdentityTypes.forEach(element => {
+        if (element === "GST") {
+          temp = 0;
+        }
+      });
+      if (temp < 0) {
+        this.AllIdentityTypes.push("GST");
+      }
+
+      let IdentityTableIndex = this.IdentificationsByVOB.findIndex(x => x.Type === "GST");
+      if (IdentityTableIndex < 0) {
+        // this.AllIdentityTypes.push("GST");
+        const identity = new BPIdentity();
+        identity.Type = "GST";
+        this.IdentificationsByVOB.push(identity);
+        this.identificationDataSource = new MatTableDataSource<BPIdentity>(this.IdentificationsByVOB);
+      }
+    }
   }
-  // let tooo:any='82450102010202';
-  // Token.toString();
 
 }
 

@@ -148,8 +148,8 @@ export class VendorRegistrationService {
   }
 
 
-  GetIdentificationsByVOB(TransID: number): Observable<BPIdentity[] | string> {
-    return this._httpClient.get<BPIdentity[]>(`${this.baseAddress}vendorregisterapi/Registration/GetIdentitiesByVOB?TransID=${TransID}`)
+  GetIdentificationsByVOB(TransID: number): Observable<any[] | string> {
+    return this._httpClient.get<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetIdentitiesByVOB?TransID=${TransID}`)
       .pipe(catchError(this.errorHandler));
   }
   GetBanksByVOB(TransID: number): Observable<BPBank[] | string> {

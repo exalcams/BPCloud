@@ -34,7 +34,7 @@ export class CBPTitle extends CommonClass {
 export class CBPDepartment extends CommonClass {
     Department: string;
     Language: string;
-    TitleText: string;
+    Text: string;
 }
 export class CBPApp extends CommonClass {
     ID: string;

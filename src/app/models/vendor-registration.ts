@@ -29,6 +29,7 @@ export class BPVendorOnBoarding extends CommonClass {
     Email2: string;
     Invoice: string;
     GSTNumber: string;
+    GSTStatus:string;
     PANNumber: string
     AccountGroup:string;
     CompanyCode:string;
@@ -115,6 +116,7 @@ export class BPVendorOnBoardingView extends CommonClass {
     Country: string;
     PinCode: string;
     GSTNumber: string;
+    GSTStatus:string;
     PANNumber: string;
     AccountGroup:string;
     CompanyCode:string;

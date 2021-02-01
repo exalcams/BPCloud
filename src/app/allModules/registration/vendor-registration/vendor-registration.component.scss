@@ -481,12 +481,11 @@
     left: 52%;
     transform: translate(-50%);
   }
-  .GSTBtn{
+  .GSTBtn {
     background-color: #efb577 !important;
     color: white;
     margin-top: 18px;
     height: 29px;
-
   }
   .example-spacer {
     flex: 1 1 auto;
@@ -526,10 +525,10 @@
     margin-bottom: 0px;
     z-index: 100;
   }
-  .EmamiContactPerson{
+  .EmamiContactPerson {
     font-weight: 600;
     letter-spacing: 0.3px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }
   .ValidityError {
     color: #f44336;
@@ -550,8 +549,19 @@
     margin-top: 51px;
     margin-left: -353px;
   }
-  h1{
+  h1 {
     font-size: 21px;
+  }
+  .GSTCheck_Box {
+    position: absolute;
+    margin-top: 15px;
+    margin-left: 10px;
+  }
+  .TableFooter{
+    margin-top: 0px !important;
+    border: 1px solid #e3dbdb;
+    height: 47px;
+    border-top: 0px;
   }
   @media screen and (max-width: 600px) {
     .logo {
@@ -560,18 +570,18 @@
       margin-left: 15px !important;
       padding: 4px 15px 2px 0px !important;
     }
-    .btn_text{
-    //   flex: 1 1 0%;
-    // box-sizing: border-box;
-    // flex-flow: row wrap;
-    // display: flex;
-    font-size: 9px;
-    margin-left: -5px;
+    .btn_text {
+      //   flex: 1 1 0%;
+      // box-sizing: border-box;
+      // flex-flow: row wrap;
+      // display: flex;
+      font-size: 9px;
+      margin-left: -5px;
     }
-    .GSTNBtn{
+    .GSTNBtn {
       margin-right: 7px !important;
     }
-    h1{
+    h1 {
       font-size: 16px;
     }
   }
