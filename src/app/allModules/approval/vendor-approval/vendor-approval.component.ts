@@ -119,7 +119,7 @@ export class VendorApprovalComponent implements OnInit {
   AllTypes: any[] = [];
   AllCountries: any[] = [];
   AllStates: StateDetails[] = [];
-
+  PanEnable=false;
   AllOnBoardingFieldMaster: CBPFieldMaster[] = [];
   inputvalue = '';
   codeselected='';
@@ -155,6 +155,7 @@ export class VendorApprovalComponent implements OnInit {
   country_india_lower: any;
   VendorType: string;
   Industrytype: string;
+  showCheckBox=false;
   constructor(
     private _fuseConfigService: FuseConfigService,
     private _masterService: MasterService,
@@ -294,6 +295,22 @@ console.log("landline below")
         this.IsProgressBarVisibile = false;
         // const type=data.
         this.BPVendorOnBoarding = <BPVendorOnBoarding>data;
+        if(this.BPVendorOnBoarding.Type === "Import Vendor")
+        {
+          this.showCheckBox=false;
+        }
+        else
+        {
+          this.showCheckBox=true;
+        }
+        if (this.BPVendorOnBoarding.GSTStatus === "true") {
+          this.PanEnable = false;
+
+        } else {
+          if (this.BPVendorOnBoarding.GSTStatus != null) {
+            this.PanEnable = true;
+          }
+        }
         this.Industrytype=data.TypeofIndustry;
         console.log('this.BPVendorOnBoarding',this.BPVendorOnBoarding,this.BPVendorOnBoarding.TypeofIndustry);
         if (this.BPVendorOnBoarding) {
@@ -339,7 +356,7 @@ console.log("landline below")
       City: ['', Validators.required],
       State: ['', Validators.required],
       MSMEType: ['', Validators.required],
-      TypeOfIndustry: ['', Validators.required],
+      TypeOfIndustry: [''],
       Country: ['India', [Validators.required]],
       // ,this.countryDomain
       PinCode: ['', [Validators.required, Validators.pattern('^\\d{4,10}$')]],
