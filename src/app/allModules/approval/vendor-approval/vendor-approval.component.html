@@ -62,34 +62,18 @@
                         <strong>Basic Details</strong>
                       </div>
                     </div>
-                    <div fxFlex="50" style="margin-top: 10px;margin-left: 5px;" *ngIf="showCheckBox">
+                    <div fxFlex="50" style="margin-top: 10px;margin-left: 5px;">
 
-                      <mat-checkbox labelPosition="before" id="checkbox" [checked]="PanEnable" class="GSTCheck_Box">
-                        Unregistred Vendor
-                      </mat-checkbox>
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;" *ngIf=!PanEnable>
+                        <input matInput placeholder="GST Number" formControlName="GST"
+                          style="font-weight: 600;opacity: 0.8;">
+                      </mat-form-field>
+                      <mat-form-field class="pl-8 pr-80" style="width: 100%;" *ngIf=PanEnable>
+                        <input matInput placeholder="PAN" formControlName="PAN"
+                          style="font-weight: 600;opacity: 0.8;">
+                      </mat-form-field>
                     </div>
-                    <!-- <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Role')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <mat-select matInput [placeholder]="GetOBDFieldLabel('Role')" formControlName="Role" style="font-weight: 600;opacity: 0.8;">
-                          <mat-option *ngFor="let rol of AllRoles" [value]="rol">{{rol}}</mat-option>
-                        </mat-select>
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Role').touched && vendorRegistrationFormGroup.get('Role').hasError('required')">
-                          {{GetOBDFieldLabel('Role')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div> -->
-
-                    <!-- <div fxFlex="50" [style.display]="GetOBDFieldVisibility('Type')">
-                      <mat-form-field class="pl-8 pr-80" style="width: 100%;">
-                        <input matInput placeholder="Type" formControlName="Type">
-                        
-                        <mat-error
-                          *ngIf="vendorRegistrationFormGroup.get('Type').touched && vendorRegistrationFormGroup.get('Type').hasError('required')">
-                          {{GetOBDFieldLabel('Type')}} is required
-                        </mat-error>
-                      </mat-form-field>
-                    </div> -->
+                   
 
                     <div fxFlex="100" [style.display]="GetOBDFieldVisibility('Name')" style="margin-top: 10px;">
                       <mat-form-field class="pl-8 pr-80" style="width: 100%;">
