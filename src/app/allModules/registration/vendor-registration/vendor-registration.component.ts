@@ -382,6 +382,7 @@ export class VendorRegistrationComponent implements OnInit {
               }
               this.vendorRegistrationFormGroup.get('Name').patchValue(Vendor.Name);
               this.vendorRegistrationFormGroup.get('LegalName').patchValue(Vendor.LegalName);
+              this.vendorRegistrationFormGroup.get('PAN').patchValue(Vendor.PANNumber);
               this.vendorRegistrationFormGroup.get('AddressLine1').patchValue(Vendor.AddressLine1);
               this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(Vendor.AddressLine2);
               this.vendorRegistrationFormGroup.get('PinCode').patchValue(Vendor.PinCode);
@@ -743,12 +744,12 @@ export class VendorRegistrationComponent implements OnInit {
       Name: ['', [Validators.required, Validators.maxLength(40)]],
       // Role: ['Vendor', Validators.required],
       PAN: ['', [Validators.required, Validators.pattern('[A-Z]{5}[0-9]{4}[A-Z]{1}')]],
-      GSTNumber: ['', [Validators.pattern('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$')]],
+      GSTNumber: ['', [Validators.required,Validators.pattern('^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$')]],
       LegalName: ['', [Validators.required, Validators.maxLength(40)]],
       // WebsiteAddress: [''],
       AddressLine1: ['', Validators.required],
       MSMEType: ['Not Applicable', Validators.required],
-      TypeOfIndustry: ['',],
+      TypeOfIndustry: [''],
       AddressLine2: ['', Validators.required],
       City: ['', Validators.required],
       State: ['', Validators.required],
@@ -764,7 +765,7 @@ export class VendorRegistrationComponent implements OnInit {
       Email2: ['', [Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
 
     });
-    // this.vendorRegistrationFormGroup.get('City').disable();
+    this.vendorRegistrationFormGroup.get('PAN').disable();
     // this.vendorRegistrationFormGroup.get('State').disable();
     // this.vendorRegistrationFormGroup.get('Country').disable();
   }
@@ -2884,6 +2885,7 @@ export class VendorRegistrationComponent implements OnInit {
     let IdentityCheck = [];
     // let IdentityCount=0;
     this.vendorRegistrationFormGroup.get('Type').patchValue(this.VendorType);
+    console.log("vendorRegistrationFormGroup",this.vendorRegistrationFormGroup.value);
     if (this.vendorRegistrationFormGroup.valid) {
       let IdentityCount = 0;
       // const file: File = this.fileToUpload;

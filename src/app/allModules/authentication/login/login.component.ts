@@ -93,12 +93,21 @@ export class LoginComponent implements OnInit {
       this._authService.login(this.loginForm.get('userName').value, this.loginForm.get('password').value).subscribe(
         (data) => {
           this.IsProgressBarVisibile = false;
+          console.log("LoginClicked",data);
           const dat = data as AuthenticationDetails;
-          if (data.isChangePasswordRequired === 'Yes') {
+
+          if (data.IsChangePasswordRequired === 'Yes') {
+            this.notificationSnackBarComponent.openSnackBar(data.ReasonForReset,SnackBarStatus.danger);
             this.OpenChangePasswordDialog(dat);
-          } else {
+          }
+          // else if(data.IsSuccess)
+          // {
+          //   this.notificationSnackBarComponent.openSnackBar(data.Message,SnackBarStatus.danger);
+          // }
+          else {
             this.saveUserDetails(dat);
           }
+
           this._cookieService.put('OBDUsername', this.Username);
         },
         (err) => {
@@ -137,7 +146,7 @@ export class LoginComponent implements OnInit {
 
   OpenChangePasswordDialog(data: AuthenticationDetails): void {
     const dialogConfig: MatDialogConfig = {
-      data: null,
+      data: data,
       panelClass: 'change-password-dialog'
     };
     const dialogRef = this.dialog.open(ChangePasswordDialogComponent, dialogConfig);
@@ -149,9 +158,14 @@ export class LoginComponent implements OnInit {
           changePassword.UserName = data.UserName;
           this._authService.ChangePassword(changePassword).subscribe(
             (res) => {
-              // console.log(res);
-              // this.notificationSnackBarComponent.openSnackBar('Password updated successfully', SnackBarStatus.success);
-              this.notificationSnackBarComponent.openSnackBar('Password updated successfully, please log with new password', SnackBarStatus.success);
+              console.log('ChangePassword Response',res);
+              if(res != null)
+              {
+                this.notificationSnackBarComponent.openSnackBar('Password updated successfully, please log with new password', SnackBarStatus.success);
+              }else
+              {
+                this.notificationSnackBarComponent.openSnackBar('Password Should Not Be Same As Previous 5 Passwords', SnackBarStatus.danger);
+              }
               this._router.navigate(['/auth/login']);
             }, (err) => {
               this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
