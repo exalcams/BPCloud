@@ -6,11 +6,12 @@ import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FusePerfectScrollbarDirective } from '@fuse/directives/fuse-perfect-scrollbar/fuse-perfect-scrollbar.directive';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
-import { AuthenticationDetails } from 'app/models/master';
+import { AuthenticationDetails, ChangePassword } from 'app/models/master';
 import { AuthService } from 'app/services/auth.service';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog, MatDialogConfig, MatSnackBar } from '@angular/material';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
+import { ChangePassDialogComponent } from 'app/layout/components/toolbar/change-pass-dialog/change-pass-dialog.component';
 
 @Component({
     selector: 'navbar-vertical-style-1',
@@ -236,5 +237,36 @@ export class NavbarVerticalStyle1Component implements OnInit, OnDestroy {
         );
         // this._router.navigate(['auth/login']);
         // this.notificationSnackBarComponent.openSnackBar('Signed out successfully', SnackBarStatus.success);
+    }
+    ChangePasswordClick(): void {
+        // this._router.navigate(['auth/changePassword']);
+        const dialogConfig: MatDialogConfig = {
+            data: this.authenticationDetails,
+            panelClass: 'change-pass-dialog'
+        };
+        const dialogRef = this.dialog.open(ChangePassDialogComponent, dialogConfig);
+        dialogRef.afterClosed().subscribe(
+            result => {
+                if (result) {
+                    const changePassword = result as ChangePassword;
+                    changePassword.UserID = this.authenticationDetails.UserID;
+                    changePassword.UserName = this.authenticationDetails.UserName;
+                    this._authService.ChangePassword(changePassword).subscribe(
+                        (res) => {
+                            console.log(res);
+                            this.notificationSnackBarComponent.openSnackBar('Password updated successfully, please log with new password', SnackBarStatus.success);
+                            localStorage.removeItem('authorizationData');
+                            localStorage.removeItem('menuItemsData');
+                            this._compiler.clearCache();
+                            this._router.navigate(['auth/login']);
+                        }, (err) => {
+                            this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+                            // this._router.navigate(['/auth/login']);
+                            console.error(err);
+                        }
+                    );
+                }
+            }
+        );
     }
 }
