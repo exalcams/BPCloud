@@ -29,8 +29,8 @@ export class ChangePassDialogComponent implements OnInit {
     this.resetPasswordForm = this._formBuilder.group({
       currentPassword: ['', Validators.required],
       newPassword: ['', [Validators.required,
-      Validators.pattern('(?=.*[a-z].*[a-z].*[a-z])(?=.*[A-Z])(?=.*[0-9].*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}')]],
-      confirmPassword: ['', [Validators.required, CustomValidator.confirmPasswordValidator]]
+        Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}')]],
+        confirmPassword: ['', [Validators.required, CustomValidator.confirmPasswordValidator]]
     });
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
   }
@@ -43,12 +43,23 @@ export class ChangePassDialogComponent implements OnInit {
       this.changePassword = new ChangePassword();
       this.changePassword.CurrentPassword = this.resetPasswordForm.get('currentPassword').value;
       this.changePassword.NewPassword = this.resetPasswordForm.get('newPassword').value;
-      if (this.changePassword.CurrentPassword === this.changePassword.NewPassword) {
-        this.notificationSnackBarComponent.openSnackBar('new password should be different from old password', SnackBarStatus.danger);
+
+      var NewPassword = this.changePassword.NewPassword.toLocaleLowerCase();
+      var username = this.data.UserName.toLocaleLowerCase();
+
+      if (NewPassword.search('emami') >= 0 || NewPassword.search('admin') >= 0 || NewPassword.search('administrator') >= 0) {
+        this.notificationSnackBarComponent.openSnackBar('Passwords Should Not Have Keywords ‘emami’, ‘admin’ And ‘administrator’', SnackBarStatus.danger);
+      }
+      else if (NewPassword.search(username) >= 0) {
+        this.notificationSnackBarComponent.openSnackBar('Passwords Should Not Be Same As Username', SnackBarStatus.danger);
+      }
+      else if (this.changePassword.CurrentPassword === this.changePassword.NewPassword) {
+        this.notificationSnackBarComponent.openSnackBar('New Password Should Be Different From Old Password', SnackBarStatus.danger);
       } else {
         this.matDialogRef.close(this.changePassword);
       }
-    } else {
+    }
+    else {
       Object.keys(this.resetPasswordForm.controls).forEach(key => {
         this.resetPasswordForm.get(key).markAsTouched();
         this.resetPasswordForm.get(key).markAsDirty();

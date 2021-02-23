@@ -6,6 +6,7 @@ import { FuseSharedModule } from '@fuse/shared.module';
 
 import { NavbarVerticalStyle1Component } from 'app/layout/components/navbar/vertical/style-1/style-1.component';
 import { SharedModule } from 'app/shared/shared-module';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
     declarations: [
@@ -17,6 +18,7 @@ import { SharedModule } from 'app/shared/shared-module';
         MatDividerModule,
         FuseSharedModule,
         FuseNavigationModule,
+        MatTooltipModule,
         SharedModule
     ],
     exports: [
