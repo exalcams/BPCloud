@@ -47,6 +47,7 @@ export class ForgetPasswordLinkDialogComponent implements OnInit {
     if (this.forgotPasswordForm.valid) {
       this.emailModel = new EMailModel();
       this.emailModel.EmailAddress = this.forgotPasswordForm.get('email').value;
+      this.emailModel.EmailAddress=this.emailModel.EmailAddress.toLocaleLowerCase();
       // this.emailModel.UserName = this.forgotPasswordForm.get('UserName').value;
       // const Origin = (this._platformLocation as any).location.origin;
       this.emailModel.siteURL = `${this.Origin}/#/auth/forgotPassword`;

@@ -24,6 +24,7 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { AttachmentDialogComponent } from './notifications/attachment-dialog/attachment-dialog.component';
 import { InformationDialogComponent } from './notifications/information-dialog/information-dialog.component';
 // import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { BnNgIdleService } from 'bn-ng-idle';
 
 
 const appRoutes: Routes = [
@@ -93,6 +94,7 @@ const appRoutes: Routes = [
     ],
     providers: [
         DatePipe,
+        BnNgIdleService,
         WINDOW_PROVIDERS,
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
         { provide: MAT_DATE_LOCALE, useValue: 'en-IN' }

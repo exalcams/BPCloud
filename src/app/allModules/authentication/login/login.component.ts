@@ -191,8 +191,8 @@ export class LoginComponent implements OnInit {
           this._authService.SendResetLinkToMail(emailModel).subscribe(
             (data) => {
               const res = data as string;
-              this.notificationSnackBarComponent.openSnackBar(res, SnackBarStatus.success);
-              // this.notificationSnackBarComponent.openSnackBar(`Reset password link sent successfully to ${emailModel.EmailAddress}`, SnackBarStatus.success);
+              // this.notificationSnackBarComponent.openSnackBar(res, SnackBarStatus.success);
+              this.notificationSnackBarComponent.openSnackBar(`Reset password link sent successfully to ${emailModel.EmailAddress}`, SnackBarStatus.success);
               // this.ResetControl();
               this.IsProgressBarVisibile = false;
               // this._router.navigate(['auth/login']);
