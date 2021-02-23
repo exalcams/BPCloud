@@ -20,6 +20,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { NotificationDialogComponent } from './notifications/notification-dialog/notification-dialog.component';
 import { AuthenticationDetails ,SessionMaster} from './models/master';
 import { NotificationSnackBarComponent } from './notifications/notification-snack-bar/notification-snack-bar.component';
+import { BnNgIdleService } from 'bn-ng-idle';
+import { AuthService } from './services/auth.service';
 
 @Component({
     selector: 'app',
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Private
     private _unsubscribeAll: Subject<any>;
-    private _authService: any;
+    // private _authService: any;
     authenticationDetails: any;
     private _router: any;
     private _compiler: any;
@@ -42,7 +44,7 @@ export class AppComponent implements OnInit, OnDestroy {
     sessionTimeOut: number;
     snackBar: MatSnackBar;
     isShowPopup: boolean;
-    bnIdle: any;
+    // bnIdle: any;
 
     /**
      * Constructor
@@ -65,6 +67,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _translateService: TranslateService,
         private _platform: Platform,
+        private bnIdle: BnNgIdleService,
+        private _authService: AuthService,
         private _menuUpdationService: MenuUpdataionService,
         mdIconRegistry: MatIconRegistry,
         sanitizer: DomSanitizer
@@ -73,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
         this.sessionTimeOut = 300;
         this.isShowPopup = true;
-        // this.GetSessionMasterByProject();
+        this.GetSessionMasterByProject();
         // Get default navigation
         this.navigation = navigation;
 
@@ -158,23 +162,22 @@ export class AppComponent implements OnInit, OnDestroy {
         this._unsubscribeAll = new Subject();
     }
 
-    // GetSessionMasterByProject(): void {
-    //     this._authService.GetSessionMasterByProject('BPCloud').subscribe(
-    //         (data) => {
-    //             this.sessionMaster = data as SessionMaster;
-    //             if (this.sessionMaster && this.sessionMaster.SessionTimeOut) {
-    //                 this.sessionTimeOut = this.sessionMaster.SessionTimeOut * 60;
-    //                 this.InitializeNgIdleService();
-    //             } else {
-    //                 this.InitializeNgIdleService();
-    //             }
-    //         },
-    //         (err) => {
-    //             this.InitializeNgIdleService();
-    //         }
-    //     );
-    // }
-
+    GetSessionMasterByProject(): void {
+        this._authService.GetSessionMasterByProject('BPCloud').subscribe(
+            (data) => {
+                this.sessionMaster = data as SessionMaster;
+                if (this.sessionMaster && this.sessionMaster.SessionTimeOut) {
+                    this.sessionTimeOut = this.sessionMaster.SessionTimeOut * 60;
+                    this.InitializeNgIdleService();
+                } else {
+                    this.InitializeNgIdleService();
+                }
+            },
+            (err) => {
+                this.InitializeNgIdleService();
+            }
+        );
+    }
     InitializeNgIdleService(): void {
         this.bnIdle.startWatching(this.sessionTimeOut).subscribe((res) => {
             if (res) {

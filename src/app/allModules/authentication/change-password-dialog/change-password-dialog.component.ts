@@ -49,13 +49,13 @@ export class ChangePasswordDialogComponent implements OnInit {
       var NewPassword = this.changePassword.NewPassword.toLocaleLowerCase();
       var username=this.data.UserName.toLocaleLowerCase();
       if (NewPassword.search('emami') >= 0 || NewPassword.search('admin') >= 0 || NewPassword.search('administrator') >= 0) {
-        this.notificationSnackBarComponent.openSnackBar('Passwords should not have keywords ‘emami’, ‘admin’ and ‘administrator’', SnackBarStatus.danger);
+        this.notificationSnackBarComponent.openSnackBar('Passwords Should Not Have Keywords ‘emami’, ‘admin’ And ‘administrator’', SnackBarStatus.danger);
       }
       else if (NewPassword.search(username) >=0 ){
-        this.notificationSnackBarComponent.openSnackBar('Passwords Should Same As Username', SnackBarStatus.danger);
+        this.notificationSnackBarComponent.openSnackBar('Passwords Should Not Be Same As Username', SnackBarStatus.danger);
       }
       else if (this.changePassword.CurrentPassword === this.changePassword.NewPassword) {
-        this.notificationSnackBarComponent.openSnackBar('new password should be different from old password', SnackBarStatus.danger);
+        this.notificationSnackBarComponent.openSnackBar('New Password Should Be Different From Old Password', SnackBarStatus.danger);
       }
       else {
         this.matDialogRef.close(this.changePassword);
