@@ -64,7 +64,7 @@
         <div style="margin-bottom: 30px !important;" fxFlex fxLayout="row" fxLayoutAlign="space-between center">
           <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
             <mat-icon class="s-16">search</mat-icon>
-            <input [(ngModel)]="searchText" type="text" placeholder="Search" fxFlex>
+            <input [(ngModel)]="searchText" type="text" (keyup)="applyFilter($event)" placeholder="Search" fxFlex>
           </div>
           <div fxFlex class="mr-24" align="end">
             <!-- <mat-form-field appearance="outline" style="width: 120px;">

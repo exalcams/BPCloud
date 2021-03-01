@@ -163,6 +163,7 @@ export class DashboardComponent implements OnInit {
                 );
                 this.VendorOnBoardingsDataSource.paginator = this.paginator;
                 this.VendorOnBoardingsDataSource.sort = this.sort;
+                console.log("GetAllVendorOnBoardings",this.AllVendorOnBoardings);
             },
             (err) => {
                 console.error(err);
@@ -202,6 +203,7 @@ export class DashboardComponent implements OnInit {
                             this.VendorOnBoardingsDataSource.paginator = this.paginator;
                             this.VendorOnBoardingsDataSource.sort = this.sort;
                         }
+                        console.log("GetAllOpenVendorOnBoardings",this.AllVendorOnBoardings);
                     },
                     (err) => {
                         console.error(err);
@@ -534,5 +536,9 @@ export class DashboardComponent implements OnInit {
 
     ReviewAndApproveVendor(bPVendorOnBoarding: BPVendorOnBoarding): void {
         this._router.navigate(["/approval", bPVendorOnBoarding.TransID]);
+    }
+    applyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.VendorOnBoardingsDataSource.filter = filterValue.trim().toLowerCase();
     }
 }
