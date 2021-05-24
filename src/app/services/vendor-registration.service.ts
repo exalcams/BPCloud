@@ -42,8 +42,12 @@ export class VendorRegistrationService {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardings`)
       .pipe(catchError(this.errorHandler));
   }
-  GetAllOpenVendorOnBoardingsByPlant(Plants:string[]): Observable<any | string> {
-    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsByPlant`,Plants)
+  GetAllOpenVendorOnBoardingsByApprover(Approver: string): Observable<any | string> {
+    return this._httpClient.get<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsByApprover?Approver=${Approver}`)
+      .pipe(catchError(this.errorHandler));
+  }
+  GetAllOpenVendorOnBoardingsByPlant(Plants: string[]): Observable<any | string> {
+    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsByPlant`, Plants)
       .pipe(catchError(this.errorHandler));
   }
   GetAllApprovedVendorOnBoardings(): Observable<any | string> {
@@ -56,6 +60,10 @@ export class VendorRegistrationService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetAllOpenVendorOnBoardingsCountByApprover(Approver: string): Observable<any | string> {
+    return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsCountByApprover?Approver=${Approver}`)
+      .pipe(catchError(this.errorHandler));
+  }
   GetAllOpenVendorOnBoardingsCount(): Observable<any | string> {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllOpenVendorOnBoardingsCount`)
       .pipe(catchError(this.errorHandler));
@@ -70,12 +78,20 @@ export class VendorRegistrationService {
     return this._httpClient.get<any>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsCount`)
       .pipe(catchError(this.errorHandler));
   }
-  GetAllRejectedVendorOnBoardingsByPlant(plants:string[]): Observable<BPVendorOnBoarding[] | string> {
-    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsByPlant`,plants)
+  GetAllRejectedVendorOnBoardingsByPlant(plants: string[]): Observable<BPVendorOnBoarding[] | string> {
+    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsByPlant`, plants)
       .pipe(catchError(this.errorHandler));
   }
-  GetAllApprovedVendorOnBoardingsByPlant(plants:string[]): Observable<BPVendorOnBoarding[] | string> {
-    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardingsByPlant`,plants)
+  GetAllRejectedVendorOnBoardingsByApprover(Approver: string): Observable<BPVendorOnBoarding[] | string> {
+    return this._httpClient.get<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllRejectedVendorOnBoardingsByApprover?Approver=${Approver}`)
+      .pipe(catchError(this.errorHandler));
+  }
+  GetAllApprovedVendorOnBoardingsByPlant(plants: string[]): Observable<BPVendorOnBoarding[] | string> {
+    return this._httpClient.post<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardingsByPlant`, plants)
+      .pipe(catchError(this.errorHandler));
+  }
+  GetAllApprovedVendorOnBoardingsByApprover(Approver: string): Observable<BPVendorOnBoarding[] | string> {
+    return this._httpClient.get<any[]>(`${this.baseAddress}vendorregisterapi/Registration/GetAllApprovedVendorOnBoardingsByApprover?Approver=${Approver}`)
       .pipe(catchError(this.errorHandler));
   }
   GetVendorOnBoardingsByID(TransID: number): Observable<any | string> {
@@ -166,11 +182,11 @@ export class VendorRegistrationService {
       .pipe(catchError(this.errorHandler));
   }
 
-  AddUserAttachment(TransID: number, CreatedBy: string, selectedFiles: File,perviousFileName=null): Observable<any> {
+  AddUserAttachment(TransID: number, CreatedBy: string, selectedFiles: File, perviousFileName = null): Observable<any> {
     const formData: FormData = new FormData();
-    formData.append(selectedFiles.name,selectedFiles,selectedFiles.name);
-    console.log("TransID",TransID.toString());
-    const id=TransID.toString();
+    formData.append(selectedFiles.name, selectedFiles, selectedFiles.name);
+    console.log("TransID", TransID.toString());
+    const id = TransID.toString();
     formData.append('TransID', id);
     formData.append('PerviousFileName', perviousFileName);
     formData.append('CreatedBy', CreatedBy.toString());

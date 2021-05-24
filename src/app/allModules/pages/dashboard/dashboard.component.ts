@@ -35,6 +35,7 @@ import { VendorRegistrationService } from 'app/services/vendor-registration.serv
 export class DashboardComponent implements OnInit {
     authenticationDetails: AuthenticationDetails;
     currentUserID: Guid;
+    currentUserName: string;
     currentUserRole: string;
     MenuItems: string[];
     PlantList: string[] = [];
@@ -94,7 +95,7 @@ export class DashboardComponent implements OnInit {
             ) as AuthenticationDetails;
             this.currentUserID = this.authenticationDetails.UserID;
             this.currentUserRole = this.authenticationDetails.UserRole;
-            // this.currentUserName = this.authenticationDetails.UserName;
+            this.currentUserName = this.authenticationDetails.UserName;
             this.MenuItems = this.authenticationDetails.MenuItemNames.split(
                 ','
             );
@@ -124,7 +125,6 @@ export class DashboardComponent implements OnInit {
                 this.GetAllApprovedVendorOnBoardingsCount();
                 this.GetAllRejectedVendorOnBoardingsCount();
             }
-
             // this.GetAllUserWithRoles();
         } else {
             this._router.navigate(['/auth/login']);
@@ -166,7 +166,7 @@ export class DashboardComponent implements OnInit {
                 );
                 this.VendorOnBoardingsDataSource.paginator = this.paginator;
                 this.VendorOnBoardingsDataSource.sort = this.sort;
-                console.log("GetAllVendorOnBoardings",this.AllVendorOnBoardings);
+                console.log("GetAllVendorOnBoardings", this.AllVendorOnBoardings);
             },
             (err) => {
                 console.error(err);
@@ -183,7 +183,7 @@ export class DashboardComponent implements OnInit {
         this.IsProgressBarVisibile = true;
         if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
-                .GetAllOpenVendorOnBoardingsByPlant(this.PlantList)
+                .GetAllOpenVendorOnBoardingsByApprover(this.currentUserName)
                 .subscribe(
                     (data) => {
                         this.IsProgressBarVisibile = false;
@@ -206,7 +206,7 @@ export class DashboardComponent implements OnInit {
                             this.VendorOnBoardingsDataSource.paginator = this.paginator;
                             this.VendorOnBoardingsDataSource.sort = this.sort;
                         }
-                        console.log("GetAllOpenVendorOnBoardings",this.AllVendorOnBoardings);
+                        console.log("GetAllOpenVendorOnBoardings", this.AllVendorOnBoardings);
                     },
                     (err) => {
                         console.error(err);
@@ -263,7 +263,7 @@ export class DashboardComponent implements OnInit {
         this.IsProgressBarVisibile = true;
         if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
-                .GetAllApprovedVendorOnBoardingsByPlant(this.PlantList)
+                .GetAllApprovedVendorOnBoardingsByApprover(this.currentUserName)
                 .subscribe(
                     (data) => {
                         this.IsProgressBarVisibile = false;
@@ -343,7 +343,7 @@ export class DashboardComponent implements OnInit {
         if (this.currentUserRole === 'Approver') {
 
             this._vendorRegistrationService
-                .GetAllRejectedVendorOnBoardingsByPlant(this.PlantList)
+                .GetAllRejectedVendorOnBoardingsByApprover(this.currentUserName)
                 .subscribe(
                     (data) => {
                         this.IsProgressBarVisibile = false;
@@ -417,29 +417,48 @@ export class DashboardComponent implements OnInit {
 
     GetAllOpenVendorOnBoardingsCount(): void {
         this.IsProgressBarVisibile = true;
-        this._vendorRegistrationService
-            .GetAllOpenVendorOnBoardingsCount()
-            .subscribe(
-                (data) => {
-                    this.IsProgressBarVisibile = false;
-                    this.OpenCount = <any>data;
-                },
-                (err) => {
-                    console.error(err);
-                    this.IsProgressBarVisibile = false;
-                    this.notificationSnackBarComponent.openSnackBar(
-                        err instanceof Object ? 'Something went wrong' : err,
-                        SnackBarStatus.danger
-                    );
-                }
-            );
+        if (this.currentUserRole === 'Approver') {
+            this._vendorRegistrationService
+                .GetAllOpenVendorOnBoardingsCountByApprover(this.currentUserName)
+                .subscribe(
+                    (data) => {
+                        this.IsProgressBarVisibile = false;
+                        this.OpenCount = <any>data;
+                    },
+                    (err) => {
+                        console.error(err);
+                        this.IsProgressBarVisibile = false;
+                        this.notificationSnackBarComponent.openSnackBar(
+                            err instanceof Object ? 'Something went wrong' : err,
+                            SnackBarStatus.danger
+                        );
+                    }
+                );
+        } else {
+            this._vendorRegistrationService
+                .GetAllOpenVendorOnBoardingsCount()
+                .subscribe(
+                    (data) => {
+                        this.IsProgressBarVisibile = false;
+                        this.OpenCount = <any>data;
+                    },
+                    (err) => {
+                        console.error(err);
+                        this.IsProgressBarVisibile = false;
+                        this.notificationSnackBarComponent.openSnackBar(
+                            err instanceof Object ? 'Something went wrong' : err,
+                            SnackBarStatus.danger
+                        );
+                    }
+                );
+        }
     }
 
     GetAllApprovedVendorOnBoardingsCount(): void {
         this.IsProgressBarVisibile = true;
         if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
-                .GetAllApprovedVendorOnBoardingsByPlant(this.PlantList)
+                .GetAllApprovedVendorOnBoardingsByApprover(this.currentUserName)
                 .subscribe(
                     (data) => {
                         console.log(
@@ -486,7 +505,7 @@ export class DashboardComponent implements OnInit {
         this.IsProgressBarVisibile = true;
         if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
-                .GetAllRejectedVendorOnBoardingsByPlant(this.PlantList)
+                .GetAllRejectedVendorOnBoardingsByApprover(this.currentUserName)
                 .subscribe(
                     (data) => {
                         this.IsProgressBarVisibile = false;
