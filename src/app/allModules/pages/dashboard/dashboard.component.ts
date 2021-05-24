@@ -4,31 +4,31 @@ import {
     ViewEncapsulation,
     ViewChild,
     ElementRef,
-} from "@angular/core";
-import { fuseAnimations } from "@fuse/animations";
+} from '@angular/core';
+import { fuseAnimations } from '@fuse/animations';
 import {
     MatTableDataSource,
     MatPaginator,
     MatSort,
     MatSnackBar,
     MatDialog,
-} from "@angular/material";
-import { SelectionModel } from "@angular/cdk/collections";
-import { AuthenticationDetails, UserWithRole } from "app/models/master";
-import { NotificationSnackBarComponent } from "app/notifications/notification-snack-bar/notification-snack-bar.component";
-import { SnackBarStatus } from "app/notifications/notification-snack-bar/notification-snackbar-status-enum";
-import { FormBuilder } from "@angular/forms";
-import { MasterService } from "app/services/master.service";
-import { Router } from "@angular/router";
-import { Guid } from "guid-typescript";
-import { ShareParameterService } from "app/services/share-parameters.service";
-import { BPVendorOnBoarding } from "app/models/vendor-registration";
-import { DashboardService } from "app/services/dashboard.service";
-import { VendorRegistrationService } from "app/services/vendor-registration.service";
+} from '@angular/material';
+import { SelectionModel } from '@angular/cdk/collections';
+import { AuthenticationDetails, UserWithRole } from 'app/models/master';
+import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
+import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
+import { FormBuilder } from '@angular/forms';
+import { MasterService } from 'app/services/master.service';
+import { Router } from '@angular/router';
+import { Guid } from 'guid-typescript';
+import { ShareParameterService } from 'app/services/share-parameters.service';
+import { BPVendorOnBoarding } from 'app/models/vendor-registration';
+import { DashboardService } from 'app/services/dashboard.service';
+import { VendorRegistrationService } from 'app/services/vendor-registration.service';
 @Component({
-    selector: "app-dashboard",
-    templateUrl: "./dashboard.component.html",
-    styleUrls: ["./dashboard.component.scss"],
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.scss'],
     encapsulation: ViewEncapsulation.None,
     animations: fuseAnimations,
 })
@@ -40,23 +40,23 @@ export class DashboardComponent implements OnInit {
     PlantList: string[] = [];
     notificationSnackBarComponent: NotificationSnackBarComponent;
     IsProgressBarVisibile: boolean;
-    //AllUserWithRoles: UserWithRole[] = [];
+    // AllUserWithRoles: UserWithRole[] = [];
     VendorOnBoardingsDisplayedColumns: string[] = [
-        "Name",
-        "LegalName",
-        "Type",
-        "Country",
-        "Phone1",
-        "Email1",
-        "CreatedOn",
-        "Status",
-        "Action",
+        'Name',
+        'LegalName',
+        'Type',
+        'Country',
+        'Phone1',
+        'Email1',
+        'CreatedOn',
+        'Status',
+        'Action',
     ];
     VendorOnBoardingsDataSource: MatTableDataSource<BPVendorOnBoarding>;
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     selection = new SelectionModel<any>(true, []);
-    searchText = "";
+    searchText = '';
     AllVendorOnBoardings: BPVendorOnBoarding[] = [];
     public tab1: boolean;
     public tab2: boolean;
@@ -87,7 +87,7 @@ export class DashboardComponent implements OnInit {
     ngOnInit(): void {
         this.tabCount = 1;
         // Retrive authorizationData
-        const retrievedObject = localStorage.getItem("authorizationData");
+        const retrievedObject = localStorage.getItem('authorizationData');
         if (retrievedObject) {
             this.authenticationDetails = JSON.parse(
                 retrievedObject
@@ -96,26 +96,29 @@ export class DashboardComponent implements OnInit {
             this.currentUserRole = this.authenticationDetails.UserRole;
             // this.currentUserName = this.authenticationDetails.UserName;
             this.MenuItems = this.authenticationDetails.MenuItemNames.split(
-                ","
+                ','
             );
-            if (this.MenuItems.indexOf("Admin Dashboard") < 0) {
+            if (this.MenuItems.indexOf('Admin Dashboard') < 0) {
                 this.notificationSnackBarComponent.openSnackBar(
-                    "You do not have permission to visit this page",
+                    'You do not have permission to visit this page',
                     SnackBarStatus.danger
                 );
-                this._router.navigate(["/auth/login"]);
+                this._router.navigate(['/auth/login']);
             }
-            if (this.currentUserRole === "Approver") {
-                this._masterService
-                    .GetApproverPlants(this.currentUserID)
-                    .subscribe((data) => {
-                        this.PlantList = data as string[];
-                        if (this.PlantList.length > 0) {
-                            this.GetAllOpenVendorOnBoardings();
-                            this.GetAllApprovedVendorOnBoardingsCount();
-                            this.GetAllRejectedVendorOnBoardingsCount();
-                        }
-                    });
+            if (this.currentUserRole === 'Approver') {
+                // this._masterService
+                //     .GetApproverPlants(this.currentUserID)
+                //     .subscribe((data) => {
+                //         this.PlantList = data as string[];
+                //         if (this.PlantList.length > 0) {
+                //             this.GetAllOpenVendorOnBoardings();
+                //             this.GetAllApprovedVendorOnBoardingsCount();
+                //             this.GetAllRejectedVendorOnBoardingsCount();
+                //         }
+                //     });
+                this.GetAllOpenVendorOnBoardings();
+                this.GetAllApprovedVendorOnBoardingsCount();
+                this.GetAllRejectedVendorOnBoardingsCount();
             } else {
                 this.GetAllOpenVendorOnBoardings();
                 this.GetAllApprovedVendorOnBoardingsCount();
@@ -124,7 +127,7 @@ export class DashboardComponent implements OnInit {
 
             // this.GetAllUserWithRoles();
         } else {
-            this._router.navigate(["/auth/login"]);
+            this._router.navigate(['/auth/login']);
         }
     }
 
@@ -169,7 +172,7 @@ export class DashboardComponent implements OnInit {
                 console.error(err);
                 this.IsProgressBarVisibile = false;
                 this.notificationSnackBarComponent.openSnackBar(
-                    err instanceof Object ? "Something went wrong" : err,
+                    err instanceof Object ? 'Something went wrong' : err,
                     SnackBarStatus.danger
                 );
             }
@@ -178,7 +181,7 @@ export class DashboardComponent implements OnInit {
 
     GetAllOpenVendorOnBoardings(): void {
         this.IsProgressBarVisibile = true;
-        if (this.currentUserRole === "Approver") {
+        if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
                 .GetAllOpenVendorOnBoardingsByPlant(this.PlantList)
                 .subscribe(
@@ -210,7 +213,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -247,7 +250,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -258,7 +261,7 @@ export class DashboardComponent implements OnInit {
 
     GetAllApprovedVendorOnBoardings(): void {
         this.IsProgressBarVisibile = true;
-        if (this.currentUserRole === "Approver") {
+        if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
                 .GetAllApprovedVendorOnBoardingsByPlant(this.PlantList)
                 .subscribe(
@@ -289,7 +292,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -326,7 +329,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -337,79 +340,78 @@ export class DashboardComponent implements OnInit {
 
     GetAllRejectedVendorOnBoardings(): void {
         this.IsProgressBarVisibile = true;
-        if (this.currentUserRole === "Approver") {
-        
-        this._vendorRegistrationService
-            .GetAllRejectedVendorOnBoardingsByPlant(this.PlantList)
-            .subscribe(
-                (data) => {
-                    this.IsProgressBarVisibile = false;
-                    this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
-                    if (
-                        this.AllVendorOnBoardings &&
-                        this.AllVendorOnBoardings.length > 0
-                    ) {
-                        this.RejectedCount = this.AllVendorOnBoardings.length;
-                        this.VendorOnBoardingsDataSource = new MatTableDataSource(
-                            this.AllVendorOnBoardings
-                        );
-                        this.VendorOnBoardingsDataSource.paginator = this.paginator;
-                        this.VendorOnBoardingsDataSource.sort = this.sort;
-                    } else {
-                        this.RejectedCount = 0;
-                        this.VendorOnBoardingsDataSource = new MatTableDataSource(
-                            this.AllVendorOnBoardings
-                        );
-                        this.VendorOnBoardingsDataSource.paginator = this.paginator;
-                        this.VendorOnBoardingsDataSource.sort = this.sort;
-                    }
-                },
-                (err) => {
-                    console.error(err);
-                    this.IsProgressBarVisibile = false;
-                    this.notificationSnackBarComponent.openSnackBar(
-                        err instanceof Object ? "Something went wrong" : err,
-                        SnackBarStatus.danger
-                    );
-                }
-            );
-        }
-        else
-        {
+        if (this.currentUserRole === 'Approver') {
+
             this._vendorRegistrationService
-            .GetAllRejectedVendorOnBoardings()
-            .subscribe(
-                (data) => {
-                    this.IsProgressBarVisibile = false;
-                    this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
-                    if (
-                        this.AllVendorOnBoardings &&
-                        this.AllVendorOnBoardings.length > 0
-                    ) {
-                        this.RejectedCount = this.AllVendorOnBoardings.length;
-                        this.VendorOnBoardingsDataSource = new MatTableDataSource(
-                            this.AllVendorOnBoardings
+                .GetAllRejectedVendorOnBoardingsByPlant(this.PlantList)
+                .subscribe(
+                    (data) => {
+                        this.IsProgressBarVisibile = false;
+                        this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
+                        if (
+                            this.AllVendorOnBoardings &&
+                            this.AllVendorOnBoardings.length > 0
+                        ) {
+                            this.RejectedCount = this.AllVendorOnBoardings.length;
+                            this.VendorOnBoardingsDataSource = new MatTableDataSource(
+                                this.AllVendorOnBoardings
+                            );
+                            this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                            this.VendorOnBoardingsDataSource.sort = this.sort;
+                        } else {
+                            this.RejectedCount = 0;
+                            this.VendorOnBoardingsDataSource = new MatTableDataSource(
+                                this.AllVendorOnBoardings
+                            );
+                            this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                            this.VendorOnBoardingsDataSource.sort = this.sort;
+                        }
+                    },
+                    (err) => {
+                        console.error(err);
+                        this.IsProgressBarVisibile = false;
+                        this.notificationSnackBarComponent.openSnackBar(
+                            err instanceof Object ? 'Something went wrong' : err,
+                            SnackBarStatus.danger
                         );
-                        this.VendorOnBoardingsDataSource.paginator = this.paginator;
-                        this.VendorOnBoardingsDataSource.sort = this.sort;
-                    } else {
-                        this.RejectedCount = 0;
-                        this.VendorOnBoardingsDataSource = new MatTableDataSource(
-                            this.AllVendorOnBoardings
-                        );
-                        this.VendorOnBoardingsDataSource.paginator = this.paginator;
-                        this.VendorOnBoardingsDataSource.sort = this.sort;
                     }
-                },
-                (err) => {
-                    console.error(err);
-                    this.IsProgressBarVisibile = false;
-                    this.notificationSnackBarComponent.openSnackBar(
-                        err instanceof Object ? "Something went wrong" : err,
-                        SnackBarStatus.danger
-                    );
-                }
-            );
+                );
+        }
+        else {
+            this._vendorRegistrationService
+                .GetAllRejectedVendorOnBoardings()
+                .subscribe(
+                    (data) => {
+                        this.IsProgressBarVisibile = false;
+                        this.AllVendorOnBoardings = <BPVendorOnBoarding[]>data;
+                        if (
+                            this.AllVendorOnBoardings &&
+                            this.AllVendorOnBoardings.length > 0
+                        ) {
+                            this.RejectedCount = this.AllVendorOnBoardings.length;
+                            this.VendorOnBoardingsDataSource = new MatTableDataSource(
+                                this.AllVendorOnBoardings
+                            );
+                            this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                            this.VendorOnBoardingsDataSource.sort = this.sort;
+                        } else {
+                            this.RejectedCount = 0;
+                            this.VendorOnBoardingsDataSource = new MatTableDataSource(
+                                this.AllVendorOnBoardings
+                            );
+                            this.VendorOnBoardingsDataSource.paginator = this.paginator;
+                            this.VendorOnBoardingsDataSource.sort = this.sort;
+                        }
+                    },
+                    (err) => {
+                        console.error(err);
+                        this.IsProgressBarVisibile = false;
+                        this.notificationSnackBarComponent.openSnackBar(
+                            err instanceof Object ? 'Something went wrong' : err,
+                            SnackBarStatus.danger
+                        );
+                    }
+                );
         }
     }
 
@@ -426,7 +428,7 @@ export class DashboardComponent implements OnInit {
                     console.error(err);
                     this.IsProgressBarVisibile = false;
                     this.notificationSnackBarComponent.openSnackBar(
-                        err instanceof Object ? "Something went wrong" : err,
+                        err instanceof Object ? 'Something went wrong' : err,
                         SnackBarStatus.danger
                     );
                 }
@@ -435,13 +437,13 @@ export class DashboardComponent implements OnInit {
 
     GetAllApprovedVendorOnBoardingsCount(): void {
         this.IsProgressBarVisibile = true;
-        if (this.currentUserRole === "Approver") {
+        if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
                 .GetAllApprovedVendorOnBoardingsByPlant(this.PlantList)
                 .subscribe(
                     (data) => {
                         console.log(
-                            "GetAllApprovedVendorOnBoardingsByPlant",
+                            'GetAllApprovedVendorOnBoardingsByPlant',
                             data
                         );
                         this.IsProgressBarVisibile = false;
@@ -452,7 +454,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -471,7 +473,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -482,7 +484,7 @@ export class DashboardComponent implements OnInit {
 
     GetAllRejectedVendorOnBoardingsCount(): void {
         this.IsProgressBarVisibile = true;
-        if (this.currentUserRole === "Approver") {
+        if (this.currentUserRole === 'Approver') {
             this._vendorRegistrationService
                 .GetAllRejectedVendorOnBoardingsByPlant(this.PlantList)
                 .subscribe(
@@ -495,7 +497,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -514,7 +516,7 @@ export class DashboardComponent implements OnInit {
                         this.IsProgressBarVisibile = false;
                         this.notificationSnackBarComponent.openSnackBar(
                             err instanceof Object
-                                ? "Something went wrong"
+                                ? 'Something went wrong'
                                 : err,
                             SnackBarStatus.danger
                         );
@@ -535,7 +537,7 @@ export class DashboardComponent implements OnInit {
     // }
 
     ReviewAndApproveVendor(bPVendorOnBoarding: BPVendorOnBoarding): void {
-        this._router.navigate(["/approval", bPVendorOnBoarding.TransID]);
+        this._router.navigate(['/approval', bPVendorOnBoarding.TransID]);
     }
     applyFilter(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;
