@@ -482,23 +482,31 @@
                       </mat-error> -->
                     </div>
 
+                    <!-- (keyup)="pinfunc()" (keydown)="numberOnly($event)"-->
                     <div fxFlex="50" [style.display]="GetOBDFieldVisibility('PinCode')">
                       <mat-form-field class="pl-8 pr-20" style="width: 100%;">
                         <input matInput [placeholder]="GetOBDFieldLabel('Pin Code')" autocomplete="doNotAutoComplete"
-                          formControlName="PinCode" maxlength="6" (blur)="OnPincodeKeyEnter($event)" (keyup)="pinfunc()"
-                          (keydown)="numberOnly($event)" (keyup.enter)="OnPincodeKeyEnter($event)"
+                          formControlName="PinCode"  (blur)="OnPincodeKeyEnter($event)" 
+                           (keyup.enter)="OnPincodeKeyEnter($event)"
                           style="font-weight: 600;opacity: 0.8;">
                         <mat-error
                           *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && vendorRegistrationFormGroup.get('PinCode').hasError('required')">
                           {{GetOBDFieldLabel('Pin Code')}} is required
                         </mat-error>
 
+                        <mat-error
+                          *ngIf="vendorRegistrationFormGroup.get('PinCode').touched && !vendorRegistrationFormGroup.get('PinCode').hasError('pattern')">
+                          Please enter a valid PinCode 
+                        </mat-error>
+
                         <!-- <mat-error *ngIf="!vendorRegistrationFormGroup.get('PinCode').hasError('required') && Postaldata">
                           Input not valid.
                         </mat-error> -->
-                        <mat-error *ngIf="!Postaldata">
+
+                        <!-- <mat-error *ngIf="!Postaldata">
                           Pincode not valid.
-                        </mat-error>
+                        </mat-error> -->
+
                         <!-- <mat-error *ngIf="!vendorRegistrationFormGroup.get('PinCode').hasError('required')
                         && vendorRegistrationFormGroup.get('PinCode').hasError('invalid')">
                           Please enter a valid PIN Code

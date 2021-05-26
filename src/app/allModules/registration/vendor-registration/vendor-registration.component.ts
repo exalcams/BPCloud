@@ -647,7 +647,6 @@ export class VendorRegistrationComponent implements OnInit {
 
   onKey(event: any) {
     this.inputvalue = event.target.value;
-    console.log(this.inputvalue, "asas");
     if (this.inputvalue.toLowerCase() === "india") {
       this.notificationSnackBarComponent.openSnackBar(`India is not Acceptable,Please Change the Country`, SnackBarStatus.danger, 6000);
     }
@@ -755,7 +754,7 @@ export class VendorRegistrationComponent implements OnInit {
       State: ['', Validators.required],
       Country: ['India', [Validators.required]],
       // ,this.countryDomain
-      PinCode: ['', [Validators.required, Validators.pattern('^\\d{4,10}$')]],
+      PinCode: ['', [Validators.required,Validators.pattern("^[0-9]{4,10}$")]],
       Type: [''],
       // Invoice: [''],
       Phone1: ['', [Validators.required, Validators.maxLength(15), Validators.pattern("^[0-9]{7,15}$")]],
@@ -831,8 +830,8 @@ export class VendorRegistrationComponent implements OnInit {
     // this.pin_first=this.pin_first
     for (this.j; this.j < this.n1; this.j++) {
       if (this.pincode[this.j].num == this.pin_first1 && this.type_option == "Import") {
-        this.vendorRegistrationFormGroup.get('PinCode').markAsTouched();
-        this.vendorRegistrationFormGroup.controls['PinCode'].setErrors({ 'incorrect': true });
+        // this.vendorRegistrationFormGroup.get('PinCode').markAsTouched();
+        // this.vendorRegistrationFormGroup.controls['PinCode'].setErrors({ 'incorrect': true });
 
       }
     }
@@ -932,7 +931,8 @@ export class VendorRegistrationComponent implements OnInit {
     this.bankDetailsFormGroup = this._formBuilder.group({
       AccountNo: ['', Validators.required],
       Name: ['', Validators.required],
-      IFSC: ['', [Validators.required, Validators.pattern("^[A-Z]{4}0[A-Z0-9]{6}$")]],
+      // IFSC: ['', [Validators.required, Validators.pattern("^[A-Z]{4}0[A-Z0-9]{6}$")]],
+      IFSC: ['', [Validators.required, Validators.pattern("^[A-Z0-9]{4,15}$")]],
       BankName: ['', Validators.required],
       Branch: ['', Validators.required],
       City: ['', Validators.required],
@@ -1295,8 +1295,8 @@ export class VendorRegistrationComponent implements OnInit {
           }
           else {
             console.log('Pincode not found');
-            this.vendorRegistrationFormGroup.get('PinCode').markAsDirty();
-            this.vendorRegistrationFormGroup.get('PinCode').setValue('');
+            // this.vendorRegistrationFormGroup.get('PinCode').markAsDirty();
+            // this.vendorRegistrationFormGroup.get('PinCode').setValue('');
             // window.alert('Error');
 
           }
@@ -1425,9 +1425,8 @@ export class VendorRegistrationComponent implements OnInit {
   }
 
   OnPincodeKeyEnter(event): void {
-    this.legalName.nativeElement.focus();
+    // this.legalName.nativeElement.focus();
     const Pincode = event.target.value;
-    console.log('OnPincodeKeyEnter Pincode', Pincode);
     if (Pincode) {
       this._vendorMasterService.GetLocationByPincode(Pincode).subscribe(
         (data) => {
@@ -1454,6 +1453,7 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('State').patchValue(postal.State);
             this.vendorRegistrationFormGroup.get('Country').patchValue(postal.Country);
             this.vendorRegistrationFormGroup.get('AddressLine2').patchValue(postal.Taluk + ',' + postal.State);
+            // this.Postaldata = true;
           }
           else {
             // this.vendorRegistrationFormGroup.get('PinCode').markAsDirty();
@@ -1463,11 +1463,7 @@ export class VendorRegistrationComponent implements OnInit {
             this.vendorRegistrationFormGroup.get('State').setValue('');
             this.vendorRegistrationFormGroup.get('Country').setValue('');
             this.vendorRegistrationFormGroup.get('AddressLine2').setValue('');
-            this.vendorRegistrationFormGroup.get('PinCode').setErrors({
-              data: { message: 'Pincode is not valid :)' },
-            });
-            this.Postaldata = false;
-            console.log(this.Postaldata);
+            // this.Postaldata = false;
           }
           // const loc = data as CBPLocation;
           // if (loc) {
@@ -3365,7 +3361,7 @@ export class VendorRegistrationComponent implements OnInit {
             } else if (key === 'LegalName') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.maxLength(40)]);
             } else if (key === 'PinCode') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^\\d{6,10}$')]);
+              // this.vendorRegistrationFormGroup.get(key).setValidators([Validators.required, Validators.pattern('^\\d{6,10}$')]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).setValidators(Validators.required);
@@ -3385,7 +3381,7 @@ export class VendorRegistrationComponent implements OnInit {
             } else if (key === 'LegalName') {
               this.vendorRegistrationFormGroup.get(key).setValidators([Validators.maxLength(40)]);
             } else if (key === 'PinCode') {
-              this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^\\d{6,10}$')]);
+              // this.vendorRegistrationFormGroup.get(key).setValidators([Validators.pattern('^\\d{4,10}$')]);
             }
             else {
               this.vendorRegistrationFormGroup.get(key).clearValidators();
@@ -3435,9 +3431,7 @@ export class VendorRegistrationComponent implements OnInit {
       // );
       this._vendorMasterService.SearchTaxPayer(this.vendorRegistrationFormGroup.get('GSTNumber').value).subscribe(
         (data) => {
-          console.log('Data from SearchTaxPayer', data);
           if (data) {
-
             let pan = this.vendorRegistrationFormGroup.get('GSTNumber').value as string;
             pan = pan.substring(2, 10);
             this.vendorRegistrationFormGroup.get('PAN').patchValue(pan);
@@ -3455,9 +3449,8 @@ export class VendorRegistrationComponent implements OnInit {
               this._vendorMasterService.GetLocationByPincode(TaxPayer.pinCode).subscribe(
                 (Loc) => {
                   const postal = Loc as CBPLocation;
-
                   if (Loc != null) {
-                    this.Postaldata = false;
+                    this.Postaldata = true;
                     this.vendorRegistrationFormGroup.get('City').patchValue(postal.District);
                     this.vendorRegistrationFormGroup.get('State').patchValue(postal.State);
                     this.vendorRegistrationFormGroup.get('Country').patchValue(postal.Country);
