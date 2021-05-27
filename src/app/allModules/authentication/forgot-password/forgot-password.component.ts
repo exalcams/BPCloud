@@ -57,7 +57,8 @@ export class ForgotPasswordComponent implements OnInit {
   ngOnInit(): void {
     this.resetPasswordForm = this._formBuilder.group({
       newPassword: ['', [Validators.required,
-      Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$&()\\-`.+,\/])[A-Za-z\d!@#$&()\\-`.+,\/].{9,}")]],
+      Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`~!@#\$%\^\&*\)\(\\+=.,_-])[A-Za-z\d`~!@#\$%\^\&*\)\(\\+=.,_-].{9,}')]],
+      //Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$&()\\-`.+,\/])[A-Za-z\d!@#$&()\\-`.+,\/].{9,}")]],
       confirmPassword: ['', [Validators.required, CustomValidator.confirmPasswordValidator]]
     });
   }
@@ -93,7 +94,8 @@ export class ForgotPasswordComponent implements OnInit {
         (err) => {
           console.error(err);
           this.IsProgressBarVisibile = false;
-          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);        }
+          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+        }
       );
     }
     else {
