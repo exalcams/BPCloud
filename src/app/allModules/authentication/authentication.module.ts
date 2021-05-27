@@ -9,6 +9,7 @@ import { ForgetPasswordLinkDialogComponent } from './forget-password-link-dialog
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog.component';
 import { CookieService } from 'angular2-cookie/services/cookies.service';
 import { CookieOptions } from 'angular2-cookie/services/base-cookie-options';
+import {MatTooltipModule} from '@angular/material/tooltip';
 const authRoutes: Routes = [
     {
         path: 'login',
@@ -49,6 +50,7 @@ const authRoutes: Routes = [
         MatDialogModule,
         MatIconModule,
         MatToolbarModule,
+        MatTooltipModule,
         MatProgressSpinnerModule,
         RouterModule.forChild(authRoutes)
     ],

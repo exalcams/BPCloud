@@ -5,6 +5,7 @@ import { FuseNavigationModule } from '@fuse/components';
 import { FuseSharedModule } from '@fuse/shared.module';
 
 import { NavbarVerticalStyle2Component } from 'app/layout/components/navbar/vertical/style-2/style-2.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
     declarations: [
@@ -13,7 +14,7 @@ import { NavbarVerticalStyle2Component } from 'app/layout/components/navbar/vert
     imports     : [
         MatButtonModule,
         MatIconModule,
-
+        MatTooltipModule,
         FuseSharedModule,
         FuseNavigationModule
     ],

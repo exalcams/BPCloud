@@ -66,8 +66,8 @@ export class ChangePasswordComponent implements OnInit {
 
     this.resetPasswordForm = this._formBuilder.group({
       currentPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required,
-      Validators.pattern('(?=.*[a-z].*[a-z].*[a-z])(?=.*[A-Z])(?=.*[0-9].*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}')]],
+      newPassword: ['', [Validators.required,Validators.pattern("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@$#!%*^?&_,.+:;<>`~\/\-])[A-Za-z\d@$#!%*?&_,.+:;`~\/\-].{9,}")]],
+      // newPassword: ['', [Validators.required,Validators.pattern('(?=.*[a-z].*[a-z].*[a-z])(?=.*[A-Z])(?=.*[0-9].*[0-9])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&].{8,}')]],
       confirmPassword: ['', [Validators.required, CustomValidator.confirmPasswordValidator]]
     });
 
