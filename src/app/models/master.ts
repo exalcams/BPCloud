@@ -74,6 +74,7 @@ export class LoginModel {
 }
 export class EMailModel {
     EmailAddress: string;
+    UserName: string;
     siteURL: string;
 }
 export class ForgotPassword {
@@ -93,9 +94,9 @@ export class UserNotification {
 export class VendorUser {
     Email: string;
     Phone: string;
-}    
+}
 
-export class SessionMaster {​​​​​​​​
+export class SessionMaster {
     ID: number;
     ProjectName: string;
     SessionTimeOut: number;
@@ -104,5 +105,5 @@ export class SessionMaster {​​​​​​​​
     CreatedBy: string;
     ModifiedOn: Date | string | null;
     ModifiedBy: string;
-}​​​​​​​​
+}
 
