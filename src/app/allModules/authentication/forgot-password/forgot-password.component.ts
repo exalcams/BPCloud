@@ -58,7 +58,7 @@ export class ForgotPasswordComponent implements OnInit {
     this.resetPasswordForm = this._formBuilder.group({
       newPassword: ['', [Validators.required,
       Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[`~!@#\$%\^\&*\)\(\\+=.,_-])[A-Za-z\d`~!@#\$%\^\&*\)\(\\+=.,_-].{9,}')]],
-      //Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$&()\\-`.+,\/])[A-Za-z\d!@#$&()\\-`.+,\/].{9,}")]],
+      // Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$&()\\-`.+,\/])[A-Za-z\d!@#$&()\\-`.+,\/].{9,}")]],
       confirmPassword: ['', [Validators.required, CustomValidator.confirmPasswordValidator]]
     });
   }
