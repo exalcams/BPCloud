@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
   addExtraClass: false;
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
-  Username = "";
+  Username = '';
 
   constructor(
     private _fuseNavigationService: FuseNavigationService,
@@ -84,7 +84,7 @@ export class LoginComponent implements OnInit {
     });
     if (undefined !== this._cookieService.get('OBDUsername')) {
       this.Username = this._cookieService.get('OBDUsername');
-  }
+    }
   }
 
   LoginClicked(): void {
@@ -93,11 +93,11 @@ export class LoginComponent implements OnInit {
       this._authService.login(this.loginForm.get('userName').value, this.loginForm.get('password').value).subscribe(
         (data) => {
           this.IsProgressBarVisibile = false;
-          console.log("LoginClicked",data);
+          // console.log('LoginClicked', data);
           const dat = data as AuthenticationDetails;
 
           if (data.IsChangePasswordRequired === 'Yes') {
-            this.notificationSnackBarComponent.openSnackBar(data.ReasonForReset,SnackBarStatus.danger);
+            this.notificationSnackBarComponent.openSnackBar(data.ReasonForReset, SnackBarStatus.danger);
             this.OpenChangePasswordDialog(dat);
           }
           // else if(data.IsSuccess)
@@ -158,12 +158,10 @@ export class LoginComponent implements OnInit {
           changePassword.UserName = data.UserName;
           this._authService.ChangePassword(changePassword).subscribe(
             (res) => {
-              console.log('ChangePassword Response',res);
-              if(res != null)
-              {
+              console.log('ChangePassword Response', res);
+              if (res != null) {
                 this.notificationSnackBarComponent.openSnackBar('Password updated successfully, please log with new password', SnackBarStatus.success);
-              }else
-              {
+              } else {
                 this.notificationSnackBarComponent.openSnackBar('Password Should Not Be Same As Previous 5 Passwords', SnackBarStatus.danger);
               }
               this._router.navigate(['/auth/login']);
@@ -192,7 +190,7 @@ export class LoginComponent implements OnInit {
             (data) => {
               const res = data as string;
               // this.notificationSnackBarComponent.openSnackBar(res, SnackBarStatus.success);
-              this.notificationSnackBarComponent.openSnackBar(`Reset password link sent successfully to ${emailModel.EmailAddress}`, SnackBarStatus.success);
+              this.notificationSnackBarComponent.openSnackBar(`Reset password link sent successfully to registered mail address`, SnackBarStatus.success);
               // this.ResetControl();
               this.IsProgressBarVisibile = false;
               // this._router.navigate(['auth/login']);
